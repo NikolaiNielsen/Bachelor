@@ -1,5 +1,5 @@
 /materials/*
-/.ipynb_checkpoints/*
+.ipynb_checkpoints
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
