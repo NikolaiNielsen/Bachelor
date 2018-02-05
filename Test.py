@@ -19,9 +19,34 @@ def LatticeGenerator(a1, a2, a3, basis, colors='xkcd:cement', sizes=1):
     length_basis = np.shape(basis)
     if len(length_basis) == 1:
         N_basis = 1
-
     elif len(length_basis) > 1:
         N_basis = length_basis[0]
+
+    # Make a list, N_basis long, for the colors and sizes,
+    # if they're not specified.
+    c_name = colors.__class__.__name__
+    if c_name == "str":
+        c = colors
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
+    elif c_name == "list" and len(colors) != N_basis:
+        c = colors[0]
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
+
+    s_name = sizes.__class__.__name__
+    if s_name == "int" or s_name == "float":
+        s = sizes
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
+    elif s_name == "list" and len(sizes) != N_basis:
+        s = sizes[0]
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
 
     # set the range of lattice vectors to be calculated
     nx_max, ny_max, nz_max = 4, 4, 4
@@ -151,14 +176,3 @@ def plotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     ax.set_zlabel('$z$')
     fig.show()
 
-
-a1 = np.array([1, 0, 0])
-a2 = np.array([0, 1, 0])
-a3 = np.array([0, 0, 1])
-# Array of basis vectors
-basis = np.array([[0, 0, 0]])
-# Colors for each of the basis vectors
-colors = ['xkcd:cement']  # , 'b', 'b', 'b']
-# Size multiplier for each of the atoms. Default is 1
-sizes = [2]  # , 1, 1, 1]
-LatticeGenerator(a1, a2, a3, basis, colors, sizes)
