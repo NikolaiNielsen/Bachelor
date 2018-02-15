@@ -1,0 +1,122 @@
+% Nikolai Nielsens "Fysiske Fag" preamble
+\documentclass[a4paper,10pt]{article} 	% A4 papir, 10pt størrelse
+\usepackage[danish]{babel}
+\usepackage{Nikolai} 					% Min hjemmelavede pakke
+\usepackage[dvipsnames]{xcolor}
+
+% Margen
+\usepackage[margin=1in]{geometry}
+
+% Max antal kolonner i en matrix. Default er 10
+%\setcounter{MaxMatrixCols}{20}
+
+% Hvor dybt skal kapitler labeles?
+%\setcounter{secnumdepth}{4}	
+%\setcounter{tocdepth}{4}
+
+% Hvilket nummer skal der startes med i sections? (n-1)
+%\setcounter{section}{0}	
+
+% Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
+\numberwithin{equation}{section}
+
+
+% Header
+%\usepackage{fancyhdr}
+%\head{}
+%\pagestyle{fancy}
+
+%Titel
+\title{Lattice classification}
+\author{}
+\date{}
+
+\begin{document}
+	\selectlanguage{danish}
+	\maketitle
+
+	\section{Face Centered cubic. Primitive}
+	$a_1 = (1/2, 1/2, 0),\ a_2 = (1/2, 0, 1/2),\ a_3 = (0, 1/2, 1/2)$
+	
+	Internal angles all 60 degrees ($\cos \theta = 1/2$). 45 degrees with respect to two cardinal axis ($\cos \theta = \sqrt{2}/2$), Orthogonal with respect to last. All lengths equal ($\sqrt{2}/2$)
+	
+	\section{Body centered cubic. Primitive}
+	$ a_1 = (1,0,0),\ a_2 = (0,1,0),\ a_3 = (1/2,1/2,1/2) $
+	
+	Internal angles: $a_1$ and $a_2$ are orthogonal. $a_1$ or $a_2$ with $a_3$ has $\cos \theta = \sqrt{3}/3 $ (roughly 54.74 degrees). Two vectors have length 1, last has length $\sqrt{3}/2$.
+	
+	\section{Tetragonal Body centered}
+	Increase z-coordinate on $a_3$. Say $a_3 = (1/2,1/2,a) $. Then $\cos \theta = 1/\sqrt{4a^2+2} $, and $|a_3| = \frac{\sqrt{4a^2+2}}{2}$
+	
+	\section{Orthorhombic}
+	Let's assume the conventional unit cell has $a_1 = (a,0,0),\ a_2 = (0,b,0),\ a_3 = (0,0,c)$
+	
+	\subsection{Body centered}
+	$a_3 = (a/2, b/2, c/2)$. Lengths: $|a_1| = a,\ |a_2| = b, |a_3| = \frac{\sqrt{a^2+b^2+c^2}}{2}$. Angles: 
+	
+	\begin{equation}
+		\cos \theta_{12} = 0,\ \cos \theta_{13} = \frac{a}{\sqrt{a^2+b^2+c^2}} = \frac{|a_1|}{2|a_3|},\ \cos \theta_{23} = \frac{b}{\sqrt{a^2+b^2+c^2}} = \frac{|a_2|}{2|a_3|}
+	\end{equation}
+	And the spacing is $ c^2 = 4a_3^2-a_1^2-a_2^2 $
+	
+	These two last are also angles with respect to x-axis and y-axis respectively. Angle with z is $\cos\theta_{3z} = \frac{c}{\sqrt{a^2+b^2+c^2}} = 2(4a_3^2-a_1^2-a_2^2)/|a_3|$
+	
+	\subsection{Face centered}
+	$ a_1 = (a/2,b/2,0), \ a_2 = (a/2,0,c/2), \ a_3 = (0,b/2,c/2) $.
+	
+	\begin{align} 
+	|a_1| &= \frac{\sqrt{a^2+b^2}}{2}, \ |a_2| = \frac{\sqrt{a^2+c^2}}{2}, \ |a_3| = \frac{\sqrt{b^2+c^2}}{2} \\
+	\cos \theta_{12} &= \frac{a^2}{\sqrt{a^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{13} = \frac{b^2}{\sqrt{b^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{23} = \frac{c^2}{\sqrt{a^2+c^2} \cdot \sqrt{b^2+c^2}} 
+	\end{align}
+	
+	And the spacings are
+	\begin{equation}\label{key}
+		a^2 = 2 (a_1^2+a_2^2-a_3^2), \ b^2 = 2(a_1^2-a_2^2+a_3^2), \ c^2 = 2(-a_1^2+a_2^2+a_3^2)
+	\end{equation}
+	As such the angles can be written
+	\begin{equation}\label{key}
+		\cos \theta_{12} = \frac{a_1^2+a_2^2-a_3^2}{2 \cdot |a_1| \cdot |a_2|}, \quad
+		\cos \theta_{13} = \frac{a_1^2-a_2^2+a_3^2}{2 \cdot |a_1| \cdot |a_3|}, \quad
+		\cos \theta_{23} = \frac{-a_1^2+a_2^2+a_3^2}{2 \cdot |a_2| \cdot |a_3|}
+	\end{equation}
+	
+	
+	\subsection{Base centered}
+	$ a_1 = (a,0,0),\ a_2 = (a/2,b/2,0),\ a_3 = (0,0,c) $.
+	
+	Spacings and angles
+	\begin{equation}\label{key}
+	|a_2|^2 = \frac{a^2+b^2}{4}, \ b^2 = 4a_2^2-a_1^2. \quad \cos \theta_{12} = \frac{a}{\sqrt{a^2+b^2}} = \frac{|a_1|}{2|a_2|}, \ \cos\theta_{13} = \cos \theta_{23} = 0
+	\end{equation}
+	
+	\section{Simple monoclinic}
+	\url{https://en.wikipedia.org/wiki/Monoclinic_crystal_system#/media/File:Monoclinic.svg}
+
+	\begin{equation}\label{key}
+		|a_1| = a,\ |a_2| = b,\ |a_3| = c, \quad \cos \theta_{12} = \cos \theta_{23} = 0, \ \cos \theta_{13} \neq 0
+	\end{equation}
+	
+	$a_1$ and $a_2$ are along x and y. $a_3 = c \cdot (\cos \theta_{13},0,\sin \theta_{13})$
+	
+	\section{Base centered monoclinic}
+	$ a_1 = (a,0,0),\ a_2 =(a/2, b/2,0),\ a_3 = c \cdot (\cos \theta_{13},0,\sin \theta_{13}) $.
+	
+	\begin{equation}\label{key}
+	|a_1| = a,\ |a_2| = \frac{\sqrt{a^2+b^2}}{2}, \ |a_3| = c \quad \cos \theta_{12} = \frac{|a_1|}{2|a_2|}, \ \cos \theta_{23} = \frac{a\cos\theta_{13}}{\sqrt{a^2+b^2}} = \frac{a_1 \cdot a_3}{2 \cdot |a_2| \cdot |a_3|}
+	\end{equation}
+	
+	
+	\section{Hexagonal}
+	$ a_1 = (1,0,0),\ a_2 = (1/2,\sqrt{3}/2,0),\ a_3 = (0,0,a) $. $a_1$ and $a_2$ are orthogonal to $a_3$, and 60 degrees between them.
+	$|a_1| = |a_2| \neq |a_3| \quad \cos \theta_{12} = 1/2, \ \cos \theta_{13} = \cos \theta_{23} = 0$
+	
+	\section{Triclinic}
+	$|a_1| \neq |a_2| \neq |a_3|$. And $\theta_{12} \neq \theta_{13} \neq \theta_{23}$
+	
+	\section{Rhombohedral}
+	$|a_1| = |a_2| = |a_3|$ and $\theta_{12} = \theta_{13} = \theta_{23}$ but they're not right angles
+
+\end{document}
+
+
+
