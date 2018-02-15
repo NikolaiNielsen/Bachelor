@@ -46,7 +46,14 @@
 	Internal angles: $a_1$ and $a_2$ are orthogonal. $a_1$ or $a_2$ with $a_3$ has $\cos \theta = \sqrt{3}/3 $ (roughly 54.74 degrees). Two vectors have length 1, last has length $\sqrt{3}/2$.
 	
 	\section{Tetragonal Body centered}
-	Increase z-coordinate on $a_3$. Say $a_3 = (1/2,1/2,a) $. Then $\cos \theta = 1/\sqrt{4a^2+2} $, and $|a_3| = \frac{\sqrt{4a^2+2}}{2}$
+	Increase z-coordinate on $a_3$. Say $a_3 = (a/2,a/2,b) $. Then $\cos \theta = a^2/\sqrt{2a^2+b^2} $, and $|a_3| = \frac{\sqrt{2a^2+b^2}}{2}$, or $ \cos \theta = |a_1|/2|a_3|$
+	
+	\section{Tetragonal Face centered}
+	\begin{align}
+		a_1 &= (a/2,a/2,0), \quad a_2 = (a/2,0,b/2), \quad a_3 = (0,a/2,b/2),\\
+		|a_1| &= \frac{\sqrt{2}}{2} a, \quad |a_2| = \frac{\sqrt{a^2+b^2}}{2} = |a_3|, \\
+		\cos \theta_{12} & = \frac{|a_1|}{2|a_2|} = \cos \theta_{13} = \frac{|a_1|}{2 |a_3|}, \quad \cos \theta_{23} = \frac{b^2}{a^2+b^2} = \frac{2a_2^2 - a_1^2}{2a_2^2} = \frac{2a_3^2 - a_1^2}{2a_3^2}
+	\end{align}
 	
 	\section{Orthorhombic}
 	Let's assume the conventional unit cell has $a_1 = (a,0,0),\ a_2 = (0,b,0),\ a_3 = (0,0,c)$
