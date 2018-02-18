@@ -46,19 +46,24 @@
 	Internal angles: $a_1$ and $a_2$ are orthogonal. $a_1$ or $a_2$ with $a_3$ has $\cos \theta = \sqrt{3}/3 $ (roughly 54.74 degrees). Two vectors have length 1, last has length $\sqrt{3}/2$.
 	
 	\section{Tetragonal Body centered}
-	Increase z-coordinate on $a_3$. Say $a_3 = (a/2,a/2,b) $. Then $\cos \theta = a^2/\sqrt{2a^2+b^2} $, and $|a_3| = \frac{\sqrt{2a^2+b^2}}{2}$, or $ \cos \theta = |a_1|/2|a_3|$
+	Increase z-coordinate on $a_3$. Say $a_3 = (a/2,a/2,b/2) $. Then $\cos \theta = a/\sqrt{2a^2+b^2} $, and $|a_3| = \frac{\sqrt{2a^2+b^2}}{2}$, or $ \cos \theta = |a_1|/2|a_3|$:
+	\begin{align}
+		a_1 &= (a,0,0), \quad a_2 = (0,a,0), \quad a_3 = (a/2,a/2,b/2) \\
+		|a_1| &= a = |a_2|, \quad |a_3| = \frac{\sqrt{2a^2+b^2}}{2}, \\
+		\cos \theta_{12} &= 0, \quad \cos \theta_{23} = \cos \theta_{31} = \frac{|a_1|}{2|a_3|}  = \frac{|a_2|}{2 |a_3|}
+	\end{align}
 	
 	\section{Tetragonal Face centered}
 	\begin{align}
 		a_1 &= (a/2,a/2,0), \quad a_2 = (a/2,0,b/2), \quad a_3 = (0,a/2,b/2),\\
 		|a_1| &= \frac{\sqrt{2}}{2} a, \quad |a_2| = \frac{\sqrt{a^2+b^2}}{2} = |a_3|, \\
-		\cos \theta_{12} & = \frac{|a_1|}{2|a_2|} = \cos \theta_{13} = \frac{|a_1|}{2 |a_3|}, \quad \cos \theta_{23} = \frac{b^2}{a^2+b^2} = \frac{2a_2^2 - a_1^2}{2a_2^2} = \frac{2a_3^2 - a_1^2}{2a_3^2}
+		\cos \theta_{12} & = \frac{|a_1|}{2|a_2|} = \cos \theta_{31} = \frac{|a_1|}{2 |a_3|}, \quad \cos \theta_{23} = \frac{b^2}{a^2+b^2} = \frac{2a_2^2 - a_1^2}{2a_2^2} = \frac{2a_3^2 - a_1^2}{2a_3^2}
 	\end{align}
 	\section{Tetragonal base centered}
 	\begin{align}
 		a_1 &= (a/2,a/2,0), \quad a_2 = (0,a,0), \quad a_3 = (0,0,b) \\
 		|a_1| &= \frac{\sqrt{2}}{2} a, \quad |a_2| = a, \quad |a_3| = b \\
-		\cos \theta_{12} &= \frac{\sqrt{2}}{2}, \quad \cos \theta_{13} = \cos\theta_{23} = 0
+		\cos \theta_{12} &= \frac{\sqrt{2}}{2}, \quad \cos \theta_{31} = \cos\theta_{23} = 0
 	\end{align}
 	
 	\section{Orthorhombic}
@@ -68,7 +73,7 @@
 	$a_3 = (a/2, b/2, c/2)$. Lengths: $|a_1| = a,\ |a_2| = b, |a_3| = \frac{\sqrt{a^2+b^2+c^2}}{2}$. Angles: 
 	
 	\begin{equation}
-		\cos \theta_{12} = 0,\ \cos \theta_{13} = \frac{a}{\sqrt{a^2+b^2+c^2}} = \frac{|a_1|}{2|a_3|},\ \cos \theta_{23} = \frac{b}{\sqrt{a^2+b^2+c^2}} = \frac{|a_2|}{2|a_3|}
+		\cos \theta_{12} = 0,\ \cos \theta_{31} = \frac{a}{\sqrt{a^2+b^2+c^2}} = \frac{|a_1|}{2|a_3|},\ \cos \theta_{23} = \frac{b}{\sqrt{a^2+b^2+c^2}} = \frac{|a_2|}{2|a_3|}
 	\end{equation}
 	And the spacing is $ c^2 = 4a_3^2-a_1^2-a_2^2 $
 	
@@ -79,7 +84,7 @@
 	
 	\begin{align} 
 	|a_1| &= \frac{\sqrt{a^2+b^2}}{2}, \ |a_2| = \frac{\sqrt{a^2+c^2}}{2}, \ |a_3| = \frac{\sqrt{b^2+c^2}}{2} \\
-	\cos \theta_{12} &= \frac{a^2}{\sqrt{a^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{13} = \frac{b^2}{\sqrt{b^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{23} = \frac{c^2}{\sqrt{a^2+c^2} \cdot \sqrt{b^2+c^2}} 
+	\cos \theta_{12} &= \frac{a^2}{\sqrt{a^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{31} = \frac{b^2}{\sqrt{b^2+c^2} \cdot \sqrt{a^2+b^2}},\ \cos \theta_{23} = \frac{c^2}{\sqrt{a^2+c^2} \cdot \sqrt{b^2+c^2}} 
 	\end{align}
 	
 	And the spacings are
@@ -89,7 +94,7 @@
 	As such the angles can be written
 	\begin{equation}\label{key}
 		\cos \theta_{12} = \frac{a_1^2+a_2^2-a_3^2}{2 \cdot |a_1| \cdot |a_2|}, \quad
-		\cos \theta_{13} = \frac{a_1^2-a_2^2+a_3^2}{2 \cdot |a_1| \cdot |a_3|}, \quad
+		\cos \theta_{31} = \frac{a_1^2-a_2^2+a_3^2}{2 \cdot |a_1| \cdot |a_3|}, \quad
 		\cos \theta_{23} = \frac{-a_1^2+a_2^2+a_3^2}{2 \cdot |a_2| \cdot |a_3|}
 	\end{equation}
 	
@@ -99,35 +104,35 @@
 	
 	Spacings and angles
 	\begin{equation}\label{key}
-	|a_2|^2 = \frac{a^2+b^2}{4}, \ b^2 = 4a_2^2-a_1^2. \quad \cos \theta_{12} = \frac{a}{\sqrt{a^2+b^2}} = \frac{|a_1|}{2|a_2|}, \ \cos\theta_{13} = \cos \theta_{23} = 0
+	|a_2|^2 = \frac{a^2+b^2}{4}, \ b^2 = 4a_2^2-a_1^2. \quad \cos \theta_{12} = \frac{a}{\sqrt{a^2+b^2}} = \frac{|a_1|}{2|a_2|}, \ \cos\theta_{31} = \cos \theta_{23} = 0
 	\end{equation}
 	
 	\section{Simple monoclinic}
 	\url{https://en.wikipedia.org/wiki/Monoclinic_crystal_system#/media/File:Monoclinic.svg}
 
 	\begin{equation}\label{key}
-		|a_1| = a,\ |a_2| = b,\ |a_3| = c, \quad \cos \theta_{12} = \cos \theta_{23} = 0, \ \cos \theta_{13} \neq 0
+		|a_1| = a,\ |a_2| = b,\ |a_3| = c, \quad \cos \theta_{12} = \cos \theta_{23} = 0, \ \cos \theta_{31} \neq 0
 	\end{equation}
 	
-	$a_1$ and $a_2$ are along x and y. $a_3 = c \cdot (\cos \theta_{13},0,\sin \theta_{13})$
+	$a_1$ and $a_2$ are along x and y. $a_3 = c \cdot (\cos \theta_{31},0,\sin \theta_{31})$
 	
 	\section{Base centered monoclinic}
-	$ a_1 = (a,0,0),\ a_2 =(a/2, b/2,0),\ a_3 = c \cdot (\cos \theta_{13},0,\sin \theta_{13}) $.
+	$ a_1 = (a,0,0),\ a_2 =(a/2, b/2,0),\ a_3 = c \cdot (\cos \theta_{31},0,\sin \theta_{31}) $.
 	
 	\begin{equation}\label{key}
-	|a_1| = a,\ |a_2| = \frac{\sqrt{a^2+b^2}}{2}, \ |a_3| = c \quad \cos \theta_{12} = \frac{|a_1|}{2|a_2|}, \ \cos \theta_{23} = \frac{a\cos\theta_{13}}{\sqrt{a^2+b^2}} = \frac{a_1 \cdot a_3}{2 \cdot |a_2| \cdot |a_3|}
+	|a_1| = a,\ |a_2| = \frac{\sqrt{a^2+b^2}}{2}, \ |a_3| = c \quad \cos \theta_{12} = \frac{|a_1|}{2|a_2|}, \ \cos \theta_{23} = \frac{a\cos\theta_{31}}{\sqrt{a^2+b^2}} = \frac{a_1 \cdot a_3}{2 \cdot |a_2| \cdot |a_3|}
 	\end{equation}
 	
 	
 	\section{Hexagonal}
 	$ a_1 = (1,0,0),\ a_2 = (1/2,\sqrt{3}/2,0),\ a_3 = (0,0,a) $. $a_1$ and $a_2$ are orthogonal to $a_3$, and 60 degrees between them.
-	$|a_1| = |a_2| \neq |a_3| \quad \cos \theta_{12} = 1/2, \ \cos \theta_{13} = \cos \theta_{23} = 0$
+	$|a_1| = |a_2| \neq |a_3| \quad \cos \theta_{12} = 1/2, \ \cos \theta_{31} = \cos \theta_{23} = 0$
 	
 	\section{Triclinic}
-	$|a_1| \neq |a_2| \neq |a_3|$. And $\theta_{12} \neq \theta_{13} \neq \theta_{23}$
+	$|a_1| \neq |a_2| \neq |a_3|$. And $\theta_{12} \neq \theta_{31} \neq \theta_{23}$
 	
 	\section{Rhombohedral}
-	$|a_1| = |a_2| = |a_3|$ and $\theta_{12} = \theta_{13} = \theta_{23}$ but they're not right angles
+	$|a_1| = |a_2| = |a_3|$ and $\theta_{12} = \theta_{31} = \theta_{23}$ but they're not right angles
 
 \end{document}
 
