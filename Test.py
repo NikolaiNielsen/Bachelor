@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # Make the matplotlib plots interactive
-get_ipython().magic('matplotlib notebook')
+#get_ipython().magic('matplotlib notebook')
 
 
 def LatticeGenerator(a1, a2, a3, basis, colors='xkcd:cement', sizes=1):
@@ -174,3 +174,4 @@ def plotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     ax.set_xlabel('$x$')
     ax.set_ylabel('$y$')
     ax.set_zlabel('$z$')
+    fig.show()
