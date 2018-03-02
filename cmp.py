@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
 
-# Make the matplotlib plots interactive
-get_ipython().run_line_magic('matplotlib', 'notebook')
-
 
 # Lattice detection
 # Let's first define some things
@@ -33,14 +30,12 @@ def LatticeClassifier(a1, a2, a3, basis):
     mag_Only31Eq = (mag_31Eq and (not mag_12Eq) and (not mag_23Eq))
     mag_Only23Eq = (mag_23Eq and (not mag_31Eq) and (not mag_12Eq))
     mag_Only2Eq = mag_Only12Eq ^ mag_Only31Eq ^ mag_Only23Eq
-    mag_NoEq = (not mag_12Eq) and (not mag_31Eq) and (not mag_23Eq)
     ortho12 = eq(0, np.dot(a1, a2))
     ortho31 = eq(0, np.dot(a1, a3))
     ortho23 = eq(0, np.dot(a2, a3))
     ortho = ortho12 and ortho31 and ortho23
     ortho2 = ((ortho12 and ortho31) ^ (ortho12 and ortho23) ^
               (ortho31 and ortho23))
-    ortho1 = ortho12 ^ ortho31 ^ ortho23
     hexa3 = eq(0.5, cos12) and eq(0, cos31) and eq(0, cos23)
     hexa2 = eq(0.5, cos31) and eq(0, cos23) and eq(0, cos12)
     hexa1 = eq(0.5, cos23) and eq(0, cos12) and eq(0, cos31)
@@ -96,11 +91,11 @@ def LatticeClassifier(a1, a2, a3, basis):
     obc = obc1 ^ obc2 ^ obc3
     # Just need one here. Cyclic permutations lead to the exact same expression
     ofc = (eq(cos12, (mag_a1**2 + mag_a2**2 - mag_a3**2) /
-           (2 * mag_a1 * mag_a2)) and
+                     (2 * mag_a1 * mag_a2)) and
            eq(cos23, (-mag_a1**2 + mag_a2**2 + mag_a3**2) /
-           (2 * mag_a2 * mag_a3)) and
+                     (2 * mag_a2 * mag_a3)) and
            eq(cos31, (mag_a1**2 - mag_a2**2 + mag_a3**2) /
-           (2 * mag_a3 * mag_a1)))
+                     (2 * mag_a3 * mag_a1)))
     # oBase False positives BaseMono, since the dot product in the
     # angle formulas all give 0
     oBase1 = eq(cos12, mag_a1 / (2 * mag_a2)) and ortho23 and ortho31
@@ -325,7 +320,7 @@ def LatticeTester():
     tester = True
     if tester:
         basis = np.array([0, 0, 0])
-        for name, lattice in l.items():
+        for name, lattice in L.items():
             for perm in itertools.permutations([0, 1, 2]):
                 a1, a2, a3 = lattice[list(perm)]
                 a1, a2, a3 = R@a1, R@a2, R@a3
@@ -435,7 +430,6 @@ elif s_name == "list" and len(sizes) < N_basis:
         sizes.append(s)
 # set the range of lattice vectors to be calculated
 r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
-print(r_min, r_max)
 # Calculate the amount of atomic positions to be calculated
 numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
             (n_max[2] + 1 - n_min[2]) * N_basis)
