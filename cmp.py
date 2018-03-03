@@ -351,83 +351,102 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
             n_max.astype('int') + np.max(Max))
 
 
-size_default = 36
-# Input sanitization:
-# We need the number of basis-vectors.
-# If there is only 1 basis vector, then len(np.shape(basis)) == 1
-# otherwise the length is 2, and the first element is number of basis vectors
-length_basis = np.shape(basis)
-if len(length_basis) == 1:
-    N_basis = 1
-elif len(length_basis) > 1:
-    N_basis = length_basis[0]
+def LatticeCreator(a1, a2, a3,
+                   basis, colors, sizes,
+                   LimType, GridType, Mins, Maxs):
+    size_default = 36
+    # Input sanitization:
+    # We need the number of basis-vectors.
+    # If there is only 1 basis vector, then len(np.shape(basis)) == 1
+    # otherwise the length is 2, and the first element is number of basis
+    # vectors
+    length_basis = np.shape(basis)
+    if len(length_basis) == 1:
+        N_basis = 1
+    elif len(length_basis) > 1:
+        N_basis = length_basis[0]
 
-# Make a list, N_basis long, for the colors and sizes,
-# if they're not specified.
-c_name = colors.__class__.__name__
-if c_name == "str":
-    c = colors
-    colors = []
-    for i in range(N_basis):
-        colors.append(c)
-elif c_name == "list" and len(colors) < N_basis:
-    c = colors[0]
-    colors = []
-    for i in range(N_basis):
-        colors.append(c)
+    # Make a list, N_basis long, for the colors and sizes,
+    # if they're not specified.
+    c_name = colors.__class__.__name__
+    if c_name == "str":
+        c = colors
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
+    elif c_name == "list" and len(colors) < N_basis:
+        c = colors[0]
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
 
-s_name = sizes.__class__.__name__
-if s_name == "int" or s_name == "float":
-    s = sizes
-    sizes = []
-    for i in range(N_basis):
-        sizes.append(s)
-elif s_name == "list" and len(sizes) < N_basis:
-    s = sizes[0]
-    sizes = []
-    for i in range(N_basis):
-        sizes.append(s)
-# set the range of lattice vectors to be calculated
-r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
-# Calculate the amount of atomic positions to be calculated
-numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
-            (n_max[2] + 1 - n_min[2]) * N_basis)
+    s_name = sizes.__class__.__name__
+    if s_name == "int" or s_name == "float":
+        s = sizes
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
+    elif s_name == "list" and len(sizes) < N_basis:
+        s = sizes[0]
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
+    # set the range of lattice vectors to be calculated
+    r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
+    # Calculate the amount of atomic positions to be calculated
+    numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
+                (n_max[2] + 1 - n_min[2]) * N_basis)
 
-# Make a zero array for all of the atomic positions. numAtoms in one direction
-# and 3 in the other (coordinates)
-AtomicPositions = np.zeros((numAtoms, 3))
-# Empty lists for colors, sizes and whether or not they're lattice points
-AtomicColors = []
-AtomicSizes = []
-LatticePosition = []
+    # Make a zero array for all of the atomic positions. numAtoms in one
+    # direction and 3 in the other (coordinates)
+    AtomicPositions = np.zeros((numAtoms, 3))
+    # Empty lists for colors, sizes and whether or not they're lattice points
+    AtomicColors = []
+    AtomicSizes = []
+    LatticePosition = []
 
-# Loop over all chosen linear combinations of basis vectors and plot each
-counter = 0
-for nx in range(n_min[0], n_max[0] + 1):
-    for ny in range(n_min[1], n_max[1] + 1):
-        for nz in range(n_min[2], n_max[2] + 1):
-            lattice_position = nx * a1 + ny * a2 + nz * a3
-            for n_atom in range(N_basis):
-                AtomicPositions[counter, ] = lattice_position + basis[n_atom, ]
-                AtomicColors.append(colors[n_atom])
-                AtomicSizes.append(size_default * sizes[n_atom])
-                if (AtomicPositions[counter, ] == lattice_position).all():
-                    LatticePosition.append(True)
-                else:
-                    LatticePosition.append(False)
-                counter += 1
+    # Loop over all chosen linear combinations of basis vectors and plot each
+    counter = 0
+    for nx in range(n_min[0], n_max[0] + 1):
+        for ny in range(n_min[1], n_max[1] + 1):
+            for nz in range(n_min[2], n_max[2] + 1):
+                lattice_position = nx * a1 + ny * a2 + nz * a3
+                for n_atom in range(N_basis):
+                    AtomicPositions[counter, ] = (lattice_position +
+                                                  basis[n_atom, ])
+                    AtomicColors.append(colors[n_atom])
+                    AtomicSizes.append(size_default * sizes[n_atom])
+                    if (AtomicPositions[counter, ] == lattice_position).all():
+                        LatticePosition.append(True)
+                    else:
+                        LatticePosition.append(False)
+                    counter += 1
 
-# Another way to do this is to use itertools.product to create all
-# permutations of -2, ..., 4 with repeat of 3, and then use np.asarray() to
-# convert this into a numpy array. The "problem" is that this doesn't allow
-# one to have nx_max = / = ny_max, etc. All ranges must be equal.
-# I should check to see which is fastest.
-# Strike that above problem. Just pass it a list for each coordinate with the
-# range and use no repeat.
-# AtomicCoefficients = np.asarray(list(itertools.product(x, y, z)))
-# Where x, y, z is list of integers from nx_min to nx_max etc.
-# This would yield list of coefficients (nx, ny, nz), then we just multiply
-# the first dimension by a1, the second by a2 and so on. But not now
+    # Another way to do this is to use itertools.product to create all
+    # permutations of -2, ..., 4 with repeat of 3, and then use np.asarray() to
+    # convert this into a numpy array. The "problem" is that this doesn't allow
+    # one to have nx_max = / = ny_max, etc. All ranges must be equal.
+    # I should check to see which is fastest.
+    # Strike that above problem. Just pass it a list for each coordinate with
+    # the range and use no repeat.
+    # AtomicCoefficients = np.asarray(list(itertools.product(x, y, z)))
+    # Where x, y, z is list of integers from nx_min to nx_max etc.
+    # This would yield list of coefficients (nx, ny, nz), then we just multiply
+    # the first dimension by a1, the second by a2 and so on. But not now
+
+    atoms, dims = np.shape(AtomicPositions)
+    # Get the rows with the function above
+    rows = Limiter(AtomicPositions, r_min, r_max)
+    # delete all rows (axis 0 of the array) that are outside the limits
+    AtomicPositions = np.delete(AtomicPositions, rows, 0)
+    # Go through the list of rows to delete in reverse order, and delete what's
+    # needed from colors and sizes
+    for ID in sorted(rows, reverse=True):
+        del AtomicColors[ID]
+        del AtomicSizes[ID]
+        del LatticePosition[ID]
+    LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+                   LatticePosition, GridType, r_min, r_max)
 
 
 # A function to highlight points that are outside the limits of the plot
@@ -447,18 +466,6 @@ def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
             rows.append(rowID)
     return rows
 
-
-atoms, dims = np.shape(AtomicPositions)
-# Get the rows with the function above
-rows = Limiter(AtomicPositions, r_min, r_max)
-# delete all rows (axis 0 of the array) that are outside the limits
-AtomicPositions = np.delete(AtomicPositions, rows, 0)
-# Go through the list of rows to delete in reverse order, and delete what's
-# needed from colors and sizes
-for ID in sorted(rows, reverse=True):
-    del AtomicColors[ID]
-    del AtomicSizes[ID]
-    del LatticePosition[ID]
 
 # Let's try and create some grid lines along the lattice vectors
 # some observations regarding grid lines:
@@ -510,106 +517,109 @@ def CreateLines(points, v1, v2, v3,
     return pruned_lines
 
 
-# Create the figure
-fig = plt.figure()
-ax = fig.gca(projection="3d")
+def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+                   LatticePosition, GridType, r_min, r_max):
+    # Create the figure
+    fig = plt.figure()
+    ax = fig.gca(projection="3d")
 
-# Plot atoms. For now a single size and color
-ax.scatter(AtomicPositions[:, 0], AtomicPositions[:, 1], AtomicPositions[:, 2],
-           c=AtomicColors, s=AtomicSizes)
+    # Plot atoms. For now a single size and color
+    ax.scatter(AtomicPositions[:, 0], AtomicPositions[:, 1],
+               AtomicPositions[:, 2], c=AtomicColors, s=AtomicSizes)
 
+    # Create grid lines
+    g_col = 'k'
+    g_w = 0.5
+    rangex = range(int(np.ceil(r_min[0])), int(np.floor(r_max[0])) + 1)
+    rangey = range(int(np.ceil(r_min[1])), int(np.floor(r_max[1])) + 1)
+    rangez = range(int(np.ceil(r_min[2])), int(np.floor(r_max[2])) + 1)
+    lowGrid = GridType.lower()
+    if lowGrid in "hard":
+        for nx in rangex:
+            for ny in rangey:
+                ax.plot(np.array([nx, nx]), np.array([ny, ny]),
+                        np.array([np.ceil(r_min[2]), np.floor(r_max[2])]),
+                        c=g_col, linewidth=g_w)
 
-# Create grid lines
-g_col = 'k'
-g_w = 0.5
+            for nz in rangez:
+                ax.plot(np.array([nx, nx]),
+                        np.array([np.ceil(r_min[1]), np.floor(r_max[1])]),
+                        np.array([nz, nz]),
+                        c=g_col, linewidth=g_w)
 
+        for ny in rangey:
+            for nz in rangez:
+                ax.plot(np.array([np.ceil(r_min[0]), np.floor(r_max[0])]),
+                        np.array([ny, ny]), np.array([nz, nz]),
+                        c=g_col, linewidth=g_w)
 
-lowGrid = GridType.lower()
-if lowGrid in "hard":
-    for nx in range(int(np.ceil(r_min[0])), int(np.floor(r_max[0])) + 1):
-        for ny in range(int(np.ceil(r_min[1])), int(np.floor(r_max[1])) + 1):
-            ax.plot(np.array([nx, nx]), np.array([ny, ny]),
-                    np.array([np.ceil(r_min[2]), np.floor(r_max[2])]),
-                    c=g_col, linewidth=g_w)
+    elif lowGrid in "latticevectors":
+        # gridlines along lattice vectors - really messy for non-orthogonal
+        # latticevectors
+        pruned_lines = CreateLines(AtomicPositions[LatticePosition],
+                                   a1, a2, a3, r_min, r_max)
+        for line in pruned_lines:
+            ax.plot(line[:, 0], line[:, 1], line[:, 2], c=g_col, linewidth=g_w)
 
-        for nz in range(int(np.ceil(r_min[2])), int(np.floor(r_max[2])) + 1):
-            ax.plot(np.array([nx, nx]), np.array([np.ceil(r_min[1]),
-                    np.floor(r_max[1])]), np.array([nz, nz]),
-                    c=g_col, linewidth=g_w)
+    elif lowGrid in "soft":
+        # A Way of finding atoms on cartesian axes
+        # bool array of atoms with x = 0 and y = 0
+        x0 = AtomicPositions[:, 0] == 0
+        y0 = AtomicPositions[:, 1] == 0
+        z0 = AtomicPositions[:, 2] == 0
 
-    for ny in range(int(np.ceil(r_min[1])), int(np.floor(r_max[1])) + 1):
-        for nz in range(int(np.ceil(r_min[2])), int(np.floor(r_max[2])) + 1):
-            ax.plot(np.array([np.ceil(r_min[0]), np.floor(r_max[0])]),
-                    np.array([ny, ny]), np.array([nz, nz]),
-                    c=g_col, linewidth=g_w)
+        # Get Lattice spacings
+        # z-values of atoms on the z-axis
+        z_vals = AtomicPositions[x0 * y0, 2]
+        # Keep those with z > 0
+        z_vals = z_vals[z_vals > 0]
+        # Take the minimum as the lattice spacing
+        a_z = np.min(z_vals)
 
-elif lowGrid in "latticevectors":
-    # gridlines along lattice vectors - really messy for non-orthogonal
-    # latticevectors
-    pruned_lines = CreateLines(AtomicPositions[LatticePosition],
-                               a1, a2, a3, r_min, r_max)
-    for line in pruned_lines:
-        ax.plot(line[:, 0], line[:, 1], line[:, 2], c=g_col, linewidth=g_w)
+        y_vals = AtomicPositions[x0 * z0, 1]
+        y_vals = y_vals[y_vals > 0]
+        a_y = np.min(y_vals)
 
-elif lowGrid in "soft":
-    # A Way of finding atoms on cartesian axes
-    # bool array of atoms with x = 0 and y = 0
-    x0 = AtomicPositions[:, 0] == 0
-    y0 = AtomicPositions[:, 1] == 0
-    z0 = AtomicPositions[:, 2] == 0
+        x_vals = AtomicPositions[y0 * z0, 0]
+        x_vals = x_vals[x_vals > 0]
+        a_x = np.min(x_vals)
 
-    # Get Lattice spacings
-    # z-values of atoms on the z-axis
-    z_vals = AtomicPositions[x0 * y0, 2]
-    # Keep those with z > 0
-    z_vals = z_vals[z_vals > 0]
-    # Take the minimum as the lattice spacing
-    a_z = np.min(z_vals)
+        for nx in np.arange(r_min[0], r_max[0] + 1, a_x):
+            for ny in np.arange(r_min[1], r_max[1] + 1, a_y):
+                ax.plot(np.array([nx, nx]), np.array([ny, ny]),
+                        np.array([r_min[2], r_max[2]]), c=g_col, linewidth=g_w)
 
-    y_vals = AtomicPositions[x0 * z0, 1]
-    y_vals = y_vals[y_vals > 0]
-    a_y = np.min(y_vals)
+            for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
+                ax.plot(np.array([nx, nx]), np.array([r_min[1], r_max[1]]),
+                        np.array([nz, nz]), c=g_col, linewidth=g_w)
 
-    x_vals = AtomicPositions[y0 * z0, 0]
-    x_vals = x_vals[x_vals > 0]
-    a_x = np.min(x_vals)
-
-    for nx in np.arange(r_min[0], r_max[0] + 1, a_x):
         for ny in np.arange(r_min[1], r_max[1] + 1, a_y):
-            ax.plot(np.array([nx, nx]), np.array([ny, ny]),
-                    np.array([r_min[2], r_max[2]]), c=g_col, linewidth=g_w)
+            for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
+                ax.plot(np.array([r_min[0], r_max[0]]), np.array([ny, ny]),
+                        np.array([nz, nz]), c=g_col, linewidth=g_w)
 
-        for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
-            ax.plot(np.array([nx, nx]), np.array([r_min[1], r_max[1]]),
-                    np.array([nz, nz]), c=g_col, linewidth=g_w)
+    else:
+        print("No Gridlines Chosen")
 
-    for ny in np.arange(r_min[1], r_max[1] + 1, a_y):
-        for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
-            ax.plot(np.array([r_min[0], r_max[0]]), np.array([ny, ny]),
-                    np.array([nz, nz]), c=g_col, linewidth=g_w)
+    # plot lattice vectors
+    ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
+    ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
+    ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
+    ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
+    ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
+    ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
 
-else:
-    print("No Gridlines Chosen")
+    # Set limits, orthographic projection (so we get the beautiful hexagons),
+    # no automatic gridlines, and no axes
+    ax.set_xlim([r_min[0], r_max[0]])
+    ax.set_ylim([r_min[1], r_max[1]])
+    ax.set_zlim([r_min[2], r_max[2]])
+    ax.set_proj_type('ortho')
+    ax.grid(False)
+    plt.axis('equal')
+    plt.axis('off')
 
-# plot lattice vectors
-ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
-ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
-ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
-ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
-ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
-ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
-
-# Set limits, orthographic projection (so we get the beautiful hexagons), no
-# automatic gridlines, and no axes
-ax.set_xlim([r_min[0], r_max[0]])
-ax.set_ylim([r_min[1], r_max[1]])
-ax.set_zlim([r_min[2], r_max[2]])
-ax.set_proj_type('ortho')
-ax.grid(False)
-plt.axis('equal')
-plt.axis('off')
-
-# make the panes transparent (the plot box)
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    # make the panes transparent (the plot box)
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
