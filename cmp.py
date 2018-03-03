@@ -107,24 +107,7 @@ def LatticeClassifier(a1, a2, a3, basis):
     oBase = oBase1 ^ oBase2 ^ oBase3 ^ oBase4 ^ oBase5 ^ oBase6
     tri = ((not eq(cos12, cos23)) and (not eq(cos23, cos31)) and
            (not eq(cos31, cos12)))
-    # # Expressing the basis in the new lattice
-    # LatticeArray = np.array([a1, a2, a3])
-    # BasisCoefficients = np.linalg.solve(LatticeArray.T, basis.T).T
-    # # Array of basis vector magnitude
-    # LatticeMag = np.array([mag_a1, mag_a2, mag_a3])
-    # BasisMag = np.array([mag(vec) for vec in basis])
-    # BasisRatio = np.zeros((3, basis.shape[0]))
-    # BasisCos = np.zeros((3, basis.shape[0]))
-    # for aID in range(3):
-    #     for bID in range(BasisMag.shape[0]):
-    #         if BasisMag[bID] == 0:
-    #             BasisRatio[aID, bID] = 0
-    #             BasisCos[aID, bID] = np.nan
-    #             continue
-    #         BasisRatio[aID, bID] = BasisMag[bID] / LatticeMag[aID]
-    #         BasisCos[aID, bID] = (basis[bID, :].dot(LatticeArray[aID, :]) /
-    #                               (BasisMag[bID] * LatticeMag[aID]))
-    A1, A2, A3 = a1, a2, a3
+
     LatticeType = "undetermined"
     if mag_AllEq:
         # Side lengths are equal. Lattice types:
@@ -135,40 +118,16 @@ def LatticeClassifier(a1, a2, a3, basis):
         # Tetragonal Body centered with b=+-sqrt(2)a
         # base centred monoclinic, b = +-sqrt(3)a, c = a
         if ortho:
-            # Cubic
-            A1 = np.array([1, 0, 0])
-            A2 = np.array([0, 1, 0])
-            A3 = np.array([0, 0, 1])
             LatticeType = "simple cubic"
         elif hexa:
             LatticeType = "hexagonal 1"
-            A1 = np.array([1, 0, 0])
-            A2 = np.array([1 / 2, np.sqrt(3) / 2, 0])
-            A3 = np.array([0, 0, 1])
         elif fcc:
-            A1 = np.array([1 / 2, 1 / 2, 0])
-            A2 = np.array([1 / 2, 0, 1 / 2])
-            A3 = np.array([0, 1 / 2, 1 / 2])
             LatticeType = "fcc"
         elif tbc:
-            # A1 = np.array([1, 0, 0])
-            # A2 = np.array([0, 1, 0])
-            # A3 = np.array([1 / 2, 1 / 2, np.sqrt(2) / 2])
             LatticeType = "tetragonal body centred"
         elif BaseMono:
-            # a = 1
-            # A1 = np.array([a, 0, 0])
-            # A2 = np.array([a / 2, np.sqrt(3) * a / 2, 0])
-            # A3 = np.array([a * np.cos(theta), 0, a * np.sin(theta)])
             LatticeType = "base centred monoclinic 1"
         elif rhombo:
-            # theta = cos12
-            # a = 1
-            # b = (1+np.sqrt(-2 * theta**2 + theta + 1)) / (2 * theta-1)
-            # A1 = np.array([a, b, b])
-            # A2 = np.array([b, a, b])
-            # A3 = np.array([b, b, a])
-            # Rhombohedral
             LatticeType = "rhombohedral"
     elif mag_Only2Eq:
         # Only two lengths are equal. Possible lattices
