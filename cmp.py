@@ -611,10 +611,11 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
 
     # Set limits, orthographic projection (so we get the beautiful hexagons),
     # no automatic gridlines, and no axes
-    ax.set_xlim([r_min[0], r_max[0]])
-    ax.set_ylim([r_min[1], r_max[1]])
-    ax.set_zlim([r_min[2], r_max[2]])
+    ax.set_aspect('equal')
     ax.set_proj_type('ortho')
+    ax.set_xlim3d([r_min[0], r_max[0]])
+    ax.set_ylim3d([r_min[1], r_max[1]])
+    ax.set_zlim3d([r_min[2], r_max[2]])
     ax.grid(False)
     plt.axis('equal')
     plt.axis('off')
