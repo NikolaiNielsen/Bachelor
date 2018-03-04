@@ -311,7 +311,7 @@ def LatticeChooser(lattice_name="simple cubic"):
     return lattice, basis
 
 
-def LatticeTester(tester=True):
+def LatticeTester(verbose=False):
     # List of all the lattices
     lattices = ["simple cubic", "fcc", "bcc", "conventional fcc",
                 "conventional bcc", "base centred cubic", "tetragonal",
@@ -331,11 +331,19 @@ def LatticeTester(tester=True):
             a1, a2, a3 = lattice[list(perm)]
             a1, a2, a3 = R@a1, R@a2, R@a3
             LatticeType = LatticeClassifier(a1, a2, a3, basis)
-            print("Lattice: {}. Classification: {}. Permutation {}".format(
-                  name,
-                  LatticeType,
-                  perm))
-    print("Test done. If nothing else printed all were succesfully classified")
+            if verbose:
+                print("Lattice: {}. Classification: {}. Permutation {}".format(
+                      name,
+                      LatticeType,
+                      perm))
+            else:
+                if name != LatticeType:
+                    s = "L: {}, C: {}, P: {}".format(name, LatticeType, perm)
+                    print(s)
+    if verbose:
+        print("Test done.")
+    else:
+        print("Test done. If nothing printed, all were succesfully classified")
 
 
 # Calculates the limits on the coordinates (the plot box),
