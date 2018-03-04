@@ -201,9 +201,12 @@ def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
             vCross + (1 - np.cos(theta)) * vTens)
 
 
-def LatticeTester():
+def LatticeChooser(lattice_name="simple cubic"):
+    # Let's just sanitize the input
+    lattice_name = lattice_name.lower()
     L = {}
-    a, b, c, theta = -1, 1.5, 2, 80 * np.pi / 180
+    B = {}
+    a, b, c, theta = 1, 1.5, 2, 80 * np.pi / 180
     # Create the relevant lattices (transposed - using row vectors)
     # Simple cubic
     lcubic = np.array([[a, 0, 0], [0, a, 0], [0, 0, a]])
@@ -275,21 +278,64 @@ def LatticeTester():
     # Rhombohedral
     lrhombo = np.array([[a, b, b], [b, a, b], [b, b, a]])
     L["rhombohedral"] = lrhombo
+
+    # conventional fcc
+    L["conventional fcc"] = lcubic
+    B["conventional fcc"] = a * np.array([[0.5, 0.5, 0],
+                                          [0.5, 0, 0.5],
+                                          [0, 0.5, 0.5]])
+
+    L["conventional bcc"] = lcubic
+    B["conventional bcc"] = a * np.array([0.5, 0.5, 0.5])
+
+    try:
+        lattice = L[lattice_name]
+    except KeyError:
+        print("You did da dumdum, and I now give you simple cubic")
+        lattice = L["simple cubic"]
+
+    basisOrigin = np.array([0, 0, 0])
+
+    try:
+        basis = B[lattice_name]
+    except KeyError:
+        basis = np.array([])
+
+    if basis.shape[0] > 0:
+        basis = np.vstack((basisOrigin, basis))
+    elif basis.shape[0] == 0:
+        basis = np.hstack((basisOrigin, basis))
+    else:
+        print("something went horribly wrong")
+
+    return lattice, basis
+
+
+def LatticeTester(tester=True):
+    # List of all the lattices
+    lattices = ["simple cubic", "fcc", "bcc", "conventional fcc",
+                "conventional bcc", "base centred cubic", "tetragonal",
+                "tetragonal body centred", "tetragonal face centred",
+                "tetragonal base centred", "orthorhombic",
+                "orthorhombic base centred", "orthorhombic body centred",
+                "orthorhombic face centred", "simple monoclinic",
+                "base centred monoclinic 1", "base centred monoclinic 2",
+                "base centred monoclinic 3", "hexagonal 1", "hexagonal 2",
+                "triclinic", "rhombohedral"]
+
     R = RotMatrix()
-    tester = True
-    if tester:
-        basis = np.array([0, 0, 0])
-        for name, lattice in L.items():
-            for perm in itertools.permutations([0, 1, 2]):
-                a1, a2, a3 = lattice[list(perm)]
-                a1, a2, a3 = R@a1, R@a2, R@a3
-                LatticeType = LatticeClassifier(a1, a2, a3, basis)
-                print("""Lattice: {}.
- Classification: {}. Permutation {}""".format(name,
-                                              LatticeType,
-                                              perm))
-        print("""Test done. If nothing else printed, all
-were succesfully classified""")
+    basis = np.array([0, 0, 0])
+    for name in lattices:
+        lattice, basis = LatticeChooser(name)
+        for perm in itertools.permutations([0, 1, 2]):
+            a1, a2, a3 = lattice[list(perm)]
+            a1, a2, a3 = R@a1, R@a2, R@a3
+            LatticeType = LatticeClassifier(a1, a2, a3, basis)
+            print("Lattice: {}. Classification: {}. Permutation {}".format(
+                  name,
+                  LatticeType,
+                  perm))
+    print("Test done. If nothing else printed all were succesfully classified")
 
 
 # Calculates the limits on the coordinates (the plot box),
