@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
 
+d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
+     np.array([0, 0, 0]), "xkcd:cement", 2, "wdynamic", "latticevectors",
+     [0, 0, 0], [2, 2, 2])
+
 
 # Lattice detection
 # Let's first define some things
@@ -405,9 +409,15 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
             n_max.astype('int') + np.max(Max))
 
 
-def LatticeCreator(a1, a2, a3,
-                   basis, colors, sizes,
-                   LimType, GridType, Mins, Maxs):
+def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
+                   basis=d[3], colors=d[4], sizes=d[5],
+                   LimType=d[6], GridType=d[7], Mins=d[8], Maxs=d[9],
+                   Lattice=None):
+
+    if Lattice is not None:
+        lattice, basis = LatticeChooser(Lattice)
+        a1, a2, a3 = lattice
+
     size_default = 36
     # Input sanitization:
     # We need the number of basis-vectors.
