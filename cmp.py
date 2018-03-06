@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
 
+# Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "wdynamic", "latticevectors",
      [0, 0, 0], [2, 2, 2])
@@ -23,36 +24,67 @@ def mag(a):
 
 
 def LatticeClassifier(a1, a2, a3, basis):
+    # test all bravais lattice types (primitive unit cells for all.
+    # conventional for fcc and bcc). Also tests for zinc blende and wurtzite
+    # It works by first checking how many of the lattice vectors have an equal
+    # magnitude, and then checking the angles between the lattice vectors.
+    # The angles are checked below with the extensive amount of boolean values.
+
+    # alias for isclose
     eq = np.isclose
-    mag_a1 = mag(a1)
-    mag_a2 = mag(a2)
-    mag_a3 = mag(a3)
+
+    # Create a lattice array and get the magnitude of the lattice vectors
     lattice = np.array([a1, a2, a3])
     mag_lattice = mag(lattice)
+    mag_a1, mag_a2, mag_a3 = mag_lattice
+
+    # Angles between lattice vectors
     cos12 = a1.dot(a2) / (mag_a1 * mag_a2)
     cos31 = a1.dot(a3) / (mag_a1 * mag_a3)
     cos23 = a2.dot(a3) / (mag_a2 * mag_a3)
+
+    # bool of equality between lattice vector magnitudes
     mag_12Eq = eq(mag_a1, mag_a2)
     mag_31Eq = eq(mag_a1, mag_a3)
     mag_23Eq = eq(mag_a2, mag_a3)
+
+    # If all magnitudes are equal, then there's equality between all magnitudes
     mag_AllEq = mag_12Eq and mag_31Eq and mag_23Eq
+
+    # We check each of the permutations where only 1 pair is equal to each
+    # other in magnitude
     mag_Only12Eq = (mag_12Eq and (not mag_31Eq) and (not mag_23Eq))
     mag_Only31Eq = (mag_31Eq and (not mag_12Eq) and (not mag_23Eq))
     mag_Only23Eq = (mag_23Eq and (not mag_31Eq) and (not mag_12Eq))
+    # XOR the above permutations together to make sure only one is true
     mag_Only2Eq = mag_Only12Eq ^ mag_Only31Eq ^ mag_Only23Eq
+
+    # Check for orthogonality
     ortho12 = eq(0, np.dot(a1, a2))
     ortho31 = eq(0, np.dot(a1, a3))
     ortho23 = eq(0, np.dot(a2, a3))
+
+    # all are orthogonal
     ortho = ortho12 and ortho31 and ortho23
+
+    # only two pairs are orthogonal
     ortho2 = ((ortho12 and ortho31) ^ (ortho12 and ortho23) ^
               (ortho31 and ortho23))
+
+    # The three possible permutations for hexagonal lattice. Hexagonal can both
+    # have 3 equal sides or only two
     hexa3 = eq(0.5, cos12) and eq(0, cos31) and eq(0, cos23)
     hexa2 = eq(0.5, cos31) and eq(0, cos23) and eq(0, cos12)
     hexa1 = eq(0.5, cos23) and eq(0, cos12) and eq(0, cos31)
     hexa = hexa1 ^ hexa2 ^ hexa3
+
     fcc = eq(0.5, cos12) and eq(0.5, cos31) and eq(0.5, cos23)
+
+    # rhombohedral have all angles equal to each other, but is not fcc
     rhombo = (eq(cos12, cos31) and eq(cos12, cos23) and
               eq(cos31, cos23) and not fcc)
+
+    # the three bcc permutations available
     bcc3 = (eq(0, cos12) and eq(np.sqrt(3) / 3, cos31) and
             eq(np.sqrt(3) / 3, cos23))
     bcc2 = (eq(0, cos31) and eq(np.sqrt(3) / 3, cos23) and
@@ -60,6 +92,8 @@ def LatticeClassifier(a1, a2, a3, basis):
     bcc1 = (eq(0, cos23) and eq(np.sqrt(3) / 3, cos12) and
             eq(np.sqrt(3) / 3, cos31))
     bcc = bcc1 ^ bcc2 ^ bcc3
+
+    # The three tetragonal body centred permutations
     tbc3 = eq(0, cos12) and eq(cos23, cos31) and eq(cos23, mag_a2 /
                                                     (2 * mag_a3))
     tbc2 = eq(0, cos31) and eq(cos12, cos23) and eq(cos12, mag_a1 /
@@ -67,6 +101,8 @@ def LatticeClassifier(a1, a2, a3, basis):
     tbc1 = eq(0, cos23) and eq(cos31, cos12) and eq(cos31, mag_a3 /
                                                     (2 * mag_a1))
     tbc = tbc1 ^ tbc2 ^ tbc3
+
+    # The three tetragonal face centred permutations
     tfc1 = (eq(cos12, cos31) and eq(cos12, mag_a1 / (2 * mag_a2)) and
             eq(cos23, (2 * mag_a2**2 - mag_a1**2) / (2 * mag_a3**2)))
     tfc2 = (eq(cos31, cos23) and eq(cos31, mag_a3 / (2 * mag_a1)) and
@@ -74,10 +110,15 @@ def LatticeClassifier(a1, a2, a3, basis):
     tfc3 = (eq(cos23, cos12) and eq(cos23, mag_a2 / (2 * mag_a3)) and
             eq(cos31, (2 * mag_a3**2 - mag_a2**2) / (2 * mag_a1**2)))
     tfc = tfc1 ^ tfc2 ^ tfc3
+
+    # Tetragonal base centred
     tBase3 = eq(cos12, np.sqrt(2) / 2) and eq(cos31, cos23) and eq(0, cos23)
     tBase2 = eq(cos31, np.sqrt(2) / 2) and eq(cos23, cos12) and eq(0, cos12)
     tBase1 = eq(cos23, np.sqrt(2) / 2) and eq(cos12, cos31) and eq(0, cos31)
     tBase = tBase1 ^ tBase2 ^ tBase3
+
+    # Base centred monoclinic has 6 different permutations, and can have either
+    # no sides equal, two sides equal or all sides equal
     BaseMono3 = (eq(cos12, mag_a1 / (2 * mag_a2)) and
                  eq(cos23, a1.dot(a3) / (2 * mag_a2 * mag_a3)))
     BaseMono2 = (eq(cos31, mag_a3 / (2 * mag_a1)) and
@@ -92,6 +133,8 @@ def LatticeClassifier(a1, a2, a3, basis):
                  eq(cos31, a2.dot(a3) / (2 * mag_a1 * mag_a3)))
     BaseMono = (BaseMono1 ^ BaseMono2 ^ BaseMono3 ^
                 BaseMono4 ^ BaseMono5 ^ BaseMono6)
+
+    # Orthorhombic body centred
     obc1 = (eq(cos12, 0) and eq(cos31, mag_a1 / (2 * mag_a3)) and
             eq(cos23, mag_a2 / (2 * mag_a3)))
     obc2 = (eq(cos31, 0) and eq(cos23, mag_a3 / (2 * mag_a2)) and
@@ -99,15 +142,18 @@ def LatticeClassifier(a1, a2, a3, basis):
     obc3 = (eq(cos23, 0) and eq(cos12, mag_a2 / (2 * mag_a1)) and
             eq(cos31, mag_a3 / (2 * mag_a1)))
     obc = obc1 ^ obc2 ^ obc3
-    # Just need one here. Cyclic permutations lead to the exact same expression
+
+    # Just need one here. Permutations lead to the exact same expression
     ofc = (eq(cos12, (mag_a1**2 + mag_a2**2 - mag_a3**2) /
                      (2 * mag_a1 * mag_a2)) and
            eq(cos23, (-mag_a1**2 + mag_a2**2 + mag_a3**2) /
                      (2 * mag_a2 * mag_a3)) and
            eq(cos31, (mag_a1**2 - mag_a2**2 + mag_a3**2) /
                      (2 * mag_a3 * mag_a1)))
+
     # oBase False positives BaseMono, since the dot product in the
     # angle formulas all give 0
+    # Again we have 6 possible permutations
     oBase1 = eq(cos12, mag_a1 / (2 * mag_a2)) and ortho23 and ortho31
     oBase2 = eq(cos31, mag_a3 / (2 * mag_a1)) and ortho12 and ortho23
     oBase3 = eq(cos23, mag_a2 / (2 * mag_a3)) and ortho31 and ortho12
@@ -115,9 +161,12 @@ def LatticeClassifier(a1, a2, a3, basis):
     oBase5 = eq(cos31, mag_a1 / (2 * mag_a3)) and ortho23 and ortho12
     oBase6 = eq(cos12, mag_a2 / (2 * mag_a1)) and ortho31 and ortho23
     oBase = oBase1 ^ oBase2 ^ oBase3 ^ oBase4 ^ oBase5 ^ oBase6
+
+    # Triclinic has no angles equal
     tri = ((not eq(cos12, cos23)) and (not eq(cos23, cos31)) and
            (not eq(cos31, cos12)))
 
+    # We start with an undetermined lattice type
     LatticeType = "undetermined"
     if mag_AllEq:
         # Side lengths are equal. Lattice types:
@@ -127,15 +176,18 @@ def LatticeClassifier(a1, a2, a3, basis):
         # hexagonal with a=|a_1|,
         # Tetragonal Body centered with b=+-sqrt(2)a
         # base centred monoclinic, b = +-sqrt(3)a, c = a
+        # conventional fcc
+        # conventional bcc
         if ortho:
             # Let's detect the conventional unit cells of fcc and bcc. Requires
             # more than one basis vector
             if len(basis.shape) == 1:
                 LatticeType = "simple cubic"
             else:
+                # we exclude the first basis vector ([0,0,0])
                 reduced_basis = basis[1:]
                 mag_basis = mag(reduced_basis)
-                # possible bcc
+                # bcc has one basis vector in the reduced basis
                 if reduced_basis.shape[0] == 1:
                     # Make sure the reduced basis is a vector
                     reduced_basis = reduced_basis.flatten()
@@ -149,7 +201,7 @@ def LatticeClassifier(a1, a2, a3, basis):
                     if lengthEq and anglesEq:
                         LatticeType = "conventional bcc"
 
-                # possible fcc
+                # fcc has 3 basis vectors in the reduced basis
                 elif reduced_basis.shape[0] == 3:
                     # check if all length ratios are sqrt(2)/2
                     lengthEq = eq(np.sqrt(2) / 2, mag_basis / mag_a1).all()
@@ -172,7 +224,7 @@ def LatticeClassifier(a1, a2, a3, basis):
                     num_0_true = (num_0.sum(axis=1) ==
                                   np.array([1, 1, 1])).all()
                     anglesEq = rank == 3 and num_0_true and num_sqrt2_true
-                    if (lengthEq and anglesEq):
+                    if lengthEq and anglesEq:
                         LatticeType = "conventional fcc"
 
         elif hexa:
