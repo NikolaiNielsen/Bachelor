@@ -15,7 +15,11 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 # Let's first define some things
 def mag(a):
     # Return magnitude of vector
-    return np.sqrt(a.dot(a))
+    if len(a.shape) == 1:
+        return np.linalg.norm(a)
+    # Return magnitude of each row of an array.
+    else:
+        return np.linalg.norm(a, axis=1)
 
 
 def LatticeClassifier(a1, a2, a3, basis):
@@ -23,6 +27,8 @@ def LatticeClassifier(a1, a2, a3, basis):
     mag_a1 = mag(a1)
     mag_a2 = mag(a2)
     mag_a3 = mag(a3)
+    lattice = np.array([a1, a2, a3])
+    mag_lattice = mag(lattice)
     cos12 = a1.dot(a2) / (mag_a1 * mag_a2)
     cos31 = a1.dot(a3) / (mag_a1 * mag_a3)
     cos23 = a2.dot(a3) / (mag_a2 * mag_a3)
@@ -122,7 +128,53 @@ def LatticeClassifier(a1, a2, a3, basis):
         # Tetragonal Body centered with b=+-sqrt(2)a
         # base centred monoclinic, b = +-sqrt(3)a, c = a
         if ortho:
-            LatticeType = "simple cubic"
+            # Let's detect the conventional unit cells of fcc and bcc. Requires
+            # more than one basis vector
+            if len(basis.shape) == 1:
+                LatticeType = "simple cubic"
+            else:
+                reduced_basis = basis[1:]
+                mag_basis = mag(reduced_basis)
+                # possible bcc
+                if reduced_basis.shape[0] == 1:
+                    # Make sure the reduced basis is a vector
+                    reduced_basis = reduced_basis.flatten()
+                    # check if the vector has the right length
+                    lengthEq = eq(np.sqrt(3) / 2, mag_basis / mag_a1)
+                    # calculate angles
+                    angles = lattice.dot(reduced_basis) / (mag_basis * mag_a1)
+                    # make sure the angles are all the right magnitude
+                    anglesEq = np.all(eq(angles, np.sqrt(3) / 3))
+                    # if lengths and angles are correct, it's bcc
+                    if lengthEq and anglesEq:
+                        LatticeType = "conventional bcc"
+
+                # possible fcc
+                elif reduced_basis.shape[0] == 3:
+                    # check if all length ratios are sqrt(2)/2
+                    lengthEq = eq(np.sqrt(2) / 2, mag_basis / mag_a1).all()
+
+                    # Calculate angles between lattice vectors and basis
+                    # vectors
+                    normalizer = np.outer(mag_lattice, mag_basis)
+                    angles = lattice.dot(reduced_basis) / normalizer
+                    # Calculate rank of matrix
+                    rank = np.linalg.matrix_rank(angles)
+
+                    # get angles that are sqrt(2)/2 and 0 respectively
+                    num_sqrt2 = eq(angles, np.sqrt(2) / 2)
+                    num_0 = eq(angles, 0)
+
+                    # Check whether there are 2 or 1 of these per row
+                    # respectively
+                    num_sqrt2_true = (num_sqrt2.sum(axis=1) ==
+                                      np.array([2, 2, 2])).all()
+                    num_0_true = (num_0.sum(axis=1) ==
+                                  np.array([1, 1, 1])).all()
+                    anglesEq = rank == 3 and num_0_true and num_sqrt2_true
+                    if (lengthEq and anglesEq):
+                        LatticeType = "conventional fcc"
+
         elif hexa:
             LatticeType = "hexagonal 1"
         elif fcc:
@@ -133,6 +185,7 @@ def LatticeClassifier(a1, a2, a3, basis):
             LatticeType = "base centred monoclinic 1"
         elif rhombo:
             LatticeType = "rhombohedral"
+
     elif mag_Only2Eq:
         # Only two lengths are equal. Possible lattices
         # BCC
@@ -327,14 +380,21 @@ def LatticeTester(verbose=False):
                 "base centred monoclinic 3", "hexagonal 1", "hexagonal 2",
                 "triclinic", "rhombohedral"]
 
+    # Create the rotation matrix
     R = RotMatrix()
-    basis = np.array([0, 0, 0])
     for name in lattices:
+        # Create the lattice
         lattice, basis = LatticeChooser(name)
+        # rotate the lattice and basis
+        lattice = (R@lattice.T).T
+        basis = (R@basis.T).T
         for perm in itertools.permutations([0, 1, 2]):
+            # permute the lattice
             a1, a2, a3 = lattice[list(perm)]
-            a1, a2, a3 = R@a1, R@a2, R@a3
+
+            # next we classify it
             LatticeType = LatticeClassifier(a1, a2, a3, basis)
+
             if verbose:
                 print("Lattice: {}. Classification: {}. Permutation {}".format(
                       name,
