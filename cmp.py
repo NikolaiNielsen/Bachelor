@@ -6,15 +6,124 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
 
+# Lattice plotting
 # Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "wdynamic", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
 
-# Lattice detection
+def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
+                   basis=d[3], colors=d[4], sizes=d[5],
+                   LimType=d[6], GridType=d[7], Mins=d[8], Maxs=d[9],
+                   Lattice=None):
+    """
+    Creates and limits the lattice
+    """
+    if Lattice is not None:
+        lattice, basis = LatticeChooser(Lattice)
+        a1, a2, a3 = lattice
+
+    size_default = 36
+    # Input sanitization:
+    # We need the number of basis-vectors.
+    # If there is only 1 basis vector, then len(np.shape(basis)) == 1
+    # otherwise the length is 2, and the first element is number of basis
+    # vectors
+    length_basis = np.shape(basis)
+    if len(length_basis) == 1:
+        N_basis = 1
+    elif len(length_basis) > 1:
+        N_basis = length_basis[0]
+
+    # Make a list, N_basis long, for the colors and sizes,
+    # if they're not specified.
+    c_name = colors.__class__.__name__
+    if c_name == "str":
+        c = colors
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
+    elif c_name == "list" and len(colors) < N_basis:
+        c = colors[0]
+        colors = []
+        for i in range(N_basis):
+            colors.append(c)
+
+    s_name = sizes.__class__.__name__
+    if s_name == "int" or s_name == "float":
+        s = sizes
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
+    elif s_name == "list" and len(sizes) < N_basis:
+        s = sizes[0]
+        sizes = []
+        for i in range(N_basis):
+            sizes.append(s)
+    # set the range of lattice vectors to be calculated
+    r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
+    # Calculate the amount of atomic positions to be calculated
+    numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
+                (n_max[2] + 1 - n_min[2]) * N_basis)
+
+    # Make a zero array for all of the atomic positions. numAtoms in one
+    # direction and 3 in the other (coordinates)
+    AtomicPositions = np.zeros((numAtoms, 3))
+    # Empty lists for colors, sizes and whether or not they're lattice points
+    AtomicColors = []
+    AtomicSizes = []
+    LatticePosition = []
+
+    # Loop over all chosen linear combinations of basis vectors and plot each
+    counter = 0
+    for nx in range(n_min[0], n_max[0] + 1):
+        for ny in range(n_min[1], n_max[1] + 1):
+            for nz in range(n_min[2], n_max[2] + 1):
+                lattice_position = nx * a1 + ny * a2 + nz * a3
+                for n_atom in range(N_basis):
+                    AtomicPositions[counter, ] = (lattice_position +
+                                                  basis[n_atom, ])
+                    AtomicColors.append(colors[n_atom])
+                    AtomicSizes.append(size_default * sizes[n_atom])
+                    if (AtomicPositions[counter, ] == lattice_position).all():
+                        LatticePosition.append(True)
+                    else:
+                        LatticePosition.append(False)
+                    counter += 1
+
+    # Another way to do this is to use itertools.product to create all
+    # permutations of -2, ..., 4 with repeat of 3, and then use np.asarray() to
+    # convert this into a numpy array. The "problem" is that this doesn't allow
+    # one to have nx_max = / = ny_max, etc. All ranges must be equal.
+    # I should check to see which is fastest.
+    # Strike that above problem. Just pass it a list for each coordinate with
+    # the range and use no repeat.
+    # AtomicCoefficients = np.asarray(list(itertools.product(x, y, z)))
+    # Where x, y, z is list of integers from nx_min to nx_max etc.
+    # This would yield list of coefficients (nx, ny, nz), then we just multiply
+    # the first dimension by a1, the second by a2 and so on. But not now
+
+    atoms, dims = np.shape(AtomicPositions)
+    # Get the rows with the function above
+    rows = Limiter(AtomicPositions, r_min, r_max)
+    # delete all rows (axis 0 of the array) that are outside the limits
+    AtomicPositions = np.delete(AtomicPositions, rows, 0)
+    # Go through the list of rows to delete in reverse order, and delete what's
+    # needed from colors and sizes
+    for ID in sorted(rows, reverse=True):
+        del AtomicColors[ID]
+        del AtomicSizes[ID]
+        del LatticePosition[ID]
+    LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+                   LatticePosition, GridType, r_min, r_max)
+
+
 # Let's first define some things
 def mag(a):
+    """
+    Returns magnitude of vector or each row of an array
+    """
     # Return magnitude of vector
     if len(a.shape) == 1:
         return np.linalg.norm(a)
@@ -24,11 +133,13 @@ def mag(a):
 
 
 def LatticeClassifier(a1, a2, a3, basis):
-    # test all bravais lattice types (primitive unit cells for all.
-    # conventional for fcc and bcc). Also tests for zinc blende and wurtzite
-    # It works by first checking how many of the lattice vectors have an equal
-    # magnitude, and then checking the angles between the lattice vectors.
-    # The angles are checked below with the extensive amount of boolean values.
+    """
+    test all bravais lattice types (primitive unit cells for all, conventional
+    for fcc and bcc). It works by first checking how many of the lattice
+    vectors have an equal magnitude, and then checking the angles between the
+    lattice vectors. The angles are checked below with the extensive amount of
+    boolean values.
+    """
 
     # alias for isclose
     eq = np.isclose
@@ -118,7 +229,9 @@ def LatticeClassifier(a1, a2, a3, basis):
     tBase = tBase1 ^ tBase2 ^ tBase3
 
     # Base centred monoclinic has 6 different permutations, and can have either
-    # no sides equal, two sides equal or all sides equal
+    # no sides equal, two sides equal or all sides equal. With two or three
+    # sides equal it has a 2D triangular lattice, where each 2D lattice is
+    # displaced with respect to the other.
     BaseMono3 = (eq(cos12, mag_a1 / (2 * mag_a2)) and
                  eq(cos23, a1.dot(a3) / (2 * mag_a2 * mag_a3)))
     BaseMono2 = (eq(cos31, mag_a3 / (2 * mag_a1)) and
@@ -237,6 +350,8 @@ def LatticeClassifier(a1, a2, a3, basis):
             LatticeType = "base centred monoclinic 1"
         elif rhombo:
             LatticeType = "rhombohedral"
+        else:
+            pass
 
     elif mag_Only2Eq:
         # Only two lengths are equal. Possible lattices
@@ -293,12 +408,16 @@ def LatticeClassifier(a1, a2, a3, basis):
             LatticeType = "simple monoclinic"
         elif tri:
             LatticeType = "triclinic"
+        else:
+            pass
     return LatticeType
 
 
-# General rotation axis about a vector.
-# See https: /  / en.wikipedia.org / wiki / Rotation_matrix
 def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
+    """
+    Generates the rotation matrix for rotation about a given vector with a
+    given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
+    """
     # Make sure we have a unit vector
     v = v / mag(v)
     # Create the cross product matrix
@@ -311,6 +430,9 @@ def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
 
 
 def LatticeChooser(lattice_name="simple cubic"):
+    """
+    Outputs the chosen lattice and basis
+    """
     # Let's just sanitize the input
     lattice_name = lattice_name.lower()
     L = {}
@@ -421,6 +543,10 @@ def LatticeChooser(lattice_name="simple cubic"):
 
 
 def LatticeTester(verbose=False):
+    """
+    Tests all the lattices for lattice detection, with permutations and
+    rotations
+    """
     # List of all the lattices
     lattices = ["simple cubic", "fcc", "bcc", "conventional fcc",
                 "conventional bcc", "base centred cubic", "tetragonal",
@@ -462,9 +588,12 @@ def LatticeTester(verbose=False):
         print("Test done. If nothing printed, all were succesfully classified")
 
 
-# Calculates the limits on the coordinates (the plot box),
-# and the limits on the basis vector ranges
 def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
+    """
+    Calculates the limits on the coordinates (the plot box), and the limits on
+    the basis vector ranges.
+    """
+
     # If we have hard limit types we just pass the min and max as coordinate
     # limits and calculate limits of the basis vector ranges based on
     # coordinate limits
@@ -521,112 +650,10 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
             n_max.astype('int') + np.max(Max))
 
 
-def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
-                   basis=d[3], colors=d[4], sizes=d[5],
-                   LimType=d[6], GridType=d[7], Mins=d[8], Maxs=d[9],
-                   Lattice=None):
-
-    if Lattice is not None:
-        lattice, basis = LatticeChooser(Lattice)
-        a1, a2, a3 = lattice
-
-    size_default = 36
-    # Input sanitization:
-    # We need the number of basis-vectors.
-    # If there is only 1 basis vector, then len(np.shape(basis)) == 1
-    # otherwise the length is 2, and the first element is number of basis
-    # vectors
-    length_basis = np.shape(basis)
-    if len(length_basis) == 1:
-        N_basis = 1
-    elif len(length_basis) > 1:
-        N_basis = length_basis[0]
-
-    # Make a list, N_basis long, for the colors and sizes,
-    # if they're not specified.
-    c_name = colors.__class__.__name__
-    if c_name == "str":
-        c = colors
-        colors = []
-        for i in range(N_basis):
-            colors.append(c)
-    elif c_name == "list" and len(colors) < N_basis:
-        c = colors[0]
-        colors = []
-        for i in range(N_basis):
-            colors.append(c)
-
-    s_name = sizes.__class__.__name__
-    if s_name == "int" or s_name == "float":
-        s = sizes
-        sizes = []
-        for i in range(N_basis):
-            sizes.append(s)
-    elif s_name == "list" and len(sizes) < N_basis:
-        s = sizes[0]
-        sizes = []
-        for i in range(N_basis):
-            sizes.append(s)
-    # set the range of lattice vectors to be calculated
-    r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
-    # Calculate the amount of atomic positions to be calculated
-    numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
-                (n_max[2] + 1 - n_min[2]) * N_basis)
-
-    # Make a zero array for all of the atomic positions. numAtoms in one
-    # direction and 3 in the other (coordinates)
-    AtomicPositions = np.zeros((numAtoms, 3))
-    # Empty lists for colors, sizes and whether or not they're lattice points
-    AtomicColors = []
-    AtomicSizes = []
-    LatticePosition = []
-
-    # Loop over all chosen linear combinations of basis vectors and plot each
-    counter = 0
-    for nx in range(n_min[0], n_max[0] + 1):
-        for ny in range(n_min[1], n_max[1] + 1):
-            for nz in range(n_min[2], n_max[2] + 1):
-                lattice_position = nx * a1 + ny * a2 + nz * a3
-                for n_atom in range(N_basis):
-                    AtomicPositions[counter, ] = (lattice_position +
-                                                  basis[n_atom, ])
-                    AtomicColors.append(colors[n_atom])
-                    AtomicSizes.append(size_default * sizes[n_atom])
-                    if (AtomicPositions[counter, ] == lattice_position).all():
-                        LatticePosition.append(True)
-                    else:
-                        LatticePosition.append(False)
-                    counter += 1
-
-    # Another way to do this is to use itertools.product to create all
-    # permutations of -2, ..., 4 with repeat of 3, and then use np.asarray() to
-    # convert this into a numpy array. The "problem" is that this doesn't allow
-    # one to have nx_max = / = ny_max, etc. All ranges must be equal.
-    # I should check to see which is fastest.
-    # Strike that above problem. Just pass it a list for each coordinate with
-    # the range and use no repeat.
-    # AtomicCoefficients = np.asarray(list(itertools.product(x, y, z)))
-    # Where x, y, z is list of integers from nx_min to nx_max etc.
-    # This would yield list of coefficients (nx, ny, nz), then we just multiply
-    # the first dimension by a1, the second by a2 and so on. But not now
-
-    atoms, dims = np.shape(AtomicPositions)
-    # Get the rows with the function above
-    rows = Limiter(AtomicPositions, r_min, r_max)
-    # delete all rows (axis 0 of the array) that are outside the limits
-    AtomicPositions = np.delete(AtomicPositions, rows, 0)
-    # Go through the list of rows to delete in reverse order, and delete what's
-    # needed from colors and sizes
-    for ID in sorted(rows, reverse=True):
-        del AtomicColors[ID]
-        del AtomicSizes[ID]
-        del LatticePosition[ID]
-    LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max)
-
-
-# A function to highlight points that are outside the limits of the plot
 def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
+    """
+    A function to highlight points that are outside the limits of the plot
+    """
     rows = []
     num, _ = np.shape(l)
     # loop over all row ID's
@@ -643,26 +670,28 @@ def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     return rows
 
 
-# Let's try and create some grid lines along the lattice vectors
-# some observations regarding grid lines:
-# - if we go along a lattice vector to a point, then we need gridlines that
-# are along the direction of the other two lattice vectors
-# A naïve approach would be to just plot 3 lines for each atomic position
-# (after limiting). This would create multiple copies of some gridlines, but
-# it's an easy solution. Let's see how long it takes to compute!
-
-# Create the plotting parameter for the gridlines.
-# They use the equation r = r0+t * a, where:
-# r0 is a fixed point (atomic position)
-# a is a vector giving the direction of the gridline (lattice vector)
-# t is a scaling parameter, creating the points along the line.
-# We use halfinteger steps for t. That way we know that we'll properly hit
-# other atomic positions. If we used linspace this wouldn't be the case
-
-
 def CreateLines(points, v1, v2, v3,
                 r_min=np.array([0, 0, 0]),
                 r_max=np.array([2, 2, 2])):
+    """
+    Creates lines along vectors and limits these to the given plot box
+    """
+    # Let's try and create some grid lines along the lattice vectors some
+    # observations regarding grid lines: if we go along a lattice vector to a
+    # point, then we need gridlines that are along the direction of the other
+    # two lattice vectors A naïve approach would be to just plot 3 lines for
+    # each atomic position (after limiting). This would create multiple copies
+    # of some gridlines, but it's an easy solution. Let's see how long it takes
+    # to compute!
+
+    # Create the plotting parameter for the gridlines.
+    # They use the equation r = r0+t * a, where:
+    # r0 is a fixed point (atomic position)
+    # a is a vector giving the direction of the gridline (lattice vector)
+    # t is a scaling parameter, creating the points along the line.
+    # We use halfinteger steps for t. That way we know that we'll properly hit
+    # other atomic positions. If we used linspace this wouldn't be the case
+
     t = np.arange(-10, 10, 0.5)
 
     lines = []
@@ -695,6 +724,9 @@ def CreateLines(points, v1, v2, v3,
 
 def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
                    LatticePosition, GridType, r_min, r_max):
+    """
+    Takes the input lattice, adds gridlines and plots everything
+    """
     # Create the figure
     fig = plt.figure()
     ax = fig.gca(projection="3d")
