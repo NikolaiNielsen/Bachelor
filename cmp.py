@@ -832,3 +832,4 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    plt.show()
