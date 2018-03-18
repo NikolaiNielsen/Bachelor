@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
 
+# alias for isclose
+eq = np.isclose
 # Lattice plotting
 # Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
@@ -140,9 +142,6 @@ def LatticeClassifier(a1, a2, a3, basis):
     lattice vectors. The angles are checked below with the extensive amount of
     boolean values.
     """
-
-    # alias for isclose
-    eq = np.isclose
 
     # Create a lattice array and get the magnitude of the lattice vectors
     lattice = np.array([a1, a2, a3])
@@ -674,7 +673,6 @@ def rotatefcc(a1, a2, a3, basis):
     """
     Rotate the (primitive) fcc lattice for easier gridline plotting
     """
-    eq = np.isclose
     a1prop = np.array([1 / 2, 1 / 2, 0])
     a2prop = np.array([1 / 2, 0, 1 / 2])
     a3prop = np.array([0, 1 / 2, 1 / 2])
@@ -745,7 +743,6 @@ def rotateHex(a1, a2, a3, basis):
     cos12 = a1.dot(a2) / (mag_a1 * mag_a2)
     cos31 = a1.dot(a3) / (mag_a1 * mag_a3)
     cos23 = a2.dot(a3) / (mag_a2 * mag_a3)
-    eq = np.isclose
     x = np.array([1, 0, 0])
     z = np.array([0, 0, 1])
 
@@ -753,7 +750,7 @@ def rotateHex(a1, a2, a3, basis):
     if eq(0.5, cos12):
         # a1 and a2 form triangular lattice. Align a1 along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag(a1))
+        theta = np.arcsin(mag(a1cross) / mag_a1)
         r1 = RotMatrix(a1cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
@@ -774,7 +771,7 @@ def rotateHex(a1, a2, a3, basis):
     elif eq(0.5, cos23):
         # a2 and a3 form triangular lattice. Align a2 along x
         a2cross = np.cross(a2, x)
-        theta = np.arcsin(mag(a2cross) / mag(a2))
+        theta = np.arcsin(mag(a2cross) / mag_a2)
         r2 = RotMatrix(a2cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
@@ -796,7 +793,7 @@ def rotateHex(a1, a2, a3, basis):
     elif eq(0.5, cos31):
         # a1 and a3 form triangular lattice. Align a1 along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag(a1))
+        theta = np.arcsin(mag(a1cross) / mag_a1)
         r1 = RotMatrix(a1cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
