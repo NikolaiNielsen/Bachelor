@@ -17,7 +17,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 
 def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
                    basis=d[3], colors=d[4], sizes=d[5],
-                   LimType=d[6], GridType=d[7], Mins=d[8], Maxs=d[9],
+                   LimType=d[6], GridType=None, Mins=d[8], Maxs=d[9],
                    Lattice=None):
     """
     Creates and limits the lattice
@@ -63,6 +63,44 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
         sizes = []
         for i in range(N_basis):
             sizes.append(s)
+
+    # Classify the lattice
+    LatticeType = LatticeClassifier(a1, a2, a3, basis)
+    # Rotate the lattice
+    a1, a2, a3, basis = rotator(a1, a2, a3, basis, LatticeType)
+    # Choose gridline type
+    latticelines = {'base centred cubic': 'soft',
+                    'base centred monoclinic 1': 'latticevectors',
+                    'base centred monoclinic 2': 'latticevectors',
+                    'base centred monoclinic 3': 'latticevectors',
+                    'bcc': 'soft',
+                    'conventional bcc': 'soft',
+                    'conventional fcc': 'soft',
+                    'fcc': 'soft',
+                    'hexagonal 1': 'latticevectors',
+                    'hexagonal 2': 'latticevectors',
+                    'orthorhombic': 'soft',
+                    'orthorhombic base centred': 'soft',
+                    'orthorhombic body centred': 'soft',
+                    'orthorhombic face centred': 'soft',
+                    'rhombohedral': 'latticevectors',
+                    'simple cubic': 'soft',
+                    'simple monoclinic': 'latticevectors',
+                    'tetragonal': 'soft',
+                    'tetragonal base centred': 'soft',
+                    'tetragonal body centred': 'soft',
+                    'tetragonal face centred': 'soft',
+                    'triclinic': 'latticevectors'}
+    # This isn't really pretty, but it works. If the Gridtype is already set,
+    # we use that value. If not, and the latticetype is undefined we choose the
+    # default type (latticevectors). Otherwise (when the latticetype is
+    # defined) we choose the gridtype appropriate for the lattice
+    if GridType is not None:
+        pass
+    elif LatticeType == "undetermined":
+        GridType = d[7]
+    else:
+        GridType = latticelines[LatticeType]
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
     # Calculate the amount of atomic positions to be calculated
