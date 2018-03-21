@@ -11,14 +11,14 @@ eq = np.isclose
 # Lattice plotting
 # Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
-     np.array([0, 0, 0]), "xkcd:cement", 2, "wdynamic", "latticevectors",
+     np.array([0, 0, 0]), "xkcd:cement", 2, "dynamic", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
 
 def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
                    basis=d[3], colors=d[4], sizes=d[5],
                    LimType=d[6], GridType=None, Mins=d[8], Maxs=d[9],
-                   Lattice=None):
+                   Lattice=None, verb=False):
     """
     Creates and limits the lattice
     """
@@ -67,7 +67,7 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     # Classify the lattice
     LatticeType = LatticeClassifier(a1, a2, a3, basis)
     # Rotate the lattice
-    a1, a2, a3, basis = rotator(a1, a2, a3, basis, LatticeType)
+    a1, a2, a3, basis = rotator(a1, a2, a3, basis, LatticeType, verb=verb)
     # Choose gridline type
     latticelines = {'base centred cubic': 'soft',
                     'base centred monoclinic 1': 'latticevectors',
@@ -144,6 +144,13 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     # This would yield list of coefficients (nx, ny, nz), then we just multiply
     # the first dimension by a1, the second by a2 and so on. But not now
 
+    # For some reason, we need to prune the coordinates again...
+    AtomicPositions[eq(AtomicPositions, 0)] = 0
+
+    if verb:
+        print("Unpruned Atomic Positions")
+        print(AtomicPositions)
+
     atoms, dims = np.shape(AtomicPositions)
     # Get the rows with the function above
     rows = Limiter(AtomicPositions, r_min, r_max)
@@ -155,8 +162,15 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
         del AtomicColors[ID]
         del AtomicSizes[ID]
         del LatticePosition[ID]
+
+    if verb:
+        print("Lattice: {}".format(LatticeType))
+        print("Pruned Atomic Positions")
+        print(AtomicPositions)
+        print("r_min, r_max, n_min, n_max")
+        print(r_min, r_max, n_min, n_max)
     LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max)
+                   LatticePosition, GridType, r_min, r_max, verb=verb)
 
 
 # Let's first define some things
@@ -498,7 +512,7 @@ def LatticeChooser(lattice_name="simple cubic"):
     ltfc = np.array([[a / 2, a / 2, 0], [a / 2, 0, b / 2], [0, a / 2, b / 2]])
     L["tetragonal face centred"] = ltfc
     # tetragonal base centred
-    ltbase = np.array([[a / 2, a / 2, 0], [0, a, 0], [0, 0, b]])
+    ltbase = np.array([[a, 0, 0], [a / 2, a / 2, 0], [0, 0, b]])
     L["tetragonal base centred"] = ltbase
     # Orthorhombic
     lortho = np.array([[a, 0, 0], [0, b, 0], [0, 0, c]])
@@ -711,9 +725,10 @@ def rotatefcc(a1, a2, a3, basis):
     """
     Rotate the (primitive) fcc lattice for easier gridline plotting
     """
-    a1prop = np.array([1 / 2, 1 / 2, 0])
-    a2prop = np.array([1 / 2, 0, 1 / 2])
-    a3prop = np.array([0, 1 / 2, 1 / 2])
+    scale = mag(a1) / np.sqrt(2) / 2
+    a1prop = scale * np.array([1 / 2, 1 / 2, 0])
+    a2prop = scale * np.array([1 / 2, 0, 1 / 2])
+    a3prop = scale * np.array([0, 1 / 2, 1 / 2])
 
     # First we orient a1 along (0.5,0.5,0)
     a1cross = np.cross(a1, a1prop)
@@ -755,8 +770,8 @@ def rotatefcc(a1, a2, a3, basis):
 
 def RotMatrixAlong(a, b, c):
     """
-    creates the rotation matrix which rotates b about a, such that it coincides
-    with c
+    creates the rotation matrix which rotates b about a, such that its vector
+    rejection coincides with that of c
     """
 
     # First we need the relevant vector rejections
@@ -875,7 +890,7 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     ortho23 = eq(0, np.dot(a2, a3))
 
     if verb:
-        print("Before:")
+        print("Lattice and basis before rotation")
         print(a1)
         print(a2)
         print(a3)
@@ -937,9 +952,9 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     a2[eq(a2, 0)] = 0
     a3[eq(a3, 0)] = 0
     basis[eq(basis, 0)] = 0
-    
+
     if verb:
-        print("after")
+        print("Lattice and basis after rotation:")
         print(a1)
         print(a2)
         print(a3)
@@ -1001,7 +1016,7 @@ def CreateLines(points, v1, v2, v3,
 
 
 def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max):
+                   LatticePosition, GridType, r_min, r_max, verb=False):
     """
     Takes the input lattice, adds gridlines and plots everything
     """
@@ -1069,18 +1084,25 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
         x_vals = AtomicPositions[y0 * z0, 0]
         x_vals = x_vals[x_vals > 0]
         a_x = np.min(x_vals)
-
-        for nx in np.arange(r_min[0], r_max[0] + 1, a_x):
-            for ny in np.arange(r_min[1], r_max[1] + 1, a_y):
+        if verb:
+            print("Atoms on cardinal axes")
+            print(x_vals)
+            print(y_vals)
+            print(z_vals)
+        rangex = np.arange(r_min[0], r_max[0] * 1.1, a_x)
+        rangey = np.arange(r_min[1], r_max[1] * 1.1, a_y)
+        rangez = np.arange(r_min[2], r_max[2] * 1.1, a_z)
+        for nx in rangex:
+            for ny in rangey:
                 ax.plot(np.array([nx, nx]), np.array([ny, ny]),
                         np.array([r_min[2], r_max[2]]), c=g_col, linewidth=g_w)
 
-            for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
+            for nz in rangez:
                 ax.plot(np.array([nx, nx]), np.array([r_min[1], r_max[1]]),
                         np.array([nz, nz]), c=g_col, linewidth=g_w)
 
-        for ny in np.arange(r_min[1], r_max[1] + 1, a_y):
-            for nz in np.arange(r_min[2], r_max[2] + 1, a_z):
+        for ny in rangey:
+            for nz in rangez:
                 ax.plot(np.array([r_min[0], r_max[0]]), np.array([ny, ny]),
                         np.array([nz, nz]), c=g_col, linewidth=g_w)
 
