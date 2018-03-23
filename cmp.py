@@ -768,6 +768,91 @@ def rotatefcc(a1, a2, a3, basis):
     return a1, a2, a3, basis
 
 
+def rotatefacecentred(a1, a2, a3, basis, verb=False):
+    """
+    Rotation function for face centred lattices
+    """
+    ma1 = a1.dot(a1)
+    ma2 = a2.dot(a2)
+    ma3 = a3.dot(a3)
+
+    # First we get the relevant lengths:
+    a = np.sqrt(2 * (ma1 + ma2 - ma3))
+    b = np.sqrt(2 * (ma1 - ma2 + ma3))
+    c = np.sqrt(2 * (-ma1 + ma2 + ma3))
+
+    # And now the "proper" lattice vectors
+    a1prop = np.array([a / 2, b / 2, 0])
+    a2prop = np.array([a / 2, 0, c / 2])
+    a3prop = np.array([0, b / 2, c / 2])
+
+    # Now we align a1 with a1prop:
+    a1cross = np.cross(a1, a1prop)
+    theta = np.arcsin(mag(a1cross) / (mag(a1) * mag(a1prop)))
+    r1 = RotMatrix(a1cross, theta)
+    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+    # And of course check that we've rotated correctly
+    if eq(a1, a1prop).all():
+        pass
+    else:
+        r1 = RotMatrix(a1cross, -2 * theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+    # Next we align a2 with a2prop:
+    theta, r2 = RotMatrixAlong(a1prop, a2, a2prop)
+    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+    if eq(a2, a2prop).all():
+        # We rotated properly!
+        pass
+    else:
+        # Rotate the other way
+        r2 = RotMatrix(a1prop, -2 * theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+    # To be sure, let's see if a3 and a3prop are (anti)parallel:
+    cos3 = a3.dot(a3prop) / (mag(a3) * mag(a3prop))
+    if verb:
+        if eq(cos3, 1):
+            print("a3 and a3prop are parallel")
+        elif eq(cos3, -1):
+            print("a3 and a3prop are ANTIparallel")
+        else:
+            print("a3 and a3prop are neither parallel or antiparallel. Check!")
+
+    return a1, a2, a3, basis
+
+
+def rotatebcm(a1, a2, a3, basis):
+    """
+    rotation function for base centred monoclinic. Rotates the lattice such
+    that a1 is along x, and a2 is in the xy-plane
+    """
+    x = np.array([1, 0, 0])
+    y = np.array([0, 1, 0])
+
+    # We align a1 along x
+    a1cross = np.cross(a1, x)
+    theta = np.arcsin(mag(a1cross) / mag(a1))
+    r1 = RotMatrix(a1cross, theta)
+    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+    # Get the rotation matrix to align a2 in the xy plane (vector rejection
+    # parallel to y)
+    theta, r2 = RotMatrixAlong(a1, a2, y)
+    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+    # Make sure a2 is perpendicular to z
+    if eq(a2[2], 0):
+        pass
+    else:
+        # rotate the other way!
+        r2 = RotMatrix(a1, -2 * theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+    return a1, a2, a3, basis
+
+
 def RotMatrixAlong(a, b, c):
     """
     creates the rotation matrix which rotates b about a, such that its vector
@@ -876,6 +961,17 @@ def rotate(a1, a2, a3, basis, R):
     return R@a1, R@a2, R@a3, (R@basis.T).T
 
 
+def parallel(a1, a2):
+    """
+    returns True if vectors are (anti)parallel and false if they're not
+    """
+    mag1 = mag(a1)
+    mag2 = mag(a2)
+    cos12 = a1.dot(a2) / (mag1 * mag2)
+    para = eq(1, cos12) or eq(-1, cos12)
+    return para
+
+
 def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     """
     Rotates the lattice to make plotting gridlines easier
@@ -888,9 +984,10 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     ortho12 = eq(0, np.dot(a1, a2))
     ortho31 = eq(0, np.dot(a1, a3))
     ortho23 = eq(0, np.dot(a2, a3))
+    face_centred = "face centred" in latticetype or latticetype == "fcc"
 
     if verb:
-        print("Lattice and basis before rotation")
+        print("Before:")
         print(a1)
         print(a2)
         print(a3)
@@ -898,14 +995,23 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
 
     if "hexagonal" in latticetype:
         a1, a2, a3, basis = rotateHex(a1, a2, a3, basis)
-    elif latticetype == "fcc":
-        a1, a2, a3, basis = rotatefcc(a1, a2, a3, basis)
+    elif "base centred monoclinic" in latticetype:
+        a1, a2, a3, basis = rotatebcm(a1, a2, a3, basis)
+    elif face_centred:
+        a1, a2, a3, basis = rotatefacecentred(a1, a2, a3, basis, verb)
     elif ortho12:
         # We choose a1 to align along x
         a1cross = np.cross(a1, x)
         theta = np.arcsin(mag(a1cross) / mag(a1))
         r1 = RotMatrix(a1cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+        if parallel(a1, x):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r1 = RotMatrix(a1cross, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
         # Now we align a2 along y
         # But we gotta make sure we rotate in the right direction
@@ -914,19 +1020,15 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
         theta = sign * np.arcsin(mag(a2cross) / mag(a2))
         r2 = RotMatrix(x, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-    elif ortho23:
-        # We choose a2 to align along x
-        a2cross = np.cross(a2, x)
-        theta = np.arcsin(mag(a2cross) / mag(a2))
-        r2 = RotMatrix(a2cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
-        # Now we align a3 along y
-        a3cross = np.cross(a3, y)
-        sign = np.sign(a3cross)[0]
-        theta = sign * np.arcsin(mag(a3cross) / mag(a3))
-        r3 = RotMatrix(x, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+        # Let's check that a2 is along y:
+        if parallel(a2, y):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r2 = RotMatrix(x, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
     elif ortho31:
         # We choose a1 to align along x
         a1cross = np.cross(a1, x)
@@ -934,12 +1036,56 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
         r1 = RotMatrix(a1cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
-        # Now we align a2 along y
+        if parallel(a1, x):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r1 = RotMatrix(a1cross, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+        # Now we align a3 along y
+        a3cross = np.cross(a3, y)
+        sign = np.sign(a3cross)[0]
+        theta = np.arcsin(mag(a3cross) / mag(a3))
+        r3 = RotMatrix(x, theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+
+        # Let's check that a3 is along y:
+        if parallel(a3, y):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r3 = RotMatrix(x, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+
+    elif ortho23:
+        # We choose a2 to align along x
+        a2cross = np.cross(a2, x)
+        theta = np.arcsin(mag(a2cross) / mag(a2))
+        r2 = RotMatrix(a2cross, theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+        if parallel(a2, y):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r2 = RotMatrix(x, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+        # Now we align a3 along y
         a3cross = np.cross(a3, y)
         sign = np.sign(a3cross)[0]
         theta = sign * np.arcsin(mag(a3cross) / mag(a3))
         r3 = RotMatrix(x, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+
+        # Let's check that a3 is along y:
+        if parallel(a3, y):
+            pass
+        else:
+            # We rotated the wrong way! Let's rotate the other way twice
+            r3 = RotMatrix(x, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
     else:
         # Well, it doesn't really matter here, if none of them are orthogonal
         # to each other. We'll just use latticevector gridlines and leave this
@@ -954,7 +1100,7 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     basis[eq(basis, 0)] = 0
 
     if verb:
-        print("Lattice and basis after rotation:")
+        print("after")
         print(a1)
         print(a2)
         print(a3)
