@@ -107,7 +107,9 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
 
     (AtomicPositions, LatticeCoefficients, AtomicColors, AtomicSizes,
-     LatticePosition) = LatticeGenerator()
+     LatticePosition) = LatticeGenerator(a1, a2, a3, basis, colors, sizes,
+                                         LimType, n_min, n_max, r_min, r_max,
+                                         N_basis)
 
     if verbose:
         print("Lattice: {}".format(LatticeType))
@@ -676,8 +678,6 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
 
     # For dynamic limits we pass Min and Max as limits of basis vector range
     # and calculate coordinate limit based on basis vector range
-    print("Limit type:")
-    print(LimType)
     if LimType.lower() in "individual":
         n_min, n_max = np.array(Min), np.array(Max)
         lattice = np.array((a1, a2, a3))
@@ -686,10 +686,7 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
         # Max[0] * a1, Max[1] * a2 and Max[2] * a3).
         # this can be done by multiplying the transposed lattice matrix by the
         # n_max vector, then taking max value
-        print(lattice)
-        print(n_max)
         max_vects = lattice.T * n_max
-        print(max_vects)
         r_max = np.amax(max_vects, 0)
         # Similar for minimums:
         min_vects = lattice.T * n_min
@@ -709,7 +706,6 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     # they've already been rounded
     returns = (r_min, r_max, n_min.astype('int') - np.max(Max),
                n_max.astype('int') + np.max(Max))
-    print(returns)
     return returns
 
 
@@ -1149,8 +1145,6 @@ def CreateLines(points, v1, v2, v3,
 def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
               LatticePosition, GridType, r_min, r_max, verbose=False):
     # Create grid lines
-    g_col = 'k'
-    g_w = 0.5
     lowGrid = GridType.lower()
     pruned_lines = []
 
@@ -1203,9 +1197,6 @@ def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
         rangex = np.arange(xmin, xmax + 0.5 * a_x, a_x)
         rangey = np.arange(ymin, ymax + 0.5 * a_y, a_y)
         rangez = np.arange(zmin, zmax + 0.5 * a_z, a_z)
-        num = (rangex.size * (rangey.size + rangez.size) +
-               rangey.size * rangez.size)
-        pruned_lines = np.zeros(num, 3)
         for nx in rangex:
             for ny in rangey:
                 pruned_lines.append([np.array([nx, nx]), np.array([ny, ny]),
@@ -1239,6 +1230,14 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     ax.scatter(AtomicPositions[:, 0], AtomicPositions[:, 1],
                AtomicPositions[:, 2], c=AtomicColors, s=AtomicSizes)
 
+    # Get the relevant gridlines:
+    g_col = 'k'
+    g_w = 0.5
+    pruned_lines = GridLines(a1, a2, a3, AtomicPositions, AtomicColors,
+                             AtomicSizes, LatticePosition, GridType, r_min,
+                             r_max, verbose=False)
+    for line in pruned_lines:
+        ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
     # plot lattice vectors
     ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
     ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
