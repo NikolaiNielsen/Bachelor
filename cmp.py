@@ -20,13 +20,12 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
                    LimType=d[6], GridType=None, Mins=d[8], Maxs=d[9],
                    Lattice=None, verbose=False):
     """
-    Creates and limits the lattice
+    Creates, limits and plots the lattice
     """
     if Lattice is not None:
         lattice, basis = LatticeChooser(Lattice, verbose=verbose)
         a1, a2, a3 = lattice
 
-    size_default = 36
     # Input sanitization:
     # We need the number of basis-vectors.
     # If there is only 1 basis vector, then len(np.shape(basis)) == 1
@@ -66,10 +65,12 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
 
     # Classify the lattice
     LatticeType = LatticeClassifier(a1, a2, a3, basis)
+
     # Rotate the lattice
     a1, a2, a3, basis = rotator(a1, a2, a3, basis,
                                 LatticeType, verbose=verbose)
-    # Choose gridline type
+
+    # Choosing gridline type. First the default settings.
     latticelines = {'base centred cubic': 'soft',
                     'base centred monoclinic 1': 'latticevectors',
                     'base centred monoclinic 2': 'latticevectors',
@@ -104,6 +105,24 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
         GridType = latticelines[LatticeType]
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = FindLimits(LimType, a1, a2, a3, Mins, Maxs)
+
+    (AtomicPositions, LatticeCoefficients, AtomicColors, AtomicSizes,
+     LatticePosition) = LatticeGenerator()
+
+    if verbose:
+        print("Lattice: {}".format(LatticeType))
+
+    LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+                   LatticePosition, GridType, r_min, r_max, verbose=verbose)
+
+
+def LatticeGenerator(a1, a2, a3, basis, colors, sizes, LimType, n_min, n_max,
+                     r_min, r_max, N_basis, GridType=None, verbose=False):
+    """
+    Generates the atomic positions of the lattice, from the lattice- and basis-
+    vectors
+    """
+    size_default = 36
     # Calculate the amount of atomic positions to be calculated
     numAtoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
                 (n_max[2] + 1 - n_min[2]) * N_basis)
@@ -116,7 +135,6 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     AtomicColors = []
     AtomicSizes = []
     LatticePosition = []
-    Lattice = np.array((a1, a2, a3))
 
     # Loop over all chosen linear combinations of basis vectors and plot each
     counter = 0
@@ -161,6 +179,7 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     rows = Limiter(AtomicPositions, r_min, r_max)
     # delete all rows (axis 0 of the array) that are outside the limits
     AtomicPositions = np.delete(AtomicPositions, rows, 0)
+    LatticeCoefficients = np.delete(LatticeCoefficients, rows, 0)
     # Go through the list of rows to delete in reverse order, and delete what's
     # needed from colors and sizes
     for ID in sorted(rows, reverse=True):
@@ -169,16 +188,15 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
         del LatticePosition[ID]
 
     if verbose:
-        print("Lattice: {}".format(LatticeType))
         print("Pruned Atomic Positions")
         print(AtomicPositions)
         print("r_min, r_max, n_min, n_max")
         print(r_min, r_max, n_min, n_max)
-    LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max, verbose=verbose)
+
+    return (AtomicPositions, LatticeCoefficients, AtomicColors, AtomicSizes,
+            LatticePosition)
 
 
-# Let's first define some things
 def mag(a):
     """
     Returns magnitude of vector or each row of an array
@@ -715,53 +733,6 @@ def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     return rows
 
 
-def rotatefcc(a1, a2, a3, basis):
-    """
-    Rotate the (primitive) fcc lattice for easier gridline plotting
-    """
-    scale = mag(a1) / np.sqrt(2) / 2
-    a1prop = scale * np.array([1 / 2, 1 / 2, 0])
-    a2prop = scale * np.array([1 / 2, 0, 1 / 2])
-    a3prop = scale * np.array([0, 1 / 2, 1 / 2])
-
-    # First we orient a1 along (0.5,0.5,0)
-    a1cross = np.cross(a1, a1prop)
-    theta = np.arcsin(mag(a1cross) / (mag(a1) * mag(a1prop)))
-    r1 = RotMatrix(a1cross, theta)
-    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
-
-    # Next we try orienting a2 along a2prop. Then we see if a3 is aligned
-    # properly. We need to rotate along a1, such that this is kept fixed
-
-    # To find the angle we need to rotate it with, we use the vector rejection
-    # of a2 and a2prop, as these are perpendicular to a1
-    theta, r2 = RotMatrixAlong(a1prop, a2, a2prop)
-    A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r2)
-    if eq(A2, a2prop).all():
-        # We rotated properly
-        a1, a2, a3, basis = A1, A2, A3, Basis
-    else:
-        # Rotate the other way!
-        r2 = RotMatrix(a1prop, -theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-
-    # Now we check if a3 is right. If not we rotate a2 along a3prop instead
-    if eq(a3, a3prop).all():
-        pass
-    else:
-        theta, r2 = RotMatrixAlong(a1prop, a2, a3prop)
-        A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r2)
-        if eq(A2, a3prop).all():
-            # We rotated properly
-            a1, a2, a3, basis = A1, A2, A3, Basis
-        else:
-            # Rotate the other way!
-            r2 = RotMatrix(a1prop, -theta)
-            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-
-    return a1, a2, a3, basis
-
-
 def rotatefacecentred(a1, a2, a3, basis, verbose=False):
     """
     Rotation function for face centred lattices
@@ -1175,31 +1146,19 @@ def CreateLines(points, v1, v2, v3,
     return pruned_lines
 
 
-def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max, verbose=False):
-    """
-    Takes the input lattice, adds gridlines and plots everything
-    """
-    # Create the figure
-    fig = plt.figure()
-    ax = fig.gca(projection="3d")
-
-    # Plot atoms. For now a single size and color
-    ax.scatter(AtomicPositions[:, 0], AtomicPositions[:, 1],
-               AtomicPositions[:, 2], c=AtomicColors, s=AtomicSizes)
-
+def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+              LatticePosition, GridType, r_min, r_max, verbose=False):
     # Create grid lines
     g_col = 'k'
     g_w = 0.5
     lowGrid = GridType.lower()
+    pruned_lines = []
 
     if lowGrid in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         pruned_lines = CreateLines(AtomicPositions[LatticePosition],
                                    a1, a2, a3, r_min, r_max)
-        for line in pruned_lines:
-            ax.plot(line[:, 0], line[:, 1], line[:, 2], c=g_col, linewidth=g_w)
 
     elif lowGrid in "soft":
         # A Way of finding atoms on cartesian axes
@@ -1244,23 +1203,41 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
         rangex = np.arange(xmin, xmax + 0.5 * a_x, a_x)
         rangey = np.arange(ymin, ymax + 0.5 * a_y, a_y)
         rangez = np.arange(zmin, zmax + 0.5 * a_z, a_z)
+        num = (rangex.size * (rangey.size + rangez.size) +
+               rangey.size * rangez.size)
+        pruned_lines = np.zeros(num, 3)
         for nx in rangex:
             for ny in rangey:
-                ax.plot(np.array([nx, nx]), np.array([ny, ny]),
-                        np.array([zmin, zmax]),
-                        c=g_col, linewidth=g_w)
+                pruned_lines.append([np.array([nx, nx]), np.array([ny, ny]),
+                                     np.array([zmin, zmax])])
 
             for nz in rangez:
-                ax.plot(np.array([nx, nx]), np.array([ymin, ymax]),
-                        np.array([nz, nz]), c=g_col, linewidth=g_w)
-
+                pruned_lines.append([np.array([nx, nx]),
+                                     np.array([ymin, ymax]),
+                                     np.array([nz, nz])])
         for ny in rangey:
             for nz in rangez:
-                ax.plot(np.array([xmin, xmax]), np.array([ny, ny]),
-                        np.array([nz, nz]), c=g_col, linewidth=g_w)
-
+                pruned_lines.append([np.array([xmin, xmax]),
+                                     np.array([ny, ny]),
+                                     np.array([nz, nz])])
     else:
         print("No Gridlines Chosen")
+
+    return pruned_lines
+
+
+def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
+                   LatticePosition, GridType, r_min, r_max, verbose=False):
+    """
+    Takes the input lattice, adds gridlines and plots everything
+    """
+    # Create the figure
+    fig = plt.figure()
+    ax = fig.gca(projection="3d")
+
+    # Plot atoms. For now a single size and color
+    ax.scatter(AtomicPositions[:, 0], AtomicPositions[:, 1],
+               AtomicPositions[:, 2], c=AtomicColors, s=AtomicSizes)
 
     # plot lattice vectors
     ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
