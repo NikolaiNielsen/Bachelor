@@ -11,19 +11,19 @@ eq = np.isclose
 # Lattice plotting
 # Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
-     np.array([0, 0, 0]), "xkcd:cement", 2, "dynamic", "latticevectors",
+     np.array([0, 0, 0]), "xkcd:cement", 2, "individual", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
 
 def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
                    basis=d[3], colors=d[4], sizes=d[5],
                    LimType=d[6], GridType=None, Mins=d[8], Maxs=d[9],
-                   Lattice=None, verb=False):
+                   Lattice=None, verbose=False):
     """
     Creates and limits the lattice
     """
     if Lattice is not None:
-        lattice, basis = LatticeChooser(Lattice)
+        lattice, basis = LatticeChooser(Lattice, verbose=verbose)
         a1, a2, a3 = lattice
 
     size_default = 36
@@ -67,7 +67,8 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     # Classify the lattice
     LatticeType = LatticeClassifier(a1, a2, a3, basis)
     # Rotate the lattice
-    a1, a2, a3, basis = rotator(a1, a2, a3, basis, LatticeType, verb=verb)
+    a1, a2, a3, basis = rotator(a1, a2, a3, basis,
+                                LatticeType, verbose=verbose)
     # Choose gridline type
     latticelines = {'base centred cubic': 'soft',
                     'base centred monoclinic 1': 'latticevectors',
@@ -110,22 +111,26 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     # Make a zero array for all of the atomic positions. numAtoms in one
     # direction and 3 in the other (coordinates)
     AtomicPositions = np.zeros((numAtoms, 3))
+    LatticeCoefficients = AtomicPositions
     # Empty lists for colors, sizes and whether or not they're lattice points
     AtomicColors = []
     AtomicSizes = []
     LatticePosition = []
+    Lattice = np.array((a1, a2, a3))
 
     # Loop over all chosen linear combinations of basis vectors and plot each
     counter = 0
     for nx in range(n_min[0], n_max[0] + 1):
         for ny in range(n_min[1], n_max[1] + 1):
             for nz in range(n_min[2], n_max[2] + 1):
+                LatticeCoefficients[counter, ] = np.array([nx, ny, nz]).T
                 lattice_position = nx * a1 + ny * a2 + nz * a3
                 for n_atom in range(N_basis):
                     AtomicPositions[counter, ] = (lattice_position +
                                                   basis[n_atom, ])
                     AtomicColors.append(colors[n_atom])
                     AtomicSizes.append(size_default * sizes[n_atom])
+
                     if (AtomicPositions[counter, ] == lattice_position).all():
                         LatticePosition.append(True)
                     else:
@@ -147,7 +152,7 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
     # For some reason, we need to prune the coordinates again...
     AtomicPositions[eq(AtomicPositions, 0)] = 0
 
-    if verb:
+    if verbose:
         print("Unpruned Atomic Positions")
         print(AtomicPositions)
 
@@ -163,14 +168,14 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
         del AtomicSizes[ID]
         del LatticePosition[ID]
 
-    if verb:
+    if verbose:
         print("Lattice: {}".format(LatticeType))
         print("Pruned Atomic Positions")
         print(AtomicPositions)
         print("r_min, r_max, n_min, n_max")
         print(r_min, r_max, n_min, n_max)
     LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max, verb=verb)
+                   LatticePosition, GridType, r_min, r_max, verbose=verbose)
 
 
 # Let's first define some things
@@ -470,6 +475,8 @@ def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
     given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
     """
     # Make sure we have a unit vector
+    print("Rotation vector!")
+    print(v)
     v = v / mag(v)
     # Create the cross product matrix
     vCross = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
@@ -480,7 +487,7 @@ def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
             vCross + (1 - np.cos(theta)) * vTens)
 
 
-def LatticeChooser(lattice_name="simple cubic"):
+def LatticeChooser(lattice_name="simple cubic", verbose=False):
     """
     Outputs the chosen lattice and basis
     """
@@ -590,6 +597,10 @@ def LatticeChooser(lattice_name="simple cubic"):
     else:
         print("something went horribly wrong")
 
+    if verbose:
+        print("Returning the following lattice and basis")
+        print(lattice)
+        print(basis)
     return lattice, basis
 
 
@@ -613,7 +624,7 @@ def LatticeTester(verbose=False):
     R = RotMatrix()
     for name in lattices:
         # Create the lattice
-        lattice, basis = LatticeChooser(name)
+        lattice, basis = LatticeChooser(name, verbose=verbose)
         # rotate the lattice and basis
         lattice = (R@lattice.T).T
         basis = (R@basis.T).T
@@ -645,33 +656,11 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     the basis vector ranges.
     """
 
-    # If we have hard limit types we just pass the min and max as coordinate
-    # limits and calculate limits of the basis vector ranges based on
-    # coordinate limits
-    # THIS METHOD IS UGLY BECAUSE WE DIVIDE BY 0 AND GET NAN AND INF.
-    # I NEED TO CLEAN IT UP
-    if LimType.lower() in "hard":
-        r_min, r_max = np.array(Min), np.array(Max)
-        lattice = np.array((a1, a2, a3))
-        # Ideally we want n1_max * a1 = r_max. But they're not (generally)
-        # parallel. So what we do is we dissolve into components, so
-        # r_max_x / a1_x = nx_max and similarly for the other components
-        # But we want nx_max to be an integer, so we take the ceiling value
-        # (round up) to allow for "spillage" and then we take the maximal
-        # value of the three coordinate ratios (again, for extra spillage).
-        # We do the same procedure (but with floor and minimum) for the n_min
-        # Let's get rid of those pesky infinities and nans
-        # (from x / 0 and 0 / 0 respectively). Just replace by 0
-        max_quot = r_max / lattice
-        min_quot = r_min / lattice
-        max_quot[np.isnan(max_quot) + np.isinf(max_quot)] = 0
-        min_quot[np.isnan(min_quot) + np.isinf(min_quot)] = 0
-        n_max = np.amax(np.ceil(max_quot), 0)
-        n_min = np.amin(np.floor(min_quot), 0)
-
     # For dynamic limits we pass Min and Max as limits of basis vector range
     # and calculate coordinate limit based on basis vector range
-    elif LimType.lower() in "dynamic":
+    print("Limit type:")
+    print(LimType)
+    if LimType.lower() in "individual":
         n_min, n_max = np.array(Min), np.array(Max)
         lattice = np.array((a1, a2, a3))
         # Take the max value for each of the cardinal directions, for the
@@ -679,14 +668,17 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
         # Max[0] * a1, Max[1] * a2 and Max[2] * a3).
         # this can be done by multiplying the transposed lattice matrix by the
         # n_max vector, then taking max value
+        print(lattice)
+        print(n_max)
         max_vects = lattice.T * n_max
+        print(max_vects)
         r_max = np.amax(max_vects, 0)
         # Similar for minimums:
         min_vects = lattice.T * n_min
         r_min = np.amin(min_vects, 0)
     # Different type of coordinate limits. Take r_max as sum(lattice * max)
     # Works well for orthogonal or near-orthogonal lattice vectors
-    elif LimType.lower() in "wdynamic":
+    elif LimType.lower() in "sum":
         n_min, n_max = np.array(Min), np.array(Max)
         lattice = np.array([a1, a2, a3])
         r_max = np.sum(lattice.T * n_max, 0)
@@ -697,8 +689,10 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     # to allow for "spillage". The value is the maximal value of the Max array.
     # Also, let's make sure n_min / max are arrays of integers. Don't worry,
     # they've already been rounded
-    return (r_min, r_max, n_min.astype('int') - np.max(Max),
-            n_max.astype('int') + np.max(Max))
+    returns = (r_min, r_max, n_min.astype('int') - np.max(Max),
+               n_max.astype('int') + np.max(Max))
+    print(returns)
+    return returns
 
 
 def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
@@ -768,7 +762,7 @@ def rotatefcc(a1, a2, a3, basis):
     return a1, a2, a3, basis
 
 
-def rotatefacecentred(a1, a2, a3, basis, verb=False):
+def rotatefacecentred(a1, a2, a3, basis, verbose=False):
     """
     Rotation function for face centred lattices
     """
@@ -812,7 +806,7 @@ def rotatefacecentred(a1, a2, a3, basis, verb=False):
 
     # To be sure, let's see if a3 and a3prop are (anti)parallel:
     cos3 = a3.dot(a3prop) / (mag(a3) * mag(a3prop))
-    if verb:
+    if verbose:
         if eq(cos3, 1):
             print("a3 and a3prop are parallel")
         elif eq(cos3, -1):
@@ -949,14 +943,14 @@ def rotateHex(a1, a2, a3, basis):
             r3 = RotMatrix(x, -theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
     else:
-        print('something went wrong')
+        print('something went wrong rotating the hexagonal lattice')
 
     return a1, a2, a3, basis
 
 
 def rotate(a1, a2, a3, basis, R):
     """
-    Rotates the lattice
+    Rotates the whole lattice given the rotation matrix.
     """
     return R@a1, R@a2, R@a3, (R@basis.T).T
 
@@ -972,7 +966,7 @@ def parallel(a1, a2):
     return para
 
 
-def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
+def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
     """
     Rotates the lattice to make plotting gridlines easier
     """
@@ -980,112 +974,132 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     eq = np.isclose
     x = np.array([1, 0, 0])
     y = np.array([0, 1, 0])
+    z = np.array([0, 0, 1])
     # Check for orthogonality
     ortho12 = eq(0, np.dot(a1, a2))
     ortho31 = eq(0, np.dot(a1, a3))
     ortho23 = eq(0, np.dot(a2, a3))
     face_centred = "face centred" in latticetype or latticetype == "fcc"
 
-    if verb:
+    if verbose:
         print("Before:")
         print(a1)
         print(a2)
         print(a3)
         print(basis)
+        print("orthogonality")
+        print(ortho12, ortho31, ortho23)
 
     if "hexagonal" in latticetype:
         a1, a2, a3, basis = rotateHex(a1, a2, a3, basis)
     elif "base centred monoclinic" in latticetype:
         a1, a2, a3, basis = rotatebcm(a1, a2, a3, basis)
     elif face_centred:
-        a1, a2, a3, basis = rotatefacecentred(a1, a2, a3, basis, verb)
+        a1, a2, a3, basis = rotatefacecentred(a1, a2, a3, basis, verbose)
     elif ortho12:
         # We choose a1 to align along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag(a1))
-        r1 = RotMatrix(a1cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
-
-        if parallel(a1, x):
+        if eq(0, mag(a1cross)):
+            # We're already parallel!
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r1 = RotMatrix(a1cross, -2 * theta)
+            # We need to rotate!
+            theta = np.arcsin(mag(a1cross) / mag(a1))
+            r1 = RotMatrix(a1cross, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+            if parallel(a1, x):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r1 = RotMatrix(a1cross, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
         # Now we align a2 along y
         # But we gotta make sure we rotate in the right direction
         a2cross = np.cross(a2, y)
-        sign = np.sign(a2cross)[0]
-        theta = sign * np.arcsin(mag(a2cross) / mag(a2))
-        r2 = RotMatrix(x, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-
-        # Let's check that a2 is along y:
-        if parallel(a2, y):
+        if eq(0, mag(a2cross)):
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r2 = RotMatrix(x, -2 * theta)
+            theta = np.arcsin(mag(a2cross) / mag(a2))
+            r2 = RotMatrix(x, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+            # Let's check that a2 is along y:
+            if parallel(a2, y):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r2 = RotMatrix(x, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
     elif ortho31:
         # We choose a1 to align along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag(a1))
-        r1 = RotMatrix(a1cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
-
-        if parallel(a1, x):
+        if eq(0, mag(a1cross)):
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r1 = RotMatrix(a1cross, -2 * theta)
+            theta = np.arcsin(mag(a1cross) / mag(a1))
+            r1 = RotMatrix(a1cross, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
-        # Now we align a3 along y
-        a3cross = np.cross(a3, y)
-        sign = np.sign(a3cross)[0]
-        theta = np.arcsin(mag(a3cross) / mag(a3))
-        r3 = RotMatrix(x, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+            if parallel(a1, x):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r1 = RotMatrix(a1cross, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
-        # Let's check that a3 is along y:
-        if parallel(a3, y):
+        # Now we align a3 along z
+        a3cross = np.cross(a3, z)
+        if eq(0, mag(a3cross)):
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r3 = RotMatrix(x, -2 * theta)
+            theta = np.arcsin(mag(a3cross) / mag(a3))
+            r3 = RotMatrix(x, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+
+            # Let's check that a3 is along y:
+            if parallel(a3, z):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r3 = RotMatrix(x, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
 
     elif ortho23:
         # We choose a2 to align along x
         a2cross = np.cross(a2, x)
-        theta = np.arcsin(mag(a2cross) / mag(a2))
-        r2 = RotMatrix(a2cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-
-        if parallel(a2, y):
+        if eq(0, mag(a2cross)):
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r2 = RotMatrix(x, -2 * theta)
+            theta = np.arcsin(mag(a2cross) / mag(a2))
+            r2 = RotMatrix(a2cross, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+
+            if parallel(a2, y):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r2 = RotMatrix(x, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
         # Now we align a3 along y
         a3cross = np.cross(a3, y)
-        sign = np.sign(a3cross)[0]
-        theta = sign * np.arcsin(mag(a3cross) / mag(a3))
-        r3 = RotMatrix(x, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
-
-        # Let's check that a3 is along y:
-        if parallel(a3, y):
+        if eq(0, mag(a3cross)):
             pass
         else:
-            # We rotated the wrong way! Let's rotate the other way twice
-            r3 = RotMatrix(x, -2 * theta)
+            theta = np.arcsin(mag(a3cross) / mag(a3))
+            r3 = RotMatrix(x, theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+
+            # Let's check that a3 is along y:
+            if parallel(a3, y):
+                pass
+            else:
+                # We rotated the wrong way! Let's rotate the other way twice
+                r3 = RotMatrix(x, -2 * theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
     else:
         # Well, it doesn't really matter here, if none of them are orthogonal
         # to each other. We'll just use latticevector gridlines and leave this
@@ -1099,7 +1113,7 @@ def rotator(a1, a2, a3, basis, latticetype=None, verb=False):
     a3[eq(a3, 0)] = 0
     basis[eq(basis, 0)] = 0
 
-    if verb:
+    if verbose:
         print("after")
         print(a1)
         print(a2)
@@ -1162,7 +1176,7 @@ def CreateLines(points, v1, v2, v3,
 
 
 def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-                   LatticePosition, GridType, r_min, r_max, verb=False):
+                   LatticePosition, GridType, r_min, r_max, verbose=False):
     """
     Takes the input lattice, adds gridlines and plots everything
     """
@@ -1177,30 +1191,9 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     # Create grid lines
     g_col = 'k'
     g_w = 0.5
-    rangex = range(int(np.ceil(r_min[0])), int(np.floor(r_max[0])) + 1)
-    rangey = range(int(np.ceil(r_min[1])), int(np.floor(r_max[1])) + 1)
-    rangez = range(int(np.ceil(r_min[2])), int(np.floor(r_max[2])) + 1)
     lowGrid = GridType.lower()
-    if lowGrid in "hard":
-        for nx in rangex:
-            for ny in rangey:
-                ax.plot(np.array([nx, nx]), np.array([ny, ny]),
-                        np.array([np.ceil(r_min[2]), np.floor(r_max[2])]),
-                        c=g_col, linewidth=g_w)
 
-            for nz in rangez:
-                ax.plot(np.array([nx, nx]),
-                        np.array([np.ceil(r_min[1]), np.floor(r_max[1])]),
-                        np.array([nz, nz]),
-                        c=g_col, linewidth=g_w)
-
-        for ny in rangey:
-            for nz in rangez:
-                ax.plot(np.array([np.ceil(r_min[0]), np.floor(r_max[0])]),
-                        np.array([ny, ny]), np.array([nz, nz]),
-                        c=g_col, linewidth=g_w)
-
-    elif lowGrid in "latticevectors":
+    if lowGrid in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         pruned_lines = CreateLines(AtomicPositions[LatticePosition],
@@ -1219,37 +1212,51 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
         # z-values of atoms on the z-axis
         z_vals = AtomicPositions[x0 * y0, 2]
         # Keep those with z > 0
-        z_vals = z_vals[z_vals > 0]
+        absz_vals = np.abs(z_vals[z_vals > 0])
         # Take the minimum as the lattice spacing
-        a_z = np.min(z_vals)
+        a_z = np.min(absz_vals)
 
         y_vals = AtomicPositions[x0 * z0, 1]
-        y_vals = y_vals[y_vals > 0]
-        a_y = np.min(y_vals)
+        absy_vals = np.abs(y_vals[y_vals > 0])
+        a_y = np.min(absy_vals)
 
         x_vals = AtomicPositions[y0 * z0, 0]
-        x_vals = x_vals[x_vals > 0]
-        a_x = np.min(x_vals)
-        if verb:
+        absx_vals = np.abs(x_vals[x_vals > 0])
+        a_x = np.min(absx_vals)
+
+        # x = np.array([a_x, 0, 0])
+        # y = np.array([0, a_y, 0])
+        # z = np.array([0, 0, a_z])
+
+        # Get the maximal and minimal values
+        xmax = np.amax(x_vals)
+        xmin = np.amin(x_vals)
+        ymax = np.amax(y_vals)
+        ymin = np.amin(y_vals)
+        zmax = np.amax(z_vals)
+        zmin = np.amin(z_vals)
+
+        if verbose:
             print("Atoms on cardinal axes")
             print(x_vals)
             print(y_vals)
             print(z_vals)
-        rangex = np.arange(r_min[0], r_max[0] * 1.1, a_x)
-        rangey = np.arange(r_min[1], r_max[1] * 1.1, a_y)
-        rangez = np.arange(r_min[2], r_max[2] * 1.1, a_z)
+        rangex = np.arange(xmin, xmax + 0.5 * a_x, a_x)
+        rangey = np.arange(ymin, ymax + 0.5 * a_y, a_y)
+        rangez = np.arange(zmin, zmax + 0.5 * a_z, a_z)
         for nx in rangex:
             for ny in rangey:
                 ax.plot(np.array([nx, nx]), np.array([ny, ny]),
-                        np.array([r_min[2], r_max[2]]), c=g_col, linewidth=g_w)
+                        np.array([zmin, zmax]),
+                        c=g_col, linewidth=g_w)
 
             for nz in rangez:
-                ax.plot(np.array([nx, nx]), np.array([r_min[1], r_max[1]]),
+                ax.plot(np.array([nx, nx]), np.array([ymin, ymax]),
                         np.array([nz, nz]), c=g_col, linewidth=g_w)
 
         for ny in rangey:
             for nz in rangez:
-                ax.plot(np.array([r_min[0], r_max[0]]), np.array([ny, ny]),
+                ax.plot(np.array([xmin, xmax]), np.array([ny, ny]),
                         np.array([nz, nz]), c=g_col, linewidth=g_w)
 
     else:
