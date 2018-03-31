@@ -132,7 +132,7 @@ def LatticeGenerator(a1, a2, a3, basis, colors, sizes, LimType, n_min, n_max,
     # Make a zero array for all of the atomic positions. numAtoms in one
     # direction and 3 in the other (coordinates)
     AtomicPositions = np.zeros((numAtoms, 3))
-    LatticeCoefficients = AtomicPositions
+    LatticeCoefficients = np.zeros((numAtoms, 3))
     # Empty lists for colors, sizes and whether or not they're lattice points
     AtomicColors = []
     AtomicSizes = []
@@ -156,7 +156,6 @@ def LatticeGenerator(a1, a2, a3, basis, colors, sizes, LimType, n_min, n_max,
                     else:
                         LatticePosition.append(False)
                     counter += 1
-
     # Another way to do this is to use itertools.product to create all
     # permutations of -2, ..., 4 with repeat of 3, and then use np.asarray() to
     # convert this into a numpy array. The "problem" is that this doesn't allow
