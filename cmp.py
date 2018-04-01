@@ -1145,8 +1145,8 @@ def CreateLines(points, vectors):
     return lines
 
 
-def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
-              LatticePosition, GridType, r_min, r_max, verbose=False):
+def GridLines(a1, a2, a3, AtomicPositions, LatticePosition, GridType,
+              verbose=False):
     # Create grid lines
     lowGrid = GridType.lower()
     pruned_lines = []
@@ -1154,8 +1154,9 @@ def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     if lowGrid in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
+        vectors = np.array([a1, a2, a3])
         pruned_lines = CreateLines(AtomicPositions[LatticePosition],
-                                   a1, a2, a3, r_min, r_max)
+                                   vectors)
 
     elif lowGrid in "soft":
         # A Way of finding atoms on cartesian axes
@@ -1236,9 +1237,8 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     # Get the relevant gridlines:
     g_col = 'k'
     g_w = 0.5
-    pruned_lines = GridLines(a1, a2, a3, AtomicPositions, AtomicColors,
-                             AtomicSizes, LatticePosition, GridType, r_min,
-                             r_max, verbose=False)
+    pruned_lines = GridLines(a1, a2, a3, AtomicPositions, LatticePosition,
+                             GridType, verbose=False)
     for line in pruned_lines:
         ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
     # plot lattice vectors
