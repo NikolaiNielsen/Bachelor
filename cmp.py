@@ -674,12 +674,11 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     Calculates the limits on the coordinates (the plot box), and the limits on
     the basis vector ranges.
     """
-
+    n_min, n_max = np.array(Min), np.array(Max)
+    lattice = np.array((a1, a2, a3))
     # For dynamic limits we pass Min and Max as limits of basis vector range
     # and calculate coordinate limit based on basis vector range
     if LimType.lower() in "individual":
-        n_min, n_max = np.array(Min), np.array(Max)
-        lattice = np.array((a1, a2, a3))
         # Take the max value for each of the cardinal directions, for the
         # three scaled lattice vectors (so x_max is max x value of
         # Max[0] * a1, Max[1] * a2 and Max[2] * a3).
@@ -693,12 +692,33 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     # Different type of coordinate limits. Take r_max as sum(lattice * max)
     # Works well for orthogonal or near-orthogonal lattice vectors
     elif LimType.lower() in "sum":
-        n_min, n_max = np.array(Min), np.array(Max)
-        lattice = np.array([a1, a2, a3])
         r_max = np.sum(lattice.T * n_max, 0)
         r_min = np.sum(lattice.T * n_min, 0)
     else:
-        print("You did poop...")
+        # We sample all 8 points arising from combinations of min and max:
+        # First we get the permutations:
+        perms = list(itertools.product([False, True], repeat=3))
+        # We create a boolean array of when to multiply by the max and when not
+        # to
+        maxMult = np.array(perms)
+        minMult = np.invert(maxMult)
+        # We stack the min and max arrays to have 8 identical rows
+        maxstack = np.array(Max * 8).reshape([8, 3])
+        minstack = np.array(Min * 8).reshape([8, 3])
+        # Each element of the multiplier matrix is made of the appropriate
+        # element from max or min. If maxMult[n,m] == False then mult[n,m] =
+        # minstack[n,m] and vice versa. This is accomplished by setting the
+        # elements of maxstack and minstack equal to 0, when they are not to be
+        # multiplied. Then we add the two arrays together.
+        maxstack[minMult] = 0
+        minstack[maxMult] = 0
+        mult = minstack + maxstack
+        # The 8 points are thus the matrix product of mult and lattice
+        limits = mult @ lattice
+        # We take the minimal and maximal values of each column, as the minimum
+        # and maximum value for our cartesian axes
+        r_min = np.amin(limits, 0)
+        r_max = np.amax(limits, 0)
     # And lastly we return the relevant arrays, with n_min / max -+ some value
     # to allow for "spillage". The value is the maximal value of the Max array.
     # Also, let's make sure n_min / max are arrays of integers. Don't worry,
