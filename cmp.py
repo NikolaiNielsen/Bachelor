@@ -1089,56 +1089,60 @@ def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
     return a1, a2, a3, basis
 
 
-def CreateLines(points, v1, v2, v3,
-                r_min=np.array([0, 0, 0]),
-                r_max=np.array([2, 2, 2])):
+def CreateLines(points, vectors):
     """
     Creates lines along vectors and limits these to the given plot box
     """
-    # Let's try and create some grid lines along the lattice vectors some
-    # observations regarding grid lines: if we go along a lattice vector to a
-    # point, then we need gridlines that are along the direction of the other
-    # two lattice vectors A naïve approach would be to just plot 3 lines for
-    # each atomic position (after limiting). This would create multiple copies
-    # of some gridlines, but it's an easy solution. Let's see how long it takes
-    # to compute!
 
-    # Create the plotting parameter for the gridlines.
-    # They use the equation r = r0+t * a, where:
-    # r0 is a fixed point (atomic position)
-    # a is a vector giving the direction of the gridline (lattice vector)
-    # t is a scaling parameter, creating the points along the line.
-    # We use halfinteger steps for t. That way we know that we'll properly hit
-    # other atomic positions. If we used linspace this wouldn't be the case
-
-    t = np.arange(-10, 10, 0.5)
-
+    # For each lattice point, we calculate the cosine of the angle between each
+    # of the lattice vectors and each of the separation vectors to other
+    # lattice points. This allows us to determine which atoms lie along a
+    # lattice vector from a given point. Then we can just pick the atom
+    # furthest away (in the "positive" direction), and use it as the end point
+    # for the grid line.
     lines = []
 
     # Create all gridlines needed and append them to the lines-list
     numPoints = np.shape(points)[0]
     for rowID in range(numPoints):
         CurrentPoint = points[rowID, ]
-        line1 = CurrentPoint + np.outer(t, v1)
-        line2 = CurrentPoint + np.outer(t, v2)
-        line3 = CurrentPoint + np.outer(t, v3)
-        lines.append([line1, line2, line3])
+        for vec in vectors:
+            # First we want to delete the origin from the separation
+            sep = points - CurrentPoint
+            # We make a boolean array of values equal to 0, sum them up and if
+            # a row equals 3, then it is the null vector
+            naughts = np.sum((sep == np.array([0, 0, 0])), 1) == 3
+            # Then we select all the separation vectors that are not the
+            # nullvector
+            notnaughts = np.invert(naughts)
+            sep = sep[notnaughts]
+            nonpoints = points[notnaughts]
+            mag_sep = mag(sep)
 
-    # run through each line and clip points outside limits
-    pruned_lines = []
-    for point in lines:
-        for line in point:
-            # Get the points outside the plot and delete them
-            rows = Limiter(line, r_min, r_max)
-            line = np.delete(line, rows, 0)
+            # We calculate the cosine of the angle between the current lattice
+            # vector and the separation vectors
+            cosine = sep.dot(vec) / (mag_sep * mag(vec))
+            # If it is close to 1, then the vectors are parallel
+            para = eq(1, cosine)
+            # We get the parallel points and magnitude of parallel separation
+            # vectors
+            parapoints = nonpoints[para, ]
+            magparasep = mag_sep[para]
+            if magparasep.shape[0] == 0:
+                # if there are no points further out, that have a parallel
+                # separation vector, we just pass, as we are at the edge of the
+                # lattice
+                pass
+            else:
+                # We pick the parallel point, that has the largest magnitude of
+                # the separation vector
+                endpointbool = magparasep == np.amax(magparasep)
+                endpoint = parapoints[endpointbool]
+                endpoint = np.squeeze(endpoint)
+                rawline = np.vstack((CurrentPoint, endpoint))
+                lines.append([rawline[:, 0], rawline[:, 1], rawline[:, 2]])
 
-            # Because we're working with arrays we're passing copies, we need
-            # to append the pruned lines to a new list. And let's only add
-            # them if there are actually any points to plot
-            line_length, _ = np.shape(line)
-            if line_length > 0:
-                pruned_lines.append(line)
-    return pruned_lines
+    return lines
 
 
 def GridLines(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
