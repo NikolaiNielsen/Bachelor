@@ -11,7 +11,7 @@ eq = np.isclose
 # Lattice plotting
 # Defaults for LatticeCreator
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
-     np.array([0, 0, 0]), "xkcd:cement", 2, "individual", "latticevectors",
+     np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
 
@@ -79,8 +79,8 @@ def LatticeCreator(a1=d[0], a2=d[1], a3=d[2],
                     'conventional bcc': 'soft',
                     'conventional fcc': 'soft',
                     'fcc': 'soft',
-                    'hexagonal 1': 'latticevectors',
-                    'hexagonal 2': 'latticevectors',
+                    'hexagonal 1': 'hexagonal',
+                    'hexagonal 2': 'hexagonal',
                     'orthorhombic': 'soft',
                     'orthorhombic base centred': 'soft',
                     'orthorhombic body centred': 'soft',
@@ -694,7 +694,7 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
     elif LimType.lower() in "sum":
         r_max = np.sum(lattice.T * n_max, 0)
         r_min = np.sum(lattice.T * n_min, 0)
-    else:
+    elif LimType.lower() in "proper":
         # We sample all 8 points arising from combinations of min and max:
         # First we get the permutations:
         perms = list(itertools.product([False, True], repeat=3))
@@ -719,6 +719,8 @@ def FindLimits(LimType, a1, a2, a3, Min=[0, 0, 0], Max=[2, 2, 2]):
         # and maximum value for our cartesian axes
         r_min = np.amin(limits, 0)
         r_max = np.amax(limits, 0)
+    else:
+        print('You chose... poorly.')
     # And lastly we return the relevant arrays, with n_min / max -+ some value
     # to allow for "spillage". The value is the maximal value of the Max array.
     # Also, let's make sure n_min / max are arrays of integers. Don't worry,
@@ -882,7 +884,7 @@ def rotateHex(a1, a2, a3, basis):
             # We rotated correctly
             a1, a2, a3, basis = A1, A2, A3, Basis
         else:
-            # We didn't rotate correctly, so we rotate the other way twice
+            # We didn't rotate correctly, so we rotate the other way
             r3 = RotMatrix(x, -theta)
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
 
@@ -899,14 +901,15 @@ def rotateHex(a1, a2, a3, basis):
         A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r1)
         # Alright, so I don't know how to get the proper rotation direction, so
         # we just check if it's rotated properly It's rotated properly if the
-        # z-coordinate of A3 is 0
+        # z-coordinate of A3 is 0. Also, we return the lattice vectors, such
+        # that a1 and a2 form the triangular lattice
         if eq(A3[2], 0):
             # We rotated correctly
-            a1, a2, a3, basis = A1, A2, A3, Basis
+            a1, a2, a3, basis = A2, A3, A1, Basis
         else:
-            # We didn't rotate correctly, so we rotate the other way twice
+            # We didn't rotate correctly, so we rotate the other way
             r1 = RotMatrix(x, -theta)
-            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+            a1, a2, a3, basis = rotate(a2, a3, a1, basis, r1)
 
     elif eq(0.5, cos31):
         # a1 and a3 form triangular lattice. Align a1 along x
@@ -920,14 +923,15 @@ def rotateHex(a1, a2, a3, basis):
         r2 = RotMatrix(x, theta)
         A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r2)
         # Alright, so I don't know how to get the proper rotation direction, so
-        # we just check if it's rotated properly
+        # we just check if it's rotated properly. Also we return the lattice
+        # vectors such that a1 and a2 form the triangular lattice
         if eq(A3[2], 0):
             # We rotated correctly
-            a1, a2, a3, basis = A1, A2, A3, Basis
+            a1, a2, a3, basis = A3, A1, A2, Basis
         else:
-            # We didn't rotate correctly, so we rotate the other way twice
+            # We didn't rotate correctly, so we rotate the other way
             r3 = RotMatrix(x, -theta)
-            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+            a1, a2, a3, basis = rotate(a3, a1, a2, basis, r3)
     else:
         print('something went wrong rotating the hexagonal lattice')
 
@@ -1167,17 +1171,22 @@ def CreateLines(points, vectors):
 
 def GridLines(a1, a2, a3, AtomicPositions, LatticePosition, GridType,
               verbose=False):
-    # Create grid lines
+    """
+    Create gridlines based on the GridType. Either along lattice vectors or
+    the cartesian axes.
+    """
+
     lowGrid = GridType.lower()
-    pruned_lines = []
+    lines = []
 
     if lowGrid in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         vectors = np.array([a1, a2, a3])
-        pruned_lines = CreateLines(AtomicPositions[LatticePosition],
-                                   vectors)
-
+        lines = CreateLines(AtomicPositions[LatticePosition], vectors)
+    elif lowGrid in "hexagonal":
+        vectors = np.array([a1, a2, a3, a1 - a2])
+        lines = CreateLines(AtomicPositions[LatticePosition], vectors)
     elif lowGrid in "soft":
         # A Way of finding atoms on cartesian axes
         # bool array of atoms with x = 0 and y = 0
@@ -1223,22 +1232,23 @@ def GridLines(a1, a2, a3, AtomicPositions, LatticePosition, GridType,
         rangez = np.arange(zmin, zmax + 0.5 * a_z, a_z)
         for nx in rangex:
             for ny in rangey:
-                pruned_lines.append([np.array([nx, nx]), np.array([ny, ny]),
-                                     np.array([zmin, zmax])])
+                lines.append([np.array([nx, nx]),
+                              np.array([ny, ny]),
+                              np.array([zmin, zmax])])
 
             for nz in rangez:
-                pruned_lines.append([np.array([nx, nx]),
-                                     np.array([ymin, ymax]),
-                                     np.array([nz, nz])])
+                lines.append([np.array([nx, nx]),
+                              np.array([ymin, ymax]),
+                              np.array([nz, nz])])
         for ny in rangey:
             for nz in rangez:
-                pruned_lines.append([np.array([xmin, xmax]),
-                                     np.array([ny, ny]),
-                                     np.array([nz, nz])])
+                lines.append([np.array([xmin, xmax]),
+                              np.array([ny, ny]),
+                              np.array([nz, nz])])
     else:
         print("No Gridlines Chosen")
 
-    return pruned_lines
+    return lines
 
 
 def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
@@ -1258,7 +1268,7 @@ def LatticePlotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
     g_col = 'k'
     g_w = 0.5
     pruned_lines = GridLines(a1, a2, a3, AtomicPositions, LatticePosition,
-                             GridType, verbose=False)
+                             GridType, verbose=verbose)
     for line in pruned_lines:
         ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
     # plot lattice vectors
