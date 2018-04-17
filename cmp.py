@@ -760,20 +760,12 @@ def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     """
     A function to highlight points that are outside the limits of the plot
     """
-    rows = []
     num, _ = np.shape(l)
-    # loop over all row ID's
-    for rowID in range(num):
-        # if the atom is outside the limits, we append the row ID to a list
-        row = l[rowID, ]
-        # (it's actually easier and prettier to check if they're inside)
-        inside_x = r_min[0] <= row[0] <= r_max[0]
-        inside_y = r_min[1] <= row[1] <= r_max[1]
-        inside_z = r_min[2] <= row[2] <= r_max[2]
-        inside = inside_x and inside_y and inside_z
-        if not inside:
-            rows.append(rowID)
-    return rows
+    # loop over all row IDs. Add the row ID to the list if all coordinates of
+    # the corresponding point are larger than or equal to those of r_min, and
+    # simultaniously smaller than or equal to those of r_max
+    return [rowID for rowID in range(num) if not
+            ((r_min <= l[rowID, ]).all() and (l[rowID, ] <= r_max).all())]
 
 
 def rotatefacecentred(a1, a2, a3, basis, verbose=False):
