@@ -762,10 +762,10 @@ def Limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     """
     num, _ = np.shape(l)
     # loop over all row IDs. Add the row ID to the list if all coordinates of
-    # the corresponding point are larger than or equal to those of r_min, and
-    # simultaniously smaller than or equal to those of r_max
-    return [rowID for rowID in range(num) if not
-            ((r_min <= l[rowID, ]).all() and (l[rowID, ] <= r_max).all())]
+    # the corresponding point are smaller than those of r_min, or larger than
+    # those of r_max
+    return [rowID for rowID in range(num) if
+            ((r_min > l[rowID, ]).any() or (l[rowID, ] > r_max).any())]
 
 
 def rotatefacecentred(a1, a2, a3, basis, verbose=False):
