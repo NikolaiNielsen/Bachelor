@@ -1,5 +1,15 @@
 # Let's get the importing out of the way.
 # Numpy for calculations, matplotlib for plotting.
+
+"""
+Next:
+Reciprocal lattice and lattice planes
+Scattering
+- Parameters:
+  - Incident angle
+  - Incident wavelength of light
+  - Start with simple cubic, and 90 degree incident angle (specific case)
+"""
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -494,8 +504,8 @@ def RotMatrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
     given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
     """
     # Make sure we have a unit vector
-    print("Rotation vector!")
-    print(v)
+    if (v == 0).all():
+        print("You tried to rotate around the null-vector!")
     v = v / mag(v)
     # Create the cross product matrix
     vCross = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
@@ -559,7 +569,7 @@ def LatticeChooser(lattice_name="simple cubic", verbose=False):
     # base centred monoclinic
     lbcmono = np.array([[a, 0, 0], [a / 2, b / 2, 0],
                         [c * np.cos(theta), 0, c * np.sin(theta)]])
-    L["base centred monoclinic 3"] = lbcmono
+    L["base centred monoclinic"] = lbcmono
     # Base centred monoclinic (2)
     lbcmono2 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0],
                          [c * np.cos(theta), 0, c * np.sin(theta)]])
@@ -570,7 +580,7 @@ def LatticeChooser(lattice_name="simple cubic", verbose=False):
     L["base centred monoclinic 1"] = lbcmono3
     # Hexagonal 1
     lhexa1 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0], [0, 0, a]])
-    L["hexagonal 1"] = lhexa1
+    L["hexagonal"] = lhexa1
     # Hexagonal 2
     lhexa2 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0], [0, 0, b]])
     L["hexagonal 2"] = lhexa2
@@ -595,6 +605,22 @@ def LatticeChooser(lattice_name="simple cubic", verbose=False):
 
     L["conventional bcc"] = lcubic
     B["conventional bcc"] = a * np.array([0.5, 0.5, 0.5])
+
+    # Diamond lattice
+    L["diamond"] = lfcc
+    B["diamond"] = a * np.array([0.25, 0.25, 0.25])
+
+    # Zinc-blende
+    L["zincblende"] = L["diamond"]
+    B["zincblende"] = B["diamond"]
+
+    # Wurtzite
+    u = 3 / 8
+    L["wurtzite"] = np.array([[0.5 * a, -a * np.sqrt(3) / 2, 0],
+                              [0.5 * a, a * np.sqrt(3) / 2, 0], [0, 0, b]])
+    B["wurtzite"] = np.array([[0, -a * np.sqrt(3) / 3, b / 2],
+                              [0, 0, u * b],
+                              [0, -a * np.sqrt(3) / 3, (1 / 2 + u) * b]])
 
     try:
         lattice = L[lattice_name]
@@ -635,8 +661,8 @@ def LatticeTester(verbose=False):
                 "tetragonal base centred", "orthorhombic",
                 "orthorhombic base centred", "orthorhombic body centred",
                 "orthorhombic face centred", "simple monoclinic",
-                "base centred monoclinic 1", "base centred monoclinic 2",
-                "base centred monoclinic 3", "hexagonal 1", "hexagonal 2",
+                "base centred monoclinic", "base centred monoclinic 2",
+                "base centred monoclinic 3", "hexagonal", "hexagonal 2",
                 "triclinic", "rhombohedral"]
 
     # Create the rotation matrix
@@ -770,16 +796,19 @@ def rotatefacecentred(a1, a2, a3, basis, verbose=False):
 
     # Now we align a1 with a1prop:
     a1cross = np.cross(a1, a1prop)
-    theta = np.arcsin(mag(a1cross) / (mag(a1) * mag(a1prop)))
-    r1 = RotMatrix(a1cross, theta)
-    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
-
-    # And of course check that we've rotated correctly
-    if eq(a1, a1prop).all():
+    if eq(0, mag(a1cross)):
         pass
     else:
-        r1 = RotMatrix(a1cross, -2 * theta)
+        theta = np.arcsin(mag(a1cross) / (mag(a1) * mag(a1prop)))
+        r1 = RotMatrix(a1cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+
+        # And of course check that we've rotated correctly
+        if eq(a1, a1prop).all():
+            pass
+        else:
+            r1 = RotMatrix(a1cross, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
     # Next we align a2 with a2prop:
     theta, r2 = RotMatrixAlong(a1prop, a2, a2prop)
@@ -815,9 +844,12 @@ def rotatebcm(a1, a2, a3, basis):
 
     # We align a1 along x
     a1cross = np.cross(a1, x)
-    theta = np.arcsin(mag(a1cross) / mag(a1))
-    r1 = RotMatrix(a1cross, theta)
-    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+    if eq(0, mag(a1cross)):
+        pass
+    else:
+        theta = np.arcsin(mag(a1cross) / mag(a1))
+        r1 = RotMatrix(a1cross, theta)
+        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
     # Get the rotation matrix to align a2 in the xy plane (vector rejection
     # parallel to y)
@@ -847,7 +879,6 @@ def RotMatrixAlong(a, b, c):
 
     # Next we get the angle between the rejections
     theta = np.arccos(brej.dot(crej) / (mag(brej) * mag(crej)))
-
     # and the relevant rotation matrix
     R = RotMatrix(a, theta)
     return theta, R
@@ -870,68 +901,88 @@ def rotateHex(a1, a2, a3, basis):
     if eq(0.5, cos12):
         # a1 and a2 form triangular lattice. Align a1 along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag_a1)
-        r1 = RotMatrix(a1cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+        if eq(0, mag(a1cross)):
+            # We are already rotated.
+            pass
+        else:
+            theta = np.arcsin(mag(a1cross) / mag_a1)
+            r1 = RotMatrix(a1cross, theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
         # now rotate a3 so it's parallel to z, with x as rotation axis
         theta = np.arccos(a3.dot(z) / (mag_a3))
-        r3 = RotMatrix(x, theta)
-        A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r3)
-        # Alright, so I don't know how to get the proper rotation direction, so
-        # we just check if it's rotated properly
-        if eq(A2[2], 0):
-            # We rotated correctly
-            a1, a2, a3, basis = A1, A2, A3, Basis
-        else:
-            # We didn't rotate correctly, so we rotate the other way
-            r3 = RotMatrix(x, -theta)
-            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
+        if eq(0, theta):
+            # We're already properly rotated for a3 as well.
+            r3 = RotMatrix(x, theta)
+            A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r3)
+            # Alright, so I don't know how to get the proper rotation
+            # direction, so we just check if it's rotated properly
+            if eq(A2[2], 0):
+                # We rotated correctly
+                a1, a2, a3, basis = A1, A2, A3, Basis
+            else:
+                # We didn't rotate correctly, so we rotate the other way
+                r3 = RotMatrix(x, -theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
 
     elif eq(0.5, cos23):
         # a2 and a3 form triangular lattice. Align a2 along x
         a2cross = np.cross(a2, x)
-        theta = np.arcsin(mag(a2cross) / mag_a2)
-        r2 = RotMatrix(a2cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+        if eq(0, mag(a2cross)):
+            # We've already rotated
+            pass
+        else:
+            theta = np.arcsin(mag(a2cross) / mag_a2)
+            r2 = RotMatrix(a2cross, theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
         # now rotate a1 so it's parallel to z, with x as rotation axis
         theta = np.arccos(a1.dot(z) / (mag_a1))
-        r1 = RotMatrix(x, theta)
-        A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r1)
-        # Alright, so I don't know how to get the proper rotation direction, so
-        # we just check if it's rotated properly It's rotated properly if the
-        # z-coordinate of A3 is 0. Also, we return the lattice vectors, such
-        # that a1 and a2 form the triangular lattice
-        if eq(A3[2], 0):
-            # We rotated correctly
-            a1, a2, a3, basis = A2, A3, A1, Basis
+        if eq(0, theta):
+            pass
         else:
-            # We didn't rotate correctly, so we rotate the other way
-            r1 = RotMatrix(x, -theta)
-            a1, a2, a3, basis = rotate(a2, a3, a1, basis, r1)
+            r1 = RotMatrix(x, theta)
+            A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r1)
+            # Alright, so I don't know how to get the proper rotation
+            # direction, so we just check if it's rotated properly It's rotated
+            # properly if the z-coordinate of A3 is 0. Also, we return the
+            # lattice vectors, such that a1 and a2 form the triangular lattice
+            if eq(A3[2], 0):
+                # We rotated correctly
+                a1, a2, a3, basis = A1, A2, A3, Basis
+            else:
+                # We didn't rotate correctly, so we rotate the other way
+                r1 = RotMatrix(x, -theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
     elif eq(0.5, cos31):
         # a1 and a3 form triangular lattice. Align a1 along x
         a1cross = np.cross(a1, x)
-        theta = np.arcsin(mag(a1cross) / mag_a1)
-        r1 = RotMatrix(a1cross, theta)
-        a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
+        if eq(0, mag(a1cross)):
+            pass
+        else:
+            theta = np.arcsin(mag(a1cross) / mag_a1)
+            r1 = RotMatrix(a1cross, theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
         # now rotate a2 so it's parallel to z, with x as rotation axis
         theta = np.arccos(a2.dot(z) / (mag_a2))
-        r2 = RotMatrix(x, theta)
-        A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r2)
-        # Alright, so I don't know how to get the proper rotation direction, so
-        # we just check if it's rotated properly. Also we return the lattice
-        # vectors such that a1 and a2 form the triangular lattice
-        if eq(A3[2], 0):
-            # We rotated correctly
-            a1, a2, a3, basis = A3, A1, A2, Basis
+        if eq(0, theta):
+            pass
         else:
-            # We didn't rotate correctly, so we rotate the other way
-            r3 = RotMatrix(x, -theta)
-            a1, a2, a3, basis = rotate(a3, a1, a2, basis, r3)
+            r2 = RotMatrix(x, theta)
+            A1, A2, A3, Basis = rotate(a1, a2, a3, basis, r2)
+            # Alright, so I don't know how to get the proper rotation
+            # direction, so we just check if it's rotated properly. Also we
+            # return the lattice vectors such that a1 and a2 form the
+            # triangular lattice
+            if eq(A3[2], 0):
+                # We rotated correctly
+                a1, a2, a3, basis = A1, A2, A3, Basis
+            else:
+                # We didn't rotate correctly, so we rotate the other way
+                r3 = RotMatrix(x, -theta)
+                a1, a2, a3, basis = rotate(a1, a2, a3, basis, r3)
     else:
         print('something went wrong rotating the hexagonal lattice')
 
