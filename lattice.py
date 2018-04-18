@@ -108,7 +108,57 @@ def creator(a1=d[0], a2=d[1], a3=d[2],
     plotter(a1, a2, a3, AtomicPositions, AtomicColors, AtomicSizes,
                    LatticePosition, GridType, r_min, r_max, verbose=verbose)
 
-    
+
+def reciprocal(a1, a2, a3, h, k, l, r_min, r_max):
+    """
+    Creates the reciprocal lattice and a given family of lattice planes.
+    """
+    # First the scaling factor for the reciprocal lattice
+    scale = a1.dot(np.cross(a2, a3))
+    # Then the reciprocal lattice
+    b1 = 2 * np.pi * np.cross(a2, a3) / scale
+    b2 = 2 * np.pi * np.cross(a3, a1) / scale
+    b3 = 2 * np.pi * np.cross(a1, a2) / scale
+    # And the normal vector for the (hkl)-family of planes.
+    G = h * b1 + k * b2 + l * b3
+    G_unit = G / mag(G)
+
+    # Next the displacement vector d
+    d = 2 * np.pi * G_unit / mag(G)
+
+    # The vertical displacement of the planes (dz) is given by
+    # mag(d)/cos(theta), where theta is the angle between the displacement
+    # vector and the z-axis. cos(theta) is also d[2]/mag(d) (cosine of angle
+    # between d and [0,0,1]):
+    dz = mag(d)**2 / d[2]
+
+    # We take the origin as the fix-point for the starting plane, then we just
+    # create copies of this plane, displaced vertically by dz, until the top of
+    # the first plane doesn't reach the bottom of the plot box, and the bottom
+    # of the last plane doesn't reach the top of the plot box. But first we
+    # create the meshgrid needed
+    x = np.linspace(r_min[0], r_max[0])
+    y = np.linspace(r_min[1], r_max[1])
+    xv, yv = np.meshgrid(x, y)
+
+    # Now the starting plane
+    zv = (-d[0] * xv - d[1] * yv) / d[2]
+
+    # The distance between the bottom of the plane and the max z-value
+    delta_z_plus = r_max[2] - np.amin(zv)
+    # The negative distance between the top of the plane and the min z-value
+    delta_z_minus = r_min[2] - np.amax(zv)
+
+    # The amount of planes needed in each direction to cover the plot box:
+    nz_plus = np.ceil(delta_z_plus / dz)
+    nz_minus = np.floor(delta_z_minus / dz)
+
+    # Create a list of the planes with a list comprehension
+    planes = [zv + n * d for n in range(nz_minus, nz_plus + 1)]
+
+    return b1, b2, b3, d, planes
+
+
 def generator(a1, a2, a3, basis, colors, sizes, LimType, n_min, n_max,
                      r_min, r_max, N_basis, GridType=None, verbose=False):
     """
