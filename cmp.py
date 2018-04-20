@@ -36,6 +36,13 @@ def Lattice(
     if lattice_name is not None:
         lattice, basis = lattices.chooser(lattice_name, verbose=verbose)
         a1, a2, a3 = lattice
+        # Classify the lattice
+    else:
+        lattice_type = lattices.classifier(a1, a2, a3, basis)
+
+        # Rotate the lattice
+        a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
+                                             lattice_type, verbose=verbose)
 
     # Input sanitization:
     # We need the number of basis-vectors.
@@ -53,27 +60,26 @@ def Lattice(
     c_name = colors.__class__.__name__
     if c_name == "str":
         c = colors
+        colors = []
+        for i in range(n_basis):
+            colors.append(c)
     elif c_name == "list" and len(colors) < n_basis:
         c = colors[0]
-    colors = []
-    for i in range(n_basis):
-        colors.append(c)
+        colors = []
+        for i in range(n_basis):
+            colors.append(c)
 
     s_name = sizes.__class__.__name__
     if s_name == "int" or s_name == "float":
         s = sizes
+        sizes = []
+        for i in range(n_basis):
+            sizes.append(s)
     elif s_name == "list" and len(sizes) < n_basis:
         s = sizes[0]
-    sizes = []
-    for i in range(n_basis):
-        sizes.append(s)
-
-    # Classify the lattice
-    lattice_type = lattices.classifier(a1, a2, a3, basis)
-
-    # Rotate the lattice
-    a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
-                                         lattice_type, verbose=verbose)
+        sizes = []
+        for i in range(n_basis):
+            sizes.append(s)
 
     # Choosing gridline type. First the default settings.
     latticelines = lattices.latticelines
@@ -95,7 +101,7 @@ def Lattice(
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                             lim_type, n_min, n_max, r_min,
-                                            r_max, n_basis)
+                                            r_max)
 
     # Objects to limit to the plot-box
     objects = [atomic_positions, lattice_coefficients, atomic_colors,
