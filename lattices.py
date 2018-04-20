@@ -144,18 +144,10 @@ def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
         print("Unpruned Atomic Positions")
         print(atomic_positions)
 
-    atoms, dims = np.shape(atomic_positions)
-    # Get the rows with the function above
-    rows = limiter(atomic_positions, r_min, r_max)
-    # delete all rows (axis 0 of the array) that are outside the limits
-    atomic_positions = np.delete(atomic_positions, rows, 0)
-    lattice_coefficients = np.delete(lattice_coefficients, rows, 0)
-    # Go through the list of rows to delete in reverse order, and delete what's
-    # needed from colors and sizes
-    for ID in sorted(rows, reverse=True):
-        del atomic_colors[ID]
-        del atomic_sizes[ID]
-        del lattice_position[ID]
+    # Delete all elements that are outside
+    objects = [atomic_positions, lattice_coefficients, atomic_colors,
+               atomic_sizes, lattice_position]
+    objects = limiter(atomic_positions, objects, r_min, r_max)
 
     if verbose:
         print("Pruned Atomic Positions")
@@ -715,7 +707,7 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
     return returns
 
 
-def limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
+def limiter(l, objects, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     """
     A function to highlight points that are outside the limits of the plot
     """
@@ -723,8 +715,21 @@ def limiter(l, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     # loop over all row IDs. Add the row ID to the list if all coordinates of
     # the corresponding point are smaller than those of r_min, or larger than
     # those of r_max
-    return [row_id for row_id in range(num) if
+
+    rows = [row_id for row_id in range(num) if
             ((r_min > l[row_id, ]).any() or (l[row_id, ] > r_max).any())]
+
+    limited_objects = []
+    for object_ in objects:
+        name = object_.__class__.__name__
+        if name == 'ndarray':
+            limited_objects.append(np.delete(object_, rows, 0))
+        if name == 'list':
+            for ID in sorted(rows, reverse=True):
+                del object_[ID]
+            limited_objects.append(object_)
+
+    return limited_objects
 
 
 def rotate_face_centred(a1, a2, a3, basis, verbose=False):
