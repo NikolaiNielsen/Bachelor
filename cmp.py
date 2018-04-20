@@ -44,35 +44,29 @@ def Lattice(
     # vectors
     length_basis = np.shape(basis)
     if len(length_basis) == 1:
-        N_basis = 1
+        n_basis = 1
     elif len(length_basis) > 1:
-        N_basis = length_basis[0]
+        n_basis = length_basis[0]
 
-    # Make a list, N_basis long, for the colors and sizes,
+    # Make a list, n_basis long, for the colors and sizes,
     # if they're not specified.
     c_name = colors.__class__.__name__
     if c_name == "str":
         c = colors
-        colors = []
-        for i in range(N_basis):
-            colors.append(c)
-    elif c_name == "list" and len(colors) < N_basis:
+    elif c_name == "list" and len(colors) < n_basis:
         c = colors[0]
-        colors = []
-        for i in range(N_basis):
-            colors.append(c)
+    colors = []
+    for i in range(n_basis):
+        colors.append(c)
 
     s_name = sizes.__class__.__name__
     if s_name == "int" or s_name == "float":
         s = sizes
-        sizes = []
-        for i in range(N_basis):
-            sizes.append(s)
-    elif s_name == "list" and len(sizes) < N_basis:
+    elif s_name == "list" and len(sizes) < n_basis:
         s = sizes[0]
-        sizes = []
-        for i in range(N_basis):
-            sizes.append(s)
+    sizes = []
+    for i in range(n_basis):
+        sizes.append(s)
 
     # Classify the lattice
     lattice_type = lattices.classifier(a1, a2, a3, basis)
@@ -101,7 +95,12 @@ def Lattice(
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                             lim_type, n_min, n_max, r_min,
-                                            r_max, N_basis)
+                                            r_max, n_basis)
+
+    # Objects to limit to the plot-box
+    objects = [atomic_positions, lattice_coefficients, atomic_colors,
+               atomic_sizes, lattice_position]
+    objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))

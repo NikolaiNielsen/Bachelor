@@ -140,21 +140,6 @@ def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
     # For some reason, we need to prune the coordinates again...
     atomic_positions[eq(atomic_positions, 0)] = 0
 
-    if verbose:
-        print("Unpruned Atomic Positions")
-        print(atomic_positions)
-
-    # Delete all elements that are outside
-    objects = [atomic_positions, lattice_coefficients, atomic_colors,
-               atomic_sizes, lattice_position]
-    objects = limiter(atomic_positions, objects, r_min, r_max)
-
-    if verbose:
-        print("Pruned Atomic Positions")
-        print(atomic_positions)
-        print("r_min, r_max, n_min, n_max")
-        print(r_min, r_max, n_min, n_max)
-
     return (atomic_positions, lattice_coefficients, atomic_colors,
             atomic_sizes, lattice_position)
 
