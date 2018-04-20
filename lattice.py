@@ -9,7 +9,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 def creator(a1=d[0], a2=d[1], a3=d[2],
             basis=d[3], colors=d[4], sizes=d[5],
             LimType=d[6], GridType=None, Mins=d[8], Maxs=d[9],
-            Lattice=None, verbose=False):
+            Lattice=None, reciprocal=None, verbose=False):
     """
     Creates, limits and plots the lattice
     """
@@ -97,6 +97,19 @@ def creator(a1=d[0], a2=d[1], a3=d[2],
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = find_limits(LimType, a1, a2, a3, Mins, Maxs)
 
+    
+    # Make it the reciprocal lattice if needed:
+    if reciprocal is not None:
+        # We expect reciprocal to be integers in a numpy-array, list or tuple
+        reciprocal = np.array(reciprocal)
+        proper = (reciprocal.shape == (3,) and 
+                  np.equal(np.mod(reciprocal, 1), 0).all())
+        if not proper:
+            print("reciprocal needs to be a list/tuple/array of 3 integers")
+            return
+        
+        
+    
     (AtomicPositions, LatticeCoefficients, AtomicColors, AtomicSizes,
      LatticePosition) = generator(a1, a2, a3, basis, colors, sizes,
                                          LimType, n_min, n_max, r_min, r_max,
