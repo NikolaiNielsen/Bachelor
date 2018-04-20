@@ -37,16 +37,10 @@ latticelines = {'base centred cubic': 'soft',
                 'triclinic': 'latticevectors'}
 
 
-def reciprocal(a1, a2, a3, h, k, l, r_min, r_max):
+def reciprocal(b1, b2, b3, h, k, l, r_min, r_max):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
-    # First the scaling factor for the reciprocal lattice
-    scale = a1.dot(np.cross(a2, a3))
-    # Then the reciprocal lattice
-    b1 = 2 * np.pi * np.cross(a2, a3) / scale
-    b2 = 2 * np.pi * np.cross(a3, a1) / scale
-    b3 = 2 * np.pi * np.cross(a1, a2) / scale
     # And the normal vector for the (hkl)-family of planes.
     G = h * b1 + k * b2 + l * b3
     G_unit = G / mag(G)
@@ -78,21 +72,27 @@ def reciprocal(a1, a2, a3, h, k, l, r_min, r_max):
     delta_z_minus = r_min[2] - np.amax(zv)
 
     # The amount of planes needed in each direction to cover the plot box:
-    nz_plus = np.ceil(delta_z_plus / dz)
-    nz_minus = np.floor(delta_z_minus / dz)
+    nz_plus = int(np.ceil(delta_z_plus / dz))
+    nz_minus = int(np.floor(delta_z_minus / dz))
 
     # Create a list of the planes with a list comprehension
-    planes = [zv + n * d for n in range(nz_minus, nz_plus + 1)]
+    planes = [zv + n * dz for n in range(nz_minus, nz_plus + 1)]
 
-    return b1, b2, b3, d, planes
+    return d, planes
 
 
 def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
-              r_min, r_max, n_basis, grid_type=None, verbose=False):
+              r_min, r_max, grid_type=None, verbose=False):
     """
     Generates the atomic positions of the lattice, from the lattice- and basis-
     vectors
     """
+    length_basis = np.shape(basis)
+    if len(length_basis) == 1:
+        n_basis = 1
+    elif len(length_basis) > 1:
+        n_basis = length_basis[0]
+
     size_default = 36
     # Calculate the amount of atomic positions to be calculated
     num_atoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
