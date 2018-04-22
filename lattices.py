@@ -41,7 +41,7 @@ latticelines = {'base centred cubic': 'soft',
                 'undefined': 'latticevectors'}
 
 
-def reciprocal(b1, b2, b3, h, k, l, r_min, r_max, points=5):
+def reciprocal(b1, b2, b3, h, k, l, r_min, r_max, points=50):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
@@ -80,9 +80,9 @@ def reciprocal(b1, b2, b3, h, k, l, r_min, r_max, points=5):
     nz_minus = int(np.floor(delta_z_minus / dz))
 
     # Create a list of the planes with a list comprehension
-    planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
+    planes = [zv + n * dz for n in range(nz_minus, nz_plus + 1)]
 
-    return d, planes
+    return d, planes, xv, yv
 
 
 def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
