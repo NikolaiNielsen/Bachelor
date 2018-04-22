@@ -34,7 +34,8 @@ def Lattice(
     Creates, limits and plots the lattice
     """
     if lattice_name is not None:
-        lattice, basis = lattices.chooser(lattice_name, verbose=verbose)
+        lattice, basis, lattice_type = lattices.chooser(lattice_name,
+                                                        verbose=verbose)
         a1, a2, a3 = lattice
         # Classify the lattice
     else:
@@ -102,11 +103,12 @@ def Lattice(
      lattice_position) = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                             lim_type, n_min, n_max, r_min,
                                             r_max)
-
     # Objects to limit to the plot-box
     objects = [atomic_positions, lattice_coefficients, atomic_colors,
                atomic_sizes, lattice_position]
     objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+     lattice_position) = objects
 
     if verbose:
         print("Lattice: {}".format(lattice_type))

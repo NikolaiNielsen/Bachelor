@@ -34,10 +34,14 @@ latticelines = {'base centred cubic': 'soft',
                 'tetragonal base centred': 'soft',
                 'tetragonal body centred': 'soft',
                 'tetragonal face centred': 'soft',
-                'triclinic': 'latticevectors'}
+                'triclinic': 'latticevectors',
+                'zincblende': 'soft',
+                'diamond': 'soft',
+                'wurtzite': 'latticevectors',
+                'undefined': 'latticevectors'}
 
 
-def reciprocal(b1, b2, b3, h, k, l, r_min, r_max):
+def reciprocal(b1, b2, b3, h, k, l, r_min, r_max, points=5):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
@@ -59,8 +63,8 @@ def reciprocal(b1, b2, b3, h, k, l, r_min, r_max):
     # the first plane doesn't reach the bottom of the plot box, and the bottom
     # of the last plane doesn't reach the top of the plot box. But first we
     # create the meshgrid needed
-    x = np.linspace(r_min[0], r_max[0])
-    y = np.linspace(r_min[1], r_max[1])
+    x = np.linspace(r_min[0], r_max[0], points)
+    y = np.linspace(r_min[1], r_max[1], points)
     xv, yv = np.meshgrid(x, y)
 
     # Now the starting plane
@@ -76,7 +80,7 @@ def reciprocal(b1, b2, b3, h, k, l, r_min, r_max):
     nz_minus = int(np.floor(delta_z_minus / dz))
 
     # Create a list of the planes with a list comprehension
-    planes = [zv + n * dz for n in range(nz_minus, nz_plus + 1)]
+    planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
 
     return d, planes
 
@@ -563,6 +567,7 @@ def chooser(lattice_name="simple cubic", verbose=False):
     except KeyError:
         print("You did da dumdum, and I now give you simple cubic")
         lattice = L["simple cubic"]
+        lattice_name = "simple cubic"
 
     basis_origin = np.array([0, 0, 0])
 
@@ -582,7 +587,7 @@ def chooser(lattice_name="simple cubic", verbose=False):
         print("Returning the following lattice and basis")
         print(lattice)
         print(basis)
-    return lattice, basis
+    return lattice, basis, lattice_name
 
 
 def tester(verbose=False):
