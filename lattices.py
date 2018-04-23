@@ -41,6 +41,22 @@ latticelines = {'base centred cubic': 'soft',
                 'undefined': 'latticevectors'}
 
 
+def plane_limiter(p, r_min, r_max, tolerance=1):
+    """
+    Limiter function for the planes, as they have a different data structure to
+    the list of points.
+    """
+    x, y, z = p
+    # We take z and compare each value to the r_min[2] and r_max[2]. If it is
+    # outside the range, then we replace the value with nan
+    outside_z = (r_min[2] * tolerance > z) + (z > r_max[2] * tolerance)
+    outside_y = (r_min[1] * tolerance > y) + (y > r_max[1] * tolerance)
+    outside_x = (r_min[0] * tolerance > x) + (x > r_max[0] * tolerance)
+    outside = outside_x + outside_y + outside_z
+    z[outside] = np.nan
+    return z
+
+
 def reciprocal(a1, a2, a3, h, k, l, r_min, r_max, points=50):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
