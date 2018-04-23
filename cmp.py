@@ -29,7 +29,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, min_=d[8], max_=d[9], lattice_name=None,
-        verbose=False):
+        indices=None, verbose=False):
     """
     Creates, limits and plots the lattice
     """
@@ -91,8 +91,6 @@ def Lattice(
     # defined) we choose the gridtype appropriate for the lattice
     if grid_type is not None:
         pass
-    elif lattice_type == "undetermined":
-        grid_type = d[7]
     else:
         grid_type = latticelines[lattice_type]
     # set the range of lattice vectors to be calculated
@@ -109,6 +107,16 @@ def Lattice(
     objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
+
+    if indices is not None:
+        if len(indices) != 3:
+            print("We need 3 indices! We'll give you (1,1,1)")
+            indices = (1, 1, 1)
+        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
+        # Prune each of the planes
+        planes = [(p[0], p[1], lattices.plane_limiter(p, r_min, r_max))
+                  for p in planes]
+        planes = [p for p in planes if not np.isnan(p[2]).all()]
 
     if verbose:
         print("Lattice: {}".format(lattice_type))
@@ -129,13 +137,23 @@ def Lattice(
                                        verbose=verbose)
     for line in pruned_lines:
         ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
-    # plot lattice vectors
-    ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
-    ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
-    ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
-    ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
-    ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
-    ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
+
+    if indices is not None:
+        # If we plot the family of lattice planes, we plot the displacement
+        # vector and the planes
+        ax.quiver(0, 0, 0, d[0], d[1], d[2])
+        ax.text(d[0] / 2, d[1] / 2, d[2] / 2, '$d$')
+        for p in planes:
+            ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
+                            alpha=0.4)
+    else:
+        # otherwise we plot the lattice vectors
+        ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
+        ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
+        ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
+        ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
+        ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
+        ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
 
     # Set limits, orthographic projection (so we get the beautiful hexagons),
     # no automatic gridlines, and no axes
@@ -153,3 +171,11 @@ def Lattice(
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     plt.show()
+
+
+def Reciprocal(
+        a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
+        lim_type=d[6], grid_type=None, min_=d[8], max_=d[9], lattice_name=None,
+        indices=(1, 1, 1), verbose=False):
+    Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, min_, max_,
+            lattice_name, indices, verbose)
