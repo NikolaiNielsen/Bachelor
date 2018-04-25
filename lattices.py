@@ -57,10 +57,11 @@ def plane_limiter(p, r_min, r_max, tolerance=1):
     return z
 
 
-def reciprocal(a1, a2, a3, h, k, l, r_min, r_max, points=50):
+def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
+    h, k, l = indices
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
     # Then the reciprocal lattice
@@ -117,6 +118,11 @@ def reciprocal(a1, a2, a3, h, k, l, r_min, r_max, points=50):
         # The amount of planes needed in each direction to cover the plot box:
         nz_plus = int(np.ceil(delta_z_plus / dz))
         nz_minus = int(np.floor(delta_z_minus / dz))
+
+        # Swap the indices if nz_plus is smaller than nz_minus, otherwise range
+        # returns nothing
+        if nz_plus < nz_minus:
+            nz_plus, nz_minus = nz_minus, nz_plus
 
         # Create a list of the planes with a list comprehension
         planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
