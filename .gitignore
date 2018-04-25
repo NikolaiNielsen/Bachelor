@@ -1,6 +1,10 @@
 /materials/*
 .ipynb_checkpoints
 /__pycache__/*
+
+# No geogebra files
+*.ggb
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
