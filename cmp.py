@@ -125,7 +125,7 @@ def Lattice(
     fig = plt.figure()
     ax = fig.gca(projection="3d")
 
-    # Plot atoms. For now a single size and color
+    # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
