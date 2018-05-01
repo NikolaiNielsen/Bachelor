@@ -67,7 +67,7 @@ def scattering(a1, a2, a3, basis, scattering_length, k_in):
     return intensity, k_out, indices
 
 
-def smart_cubic_k(indices, k0=None, k1=None, k2=None):
+def smart_cubic_k(indices, k0=None, k1=None, k2=None, theta=None, phi=None):
     indices = np.array(indices)
     scaler = np.pi * indices.dot(indices)
 
@@ -77,19 +77,31 @@ def smart_cubic_k(indices, k0=None, k1=None, k2=None):
         return
 
     # More sanitization
+    angles = np.array([theta is None, phi is None])
     ks = np.array([k0 is None, k1 is None, k2 is None])
-    if np.sum(ks) != 1:
-        print("You need to specify 2 and only 2 of the k-coordinates!")
-        return
-
-    # Now that we've made sure only 1 component is unspecified, only one of
-    # these if statements will execute
-    if ks[0]:
-        k0 = - (scaler + indices[1] * k1 + indices[2] * k2) / indices[0]
-    if ks[1]:
-        k1 = - (scaler + indices[0] * k0 + indices[2] * k2) / indices[1]
-    if ks[2]:
-        k2 = - (scaler + indices[0] * k0 + indices[1] * k1) / indices[2]
+    if angles.all():
+        # We prefer angles. And we check if the values are acceptable
+        if 0 <= theta <= np.pi / 2 and 0 <= phi <= 2 * np.pi:
+            r = -scaler / (np.sin(theta) * (indices[0] * np.cos(phi) +
+                                            indices[1] * np.sin(phi)) +
+                           indices[2] * np.cos(theta))
+            # Also we flip the coordinates, as it otherwise points upwards
+            k0 = -r * np.sin(theta) * np.cos(phi)
+            k1 = -r * np.sin(theta) * np.sin(phi)
+            k2 = -r * np.cos(theta)
+        else:
+            print("You need 0 <= theta <= pi/2 and 0 <= phi <= 2*pi")
+    elif np.sum(ks) == 1:
+        # Only one of these will of course execute. The rest
+        if ks[0]:
+            k0 = - (scaler + indices[1] * k1 + indices[2] * k2) / indices[0]
+        if ks[1]:
+            k1 = - (scaler + indices[0] * k0 + indices[2] * k2) / indices[1]
+        if ks[2]:
+            k2 = - (scaler + indices[0] * k0 + indices[1] * k1) / indices[2]
+    else:
+        print("You need to specify only 2 of the k-coordinates, or 2 angles")
+        k0, k1, k2 = 0, 0, np.pi
 
     return np.array([k0, k1, k2])
 
