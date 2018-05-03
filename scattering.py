@@ -5,7 +5,7 @@ import lattices
 eq = np.isclose
 
 
-def scattering(a1, a2, a3, basis, scattering_length, k_in):
+def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
     """
     Calculates the scattering off a given lattice, for a given set of
     scattering lengths and incident wavevector
