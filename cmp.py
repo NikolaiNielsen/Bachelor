@@ -113,10 +113,7 @@ def Lattice(
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
         d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
-        # Prune each of the planes
-        planes = [(p[0], p[1], lattices.plane_limiter(p, r_min, r_max))
-                  for p in planes]
-        planes = [p for p in planes if not np.isnan(p[2]).all()]
+        planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))

@@ -40,21 +40,39 @@ latticelines = {'base centred cubic': 'soft',
                 'wurtzite': 'latticevectors',
                 'undefined': 'latticevectors'}
 
+# d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
+# # Prune each of the planes
+# planes = [(p[0], p[1], lattices.plane_limiter(p, r_min, r_max))
+#           for p in planes]
+# planes = [p for p in planes if not np.isnan(p[2]).all()]
 
-def plane_limiter(p, r_min, r_max, tolerance=1):
+
+def plane_limiter(planes, r_min, r_max):
     """
     Limiter function for the planes, as they have a different data structure to
     the list of points.
     """
-    x, y, z = p
-    # We take z and compare each value to the r_min[2] and r_max[2]. If it is
-    # outside the range, then we replace the value with nan
-    outside_z = (r_min[2] * tolerance > z) + (z > r_max[2] * tolerance)
-    outside_y = (r_min[1] * tolerance > y) + (y > r_max[1] * tolerance)
-    outside_x = (r_min[0] * tolerance > x) + (x > r_max[0] * tolerance)
-    outside = outside_x + outside_y + outside_z
-    z[outside] = np.nan
-    return z
+    # We expect a list of tuples, where each tuple has 3 2D-arrays containing
+    # the coordinates
+    new_planes = []
+
+    # first we prune the planes and put them in a new list (just because that's
+    # easier)
+    for p in planes:
+        x, y, z = p
+        # We take z and compare each value to the r_min[2] and r_max[2]. If it
+        # is outside the range, then we replace the value with nan
+        outside_z = (r_min[2] > z) + (z > r_max[2])
+        outside_y = (r_min[1] > y) + (y > r_max[1])
+        outside_x = (r_min[0] > x) + (x > r_max[0])
+        outside = outside_x + outside_y + outside_z
+        z[outside] = np.nan
+        new_planes.append((x, y, z))
+
+    # Next we only keep the planes that actually have some part of them inside
+    # the plot box
+    new_planes = [p for p in new_planes if not np.isnan(p[2]).all()]
+    return new_planes
 
 
 def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
