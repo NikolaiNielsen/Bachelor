@@ -134,3 +134,52 @@ def projection(k_array, r=np.array([0, 0, 1]), n=np.array([0, 0, 1]), p0=np.
     D = np.vstack((d, d, d)).T
     p = r + k_array * D
     return p
+
+
+def prune_scattered_points(points, intensities, indices):
+    """
+    We prune the array of points, so we're left with unique points. The
+    intensities are adjusted accordingly, and the indices are made into a list
+    of strings, with one element per unique point
+    """
+    # First we get the unique points, the index of the new points from the old
+    # array, and a list of the inverse ids (list of n elements, where n is the
+    # number of points. Each element is the id of the corresponding unique
+    # point in the new array)
+    unique_points, ids, inverse = np.unique(points, axis=0, return_index=True,
+                                            return_inverse=True)
+
+    # next we create an array of zeros for the new intensities
+    new_intensities = np.zeros(ids.shape)
+
+    # And a empty list with a guarantied number of elements
+    new_indices = [None] * new_intensities.size
+
+    for i in range(intensities.size):
+        # The id of the new, unique point
+        new_id = inverse[i]
+        # A tuple of the old index row
+        index = tuple(indices[i])
+        # We add the old intensity from a given point, to the new unique points
+        # intensity
+        new_intensities[new_id] += intensities[i]
+
+        # We populate the list of new indices, taking care of whether or not an
+        # element of the list is empty
+        if new_indices[new_id] is None:
+            new_indices[new_id] = "{}".format(index)
+        else:
+            new_indices[new_id] = "{}\n{}".format(new_indices[new_id], index)
+
+    return unique_points, new_intensities, new_indices
+
+
+def projection_sphere(k_array, r=5, o=np.array([0, 0, 1])):
+    """
+    calculates the (positive) intersection between the line defined by o and
+    k_array, and the sphere with radius r and origin o
+    """
+    d = r / lattices.mag(k_array)
+    D = np.vstack((d, d, d)).T
+    p = o + k_array * D
+    return p

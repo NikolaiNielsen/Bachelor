@@ -79,7 +79,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
-    h, k, l = indices
+    h, k, ell = indices
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
     # Then the reciprocal lattice
@@ -88,7 +88,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     b3 = 2 * np.pi * np.cross(a1, a2) / scale
 
     # And the normal vector for the (hkl)-family of planes.
-    G = h * b1 + k * b2 + l * b3
+    G = h * b1 + k * b2 + ell * b3
     G_unit = G / mag(G)
     z = np.array([0, 0, 1])
     cosGz = G_unit.dot(z)
