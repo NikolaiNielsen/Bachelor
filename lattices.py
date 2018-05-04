@@ -1,10 +1,7 @@
-# Lattice plotting
+# Calculations for lattices
 import itertools
 
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 eq = np.isclose
 
@@ -40,112 +37,17 @@ latticelines = {'base centred cubic': 'soft',
                 'wurtzite': 'latticevectors',
                 'undefined': 'latticevectors'}
 
-# d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
-# # Prune each of the planes
-# planes = [(p[0], p[1], lattices.plane_limiter(p, r_min, r_max))
-#           for p in planes]
-# planes = [p for p in planes if not np.isnan(p[2]).all()]
 
-
-def plane_limiter(planes, r_min, r_max):
+def mag(a):
     """
-    Limiter function for the planes, as they have a different data structure to
-    the list of points.
+    Returns magnitude of vector or each row of an array
     """
-    # We expect a list of tuples, where each tuple has 3 2D-arrays containing
-    # the coordinates
-    new_planes = []
-
-    # first we prune the planes and put them in a new list (just because that's
-    # easier)
-    for p in planes:
-        x, y, z = p
-        # We take z and compare each value to the r_min[2] and r_max[2]. If it
-        # is outside the range, then we replace the value with nan
-        outside_z = (r_min[2] > z) + (z > r_max[2])
-        outside_y = (r_min[1] > y) + (y > r_max[1])
-        outside_x = (r_min[0] > x) + (x > r_max[0])
-        outside = outside_x + outside_y + outside_z
-        z[outside] = np.nan
-        new_planes.append((x, y, z))
-
-    # Next we only keep the planes that actually have some part of them inside
-    # the plot box
-    new_planes = [p for p in new_planes if not np.isnan(p[2]).all()]
-    return new_planes
-
-
-def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
-    """
-    Creates the reciprocal lattice and a given family of lattice planes.
-    """
-    h, k, ell = indices
-    # First the scaling factor for the reciprocal lattice
-    scale = a1.dot(np.cross(a2, a3))
-    # Then the reciprocal lattice
-    b1 = 2 * np.pi * np.cross(a2, a3) / scale
-    b2 = 2 * np.pi * np.cross(a3, a1) / scale
-    b3 = 2 * np.pi * np.cross(a1, a2) / scale
-
-    # And the normal vector for the (hkl)-family of planes.
-    G = h * b1 + k * b2 + ell * b3
-    G_unit = G / mag(G)
-    z = np.array([0, 0, 1])
-    cosGz = G_unit.dot(z)
-    # Next the displacement vector d
-    d = 2 * np.pi * G_unit / mag(G)
-    if eq(cosGz, 0):
-        # We have a vertical plane!
-        v1 = z / 4
-        v2 = np.cross(G_unit, z) / 4
-        min_, max_ = -10, 11
-        P, Q = np.meshgrid(range(min_, max_), range(min_, max_))
-
-        # Now the starting plane
-        x0 = v1[0] * P + v2[0] * Q
-        y0 = v1[1] * P + v2[1] * Q
-        z0 = v1[2] * P + v2[2] * Q
-        range_ = 20
-        planes = [(x0 + n * d[0], y0 + n * d[1], z0 + n * d[2]) for n in
-                  range(-range_, range_)]
+    # Return magnitude of vector
+    if len(a.shape) == 1:
+        return np.linalg.norm(a)
+    # Return magnitude of each row of an array.
     else:
-        # The vertical displacement of the planes (dz) is given by
-        # mag(d)/cos(theta), where theta is the angle between the displacement
-        # vector and the z-axis. cos(theta) is also d[2]/mag(d) (cosine of
-        # angle between d and [0,0,1]):
-        dz = mag(d)**2 / d[2]
-
-        # We take the origin as the fix-point for the starting plane, then we
-        # just create copies of this plane, displaced vertically by dz, until
-        # the top of the first plane doesn't reach the bottom of the plot box,
-        # and the bottom of the last plane doesn't reach the top of the plot
-        # box. But first we create the meshgrid needed
-        x = np.linspace(r_min[0], r_max[0], points)
-        y = np.linspace(r_min[1], r_max[1], points)
-        xv, yv = np.meshgrid(x, y)
-
-        # Now the starting plane
-        zv = (-d[0] * xv - d[1] * yv) / d[2]
-
-        # The distance between the bottom of the plane and the max z-value
-        delta_z_plus = r_max[2] - np.amin(zv)
-        # The negative distance between the top of the plane and the min
-        # z-value
-        delta_z_minus = r_min[2] - np.amax(zv)
-
-        # The amount of planes needed in each direction to cover the plot box:
-        nz_plus = int(np.ceil(delta_z_plus / dz))
-        nz_minus = int(np.floor(delta_z_minus / dz))
-
-        # Swap the indices if nz_plus is smaller than nz_minus, otherwise range
-        # returns nothing
-        if nz_plus < nz_minus:
-            nz_plus, nz_minus = nz_minus, nz_plus
-
-        # Create a list of the planes with a list comprehension
-        planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
-
-    return d, planes
+        return np.linalg.norm(a, axis=1)
 
 
 def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
@@ -154,6 +56,7 @@ def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
     Generates the atomic positions of the lattice, from the lattice- and basis-
     vectors
     """
+
     length_basis = np.shape(basis)
     if len(length_basis) == 1:
         n_basis = 1
@@ -209,18 +112,6 @@ def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
 
     return (atomic_positions, lattice_coefficients, atomic_colors,
             atomic_sizes, lattice_position)
-
-
-def mag(a):
-    """
-    Returns magnitude of vector or each row of an array
-    """
-    # Return magnitude of vector
-    if len(a.shape) == 1:
-        return np.linalg.norm(a)
-    # Return magnitude of each row of an array.
-    else:
-        return np.linalg.norm(a, axis=1)
 
 
 def classifier(a1, a2, a3, basis):
@@ -501,28 +392,11 @@ def classifier(a1, a2, a3, basis):
     return lattice_type
 
 
-def rot_matrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
-    """
-    Generates the rotation matrix for rotation about a given vector with a
-    given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
-    """
-    # Make sure we have a unit vector
-    if (v == 0).all():
-        print("You tried to rotate around the null-vector!")
-    v = v / mag(v)
-    # Create the cross product matrix
-    v_cross = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-    # Tensor product
-    v_tens = np.tensordot(v, v, 0)
-    # Return rotation matrix
-    return (np.cos(theta) * np.identity(3) + np.sin(theta) *
-            v_cross + (1 - np.cos(theta)) * v_tens)
-
-
 def chooser(lattice_name="simple cubic", verbose=False):
     """
     Outputs the chosen lattice and basis
     """
+
     # Let's just sanitize the input
     lattice_name = lattice_name.lower()
     L = {}
@@ -653,57 +527,12 @@ def chooser(lattice_name="simple cubic", verbose=False):
     return lattice, basis, lattice_name
 
 
-def tester(verbose=False):
-    """
-    Tests all the lattices for lattice detection, with permutations and
-    rotations
-    """
-    # List of all the lattices
-    lattices = ["simple cubic", "fcc", "bcc", "conventional fcc",
-                "conventional bcc", "base centred cubic", "tetragonal",
-                "tetragonal body centred", "tetragonal face centred",
-                "tetragonal base centred", "orthorhombic",
-                "orthorhombic base centred", "orthorhombic body centred",
-                "orthorhombic face centred", "simple monoclinic",
-                "base centred monoclinic", "base centred monoclinic 2",
-                "base centred monoclinic 3", "hexagonal", "hexagonal 2",
-                "triclinic", "rhombohedral"]
-
-    # Create the rotation matrix
-    R = rot_matrix()
-    for name in lattices:
-        # Create the lattice
-        lattice, basis = chooser(name, verbose=verbose)
-        # rotate the lattice and basis
-        lattice = (R@lattice.T).T
-        basis = (R@basis.T).T
-        for perm in itertools.permutations([0, 1, 2]):
-            # permute the lattice
-            a1, a2, a3 = lattice[list(perm)]
-
-            # next we classify it
-            lattice_type = classifier(a1, a2, a3, basis)
-
-            if verbose:
-                print("Lattice: {}. Classification: {}. Permutation {}".format(
-                      name,
-                      lattice_type,
-                      perm))
-            else:
-                if name != lattice_type:
-                    s = "L: {}, C: {}, P: {}".format(name, lattice_type, perm)
-                    print(s)
-    if verbose:
-        print("Test done.")
-    else:
-        print("Test done. If nothing printed, all were succesfully classified")
-
-
 def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
     """
     Calculates the limits on the coordinates (the plot box), and the limits on
     the basis vector ranges.
     """
+
     n_min, n_max = np.array(min_), np.array(max_)
     lattice = np.array((a1, a2, a3))
     # For dynamic limits we pass min_ and max_ as limits of basis vector range
@@ -764,6 +593,7 @@ def limiter(l, objects, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     """
     A function to highlight points that are outside the limits of the plot
     """
+
     num, _ = np.shape(l)
     # loop over all row IDs. Add the row ID to the list if all coordinates of
     # the corresponding point are smaller than those of r_min, or larger than
@@ -785,10 +615,66 @@ def limiter(l, objects, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
     return limited_objects
 
 
+def parallel(a1, a2):
+    """
+    returns True if vectors are (anti)parallel and false if they're not
+    """
+
+    mag1 = mag(a1)
+    mag2 = mag(a2)
+    cos12 = a1.dot(a2) / (mag1 * mag2)
+    para = eq(1, cos12) or eq(-1, cos12)
+    return para
+
+
+def rotate(a1, a2, a3, basis, R):
+    """
+    Rotates the whole lattice given the rotation matrix.
+    """
+    return R@a1, R@a2, R@a3, (R@basis.T).T
+
+
+def rot_matrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
+    """
+    Generates the rotation matrix for rotation about a given vector with a
+    given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
+    """
+
+    # Make sure we have a unit vector
+    if (v == 0).all():
+        print("You tried to rotate around the null-vector!")
+    v = v / mag(v)
+    # Create the cross product matrix
+    v_cross = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    # Tensor product
+    v_tens = np.tensordot(v, v, 0)
+    # Return rotation matrix
+    return (np.cos(theta) * np.identity(3) + np.sin(theta) *
+            v_cross + (1 - np.cos(theta)) * v_tens)
+
+
+def rot_matrix_along(a, b, c):
+    """
+    creates the rotation matrix which rotates b about a, such that its vector
+    rejection coincides with that of c
+    """
+
+    # First we need the relevant vector rejections
+    brej = b - b.dot(a) / (mag(a)**2) * a
+    crej = c - c.dot(a) / (mag(a)**2) * a
+
+    # Next we get the angle between the rejections
+    theta = np.arccos(brej.dot(crej) / (mag(brej) * mag(crej)))
+    # and the relevant rotation matrix
+    R = rot_matrix(a, theta)
+    return theta, R
+
+
 def rotate_face_centred(a1, a2, a3, basis, verbose=False):
     """
     Rotation function for face centred lattices
     """
+
     ma1 = a1.dot(a1)
     ma2 = a2.dot(a2)
     ma3 = a3.dot(a3)
@@ -849,6 +735,7 @@ def rotate_bcm(a1, a2, a3, basis):
     rotation function for base centred monoclinic. Rotates the lattice such
     that a1 is along x, and a2 is in the xy-plane
     """
+
     x = np.array([1, 0, 0])
     y = np.array([0, 1, 0])
 
@@ -877,27 +764,11 @@ def rotate_bcm(a1, a2, a3, basis):
     return a1, a2, a3, basis
 
 
-def rot_matrix_along(a, b, c):
-    """
-    creates the rotation matrix which rotates b about a, such that its vector
-    rejection coincides with that of c
-    """
-
-    # First we need the relevant vector rejections
-    brej = b - b.dot(a) / (mag(a)**2) * a
-    crej = c - c.dot(a) / (mag(a)**2) * a
-
-    # Next we get the angle between the rejections
-    theta = np.arccos(brej.dot(crej) / (mag(brej) * mag(crej)))
-    # and the relevant rotation matrix
-    R = rot_matrix(a, theta)
-    return theta, R
-
-
 def rotate_hex(a1, a2, a3, basis):
     """
     Rotator for the hexagonal structure
     """
+
     mag_a1 = mag(a1)
     mag_a2 = mag(a2)
     mag_a3 = mag(a3)
@@ -999,28 +870,11 @@ def rotate_hex(a1, a2, a3, basis):
     return a1, a2, a3, basis
 
 
-def rotate(a1, a2, a3, basis, R):
-    """
-    Rotates the whole lattice given the rotation matrix.
-    """
-    return R@a1, R@a2, R@a3, (R@basis.T).T
-
-
-def parallel(a1, a2):
-    """
-    returns True if vectors are (anti)parallel and false if they're not
-    """
-    mag1 = mag(a1)
-    mag2 = mag(a2)
-    cos12 = a1.dot(a2) / (mag1 * mag2)
-    para = eq(1, cos12) or eq(-1, cos12)
-    return para
-
-
 def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
     """
     Rotates the lattice to make plotting gridlines easier
     """
+
     # We remember, that |a x b| = |a| |b| sin(theta)
     eq = np.isclose
     x = np.array([1, 0, 0])
@@ -1310,3 +1164,153 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
         print("No Gridlines Chosen")
 
     return lines
+
+
+def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
+    """
+    Creates the reciprocal lattice and a given family of lattice planes.
+    """
+
+    h, k, ell = indices
+    # First the scaling factor for the reciprocal lattice
+    scale = a1.dot(np.cross(a2, a3))
+    # Then the reciprocal lattice
+    b1 = 2 * np.pi * np.cross(a2, a3) / scale
+    b2 = 2 * np.pi * np.cross(a3, a1) / scale
+    b3 = 2 * np.pi * np.cross(a1, a2) / scale
+
+    # And the normal vector for the (hkl)-family of planes.
+    G = h * b1 + k * b2 + ell * b3
+    G_unit = G / mag(G)
+    z = np.array([0, 0, 1])
+    cosGz = G_unit.dot(z)
+    # Next the displacement vector d
+    d = 2 * np.pi * G_unit / mag(G)
+    if eq(cosGz, 0):
+        # We have a vertical plane!
+        v1 = z / 4
+        v2 = np.cross(G_unit, z) / 4
+        min_, max_ = -10, 11
+        P, Q = np.meshgrid(range(min_, max_), range(min_, max_))
+
+        # Now the starting plane
+        x0 = v1[0] * P + v2[0] * Q
+        y0 = v1[1] * P + v2[1] * Q
+        z0 = v1[2] * P + v2[2] * Q
+        range_ = 20
+        planes = [(x0 + n * d[0], y0 + n * d[1], z0 + n * d[2]) for n in
+                  range(-range_, range_)]
+    else:
+        # The vertical displacement of the planes (dz) is given by
+        # mag(d)/cos(theta), where theta is the angle between the displacement
+        # vector and the z-axis. cos(theta) is also d[2]/mag(d) (cosine of
+        # angle between d and [0,0,1]):
+        dz = mag(d)**2 / d[2]
+
+        # We take the origin as the fix-point for the starting plane, then we
+        # just create copies of this plane, displaced vertically by dz, until
+        # the top of the first plane doesn't reach the bottom of the plot box,
+        # and the bottom of the last plane doesn't reach the top of the plot
+        # box. But first we create the meshgrid needed
+        x = np.linspace(r_min[0], r_max[0], points)
+        y = np.linspace(r_min[1], r_max[1], points)
+        xv, yv = np.meshgrid(x, y)
+
+        # Now the starting plane
+        zv = (-d[0] * xv - d[1] * yv) / d[2]
+
+        # The distance between the bottom of the plane and the max z-value
+        delta_z_plus = r_max[2] - np.amin(zv)
+        # The negative distance between the top of the plane and the min
+        # z-value
+        delta_z_minus = r_min[2] - np.amax(zv)
+
+        # The amount of planes needed in each direction to cover the plot box:
+        nz_plus = int(np.ceil(delta_z_plus / dz))
+        nz_minus = int(np.floor(delta_z_minus / dz))
+
+        # Swap the indices if nz_plus is smaller than nz_minus, otherwise range
+        # returns nothing
+        if nz_plus < nz_minus:
+            nz_plus, nz_minus = nz_minus, nz_plus
+
+        # Create a list of the planes with a list comprehension
+        planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
+
+    return d, planes
+
+
+def plane_limiter(planes, r_min, r_max):
+    """
+    Limiter function for the planes, as they have a different data structure to
+    the list of points.
+    """
+
+    # We expect a list of tuples, where each tuple has 3 2D-arrays containing
+    # the coordinates
+    new_planes = []
+
+    # first we prune the planes and put them in a new list (just because that's
+    # easier)
+    for p in planes:
+        x, y, z = p
+        # We take z and compare each value to the r_min[2] and r_max[2]. If it
+        # is outside the range, then we replace the value with nan
+        outside_z = (r_min[2] > z) + (z > r_max[2])
+        outside_y = (r_min[1] > y) + (y > r_max[1])
+        outside_x = (r_min[0] > x) + (x > r_max[0])
+        outside = outside_x + outside_y + outside_z
+        z[outside] = np.nan
+        new_planes.append((x, y, z))
+
+    # Next we only keep the planes that actually have some part of them inside
+    # the plot box
+    new_planes = [p for p in new_planes if not np.isnan(p[2]).all()]
+    return new_planes
+
+
+def tester(verbose=False):
+    """
+    Tests all the lattices for lattice detection, with permutations and
+    rotations
+    """
+
+    # List of all the lattices
+    lattices = ["simple cubic", "fcc", "bcc", "conventional fcc",
+                "conventional bcc", "base centred cubic", "tetragonal",
+                "tetragonal body centred", "tetragonal face centred",
+                "tetragonal base centred", "orthorhombic",
+                "orthorhombic base centred", "orthorhombic body centred",
+                "orthorhombic face centred", "simple monoclinic",
+                "base centred monoclinic", "base centred monoclinic 2",
+                "base centred monoclinic 3", "hexagonal", "hexagonal 2",
+                "triclinic", "rhombohedral"]
+
+    # Create the rotation matrix
+    R = rot_matrix()
+    for name in lattices:
+        # Create the lattice
+        lattice, basis = chooser(name, verbose=verbose)
+        # rotate the lattice and basis
+        lattice = (R@lattice.T).T
+        basis = (R@basis.T).T
+        for perm in itertools.permutations([0, 1, 2]):
+            # permute the lattice
+            a1, a2, a3 = lattice[list(perm)]
+
+            # next we classify it
+            lattice_type = classifier(a1, a2, a3, basis)
+
+            if verbose:
+                print("Lattice: {}. Classification: {}. Permutation {}".format(
+                      name,
+                      lattice_type,
+                      perm))
+            else:
+                if name != lattice_type:
+                    s = "L: {}, C: {}, P: {}".format(name, lattice_type, perm)
+                    print(s)
+    if verbose:
+        print("Test done.")
+    else:
+        print("Test done. If nothing printed, all were succesfully classified")

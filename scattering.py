@@ -1,7 +1,8 @@
-# Lattice plotting
+# Calculations for scattering
 import itertools
 import numpy as np
 import lattices
+
 eq = np.isclose
 
 
