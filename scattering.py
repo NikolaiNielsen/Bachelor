@@ -62,10 +62,16 @@ def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
     # And select only those that actually satisfy |k_in| = |k_out|
     mag_equal = eq(lattices.mag(k_out), lattices.mag(k_in))
 
+    # next we make sure that only the ones that have a positive z-component are
+    # output (as these are the only ones which will actually hit the detection
+    # screen)
+    non_negatives = k_out[:, 2] > 0
+    allowed = mag_equal * non_negatives
+
     # delete all indices, intensities and k_out, that don't satisfy the above
-    indices = indices[mag_equal]
-    intensity = intensity[mag_equal]
-    k_out = k_out[mag_equal]
+    indices = indices[allowed]
+    intensity = intensity[allowed]
+    k_out = k_out[allowed]
     return intensity, k_out, indices
 
 
