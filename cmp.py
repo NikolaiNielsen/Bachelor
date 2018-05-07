@@ -34,6 +34,8 @@ def Lattice(
     """
     Creates, limits and plots the lattice
     """
+    
+    num_plane_points = 20
     if lattice_name is not None:
         lattice, basis, lattice_type = lattices.chooser(lattice_name,
                                                         verbose=verbose)
@@ -113,7 +115,8 @@ def Lattice(
         if len(indices) != 3:
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
-        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
+        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
+                                        points=num_plane_points)
         planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
@@ -177,3 +180,5 @@ def Reciprocal(
         indices=(1, 1, 1), verbose=False):
     Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, min_, max_,
             lattice_name, indices, verbose)
+
+Reciprocal(lattice_name="simple cubic", indices=(1,1,0))
