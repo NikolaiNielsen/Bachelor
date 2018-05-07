@@ -137,6 +137,17 @@ def projection(k_array, r=np.array([0, 0, 1]), n=np.array([0, 0, 1]), p0=np.
     return p
 
 
+def projection_sphere(k_array, r=5, o=np.array([0, 0, 1])):
+    """
+    calculates the (positive) intersection between the line defined by o and
+    k_array, and the sphere with radius r and origin o
+    """
+    d = r / lattices.mag(k_array)
+    D = np.vstack((d, d, d)).T
+    p = o + k_array * D
+    return p
+
+
 def prune_scattered_points(points, intensities, indices):
     """
     We prune the array of points, so we're left with unique points. The
@@ -173,14 +184,3 @@ def prune_scattered_points(points, intensities, indices):
             new_indices[new_id] = "{}\n{}".format(new_indices[new_id], index)
 
     return unique_points, new_intensities, new_indices
-
-
-def projection_sphere(k_array, r=5, o=np.array([0, 0, 1])):
-    """
-    calculates the (positive) intersection between the line defined by o and
-    k_array, and the sphere with radius r and origin o
-    """
-    d = r / lattices.mag(k_array)
-    D = np.vstack((d, d, d)).T
-    p = o + k_array * D
-    return p
