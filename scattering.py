@@ -54,19 +54,22 @@ def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
             structure_factors[counter] += (scattering_length[n] *
                                            np.exp(1j * G.dot(atom)))
         counter += 1
-    intensity = structure_factors * np.conj(structure_factors)
-    intensity = intensity.real.astype(float)
     # Then we get the scattered wavevectors:
     k_out = G_array + k_in
+    intensity = structure_factors * np.conj(structure_factors)
+    intensity = intensity.real.astype(float)
 
     # And select only those that actually satisfy |k_in| = |k_out|
     mag_equal = eq(lattices.mag(k_out), lattices.mag(k_in))
+
+    # Prune those scattered wave vectors with an intensity close to 0
+    no_intensity = ~ eq(intensity, 0)
 
     # next we make sure that only the ones that have a positive z-component are
     # output (as these are the only ones which will actually hit the detection
     # screen)
     non_negatives = k_out[:, 2] > 0
-    allowed = mag_equal * non_negatives
+    allowed = mag_equal * non_negatives * no_intensity
 
     # delete all indices, intensities and k_out, that don't satisfy the above
     indices = indices[allowed]
