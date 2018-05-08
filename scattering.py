@@ -11,6 +11,14 @@ def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
     Calculates the scattering off a given lattice, for a given set of
     scattering lengths and incident wavevector
     """
+    # Inputs
+    # - a1, a2, a3, k_in:   ndarray, shape (3,)
+    # - basis:              ndarray shape (n,3)
+    # - scattering_length:  list, n elements
+    #
+    # Outputs:
+    # - intensity:          ndarray, shape (n,)
+    # - k_out, indices:     ndarray, shape (n,3)
 
     basis = np.atleast_2d(basis)
     n_basis = np.shape(basis)[0]
@@ -84,6 +92,12 @@ def smart_cubic_k(indices, k0=None, k1=None, k2=None, theta=None, phi=None):
     desired family of lattice planes and at least two components (in cartesian
     coordinates) or two angles (in spherical polar).
     """
+    # Inputs:
+    # - k0, k1, k2, theta, phi: floats
+    # - indices:                list/tuple/ndarray, 3 elements
+    #
+    # Outputs:
+    # - k_out:                  ndarray, shape (3,)
 
     indices = np.array(indices)
     scaler = np.pi * indices.dot(indices)
@@ -135,8 +149,12 @@ def projection(k_array, r=np.array([0, 0, 1]), n=np.array([0, 0, 1]), p0=np.
     """
     Calculates the projections of the scattered vector onto the detector plate.
     """
-    # We assume k_array is a 2D array, with shape (N,3) where N is the number
-    # of scattered wave vectors
+    # Inputs:
+    # - k_array:    ndarray, shape (n,3)
+    # - r, n, p0:   ndarray, shape (3,)
+    #
+    # Outputs:
+    # - p:          ndarray, shape (n,3)
     num = n.dot(p0 - r)
     den = k_array @ n
     d = num / den
@@ -151,6 +169,13 @@ def projection_sphere(k_array, r=5, o=np.array([0, 0, 1])):
     calculates the (positive) intersection between the line defined by o and
     k_array, and the sphere with radius r and origin o
     """
+    # Inputs:
+    # - k_array:    ndarray, shape (n,3)
+    # - r:          float/int
+    # - o:          ndarray, shape (3,)
+    #
+    # Outputs:
+    # - p:          ndarray, shape (n,3)
     d = r / lattices.mag(k_array)
     D = np.vstack((d, d, d)).T
     p = o + k_array * D

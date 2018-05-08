@@ -42,6 +42,12 @@ def mag(a):
     """
     Returns magnitude of vector or each row of an array
     """
+    # inputs:
+    # - a:  ndarray, shape (3,)/(n,3)
+    #
+    # Outputs:
+    # - float / ndarray (n,)
+
     # Return magnitude of vector
     if len(a.shape) == 1:
         return np.linalg.norm(a)
@@ -56,7 +62,21 @@ def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
     Generates the atomic positions of the lattice, from the lattice- and basis-
     vectors
     """
-
+    # inputs:
+    # - a1, a2, a3:                     ndarray (3,)
+    # - basis:                          ndarray (n,3)
+    # - colors:                         list (n, strings)
+    # - sizes:                          list (n, ints)
+    # - lim_type, gridtype:             string
+    # - n_min, n_max, r_min, r_max:     ndarray (3,)
+    # - verbose:                        Bool
+    #
+    # Outputs:
+    # - atomic_positions:               ndarray (n,3)
+    # - lattice_coefficients:           ndarray (n,3)
+    # - atomic_colors:                  list (n, strings)
+    # - atomic_sizes:                   list (n, ints)
+    # - lattice_position:               list (n, bools)
     length_basis = np.shape(basis)
     if len(length_basis) == 1:
         n_basis = 1
@@ -122,6 +142,12 @@ def classifier(a1, a2, a3, basis):
     lattice vectors. The angles are checked below with the extensive amount of
     boolean values.
     """
+    # inputs:
+    # - a1, a2, a3      ndarray (3,)
+    # - basis:          ndarray (n,3)
+    #
+    # outputs:
+    # - lattice_name:   string
 
     # Create a lattice array and get the magnitude of the lattice vectors
     lattice = np.array([a1, a2, a3])
@@ -259,7 +285,7 @@ def classifier(a1, a2, a3, basis):
            (not eq(cos31, cos12)))
 
     # We start with an undetermined lattice type
-    lattice_type = "undetermined"
+    lattice_name = "undetermined"
     if mag_all_eq:
         # Side lengths are equal. Lattice types:
         # Cubic,
@@ -274,7 +300,7 @@ def classifier(a1, a2, a3, basis):
             # Let's detect the conventional unit cells of fcc and bcc. Requires
             # more than one basis vector
             if len(basis.shape) == 1:
-                lattice_type = "simple cubic"
+                lattice_name = "simple cubic"
             else:
                 # we exclude the first basis vector ([0,0,0])
                 reduced_basis = basis[1:]
@@ -291,7 +317,7 @@ def classifier(a1, a2, a3, basis):
                     angles_eq = np.all(eq(angles, np.sqrt(3) / 3))
                     # if lengths and angles are correct, it's bcc
                     if length_eq and angles_eq:
-                        lattice_type = "conventional bcc"
+                        lattice_name = "conventional bcc"
 
                 # fcc has 3 basis vectors in the reduced basis
                 elif reduced_basis.shape[0] == 3:
@@ -317,18 +343,18 @@ def classifier(a1, a2, a3, basis):
                                   np.array([1, 1, 1])).all()
                     angles_eq = rank == 3 and num_0_true and num_sqrt2_true
                     if length_eq and angles_eq:
-                        lattice_type = "conventional fcc"
+                        lattice_name = "conventional fcc"
 
         elif hexa:
-            lattice_type = "hexagonal 1"
+            lattice_name = "hexagonal 1"
         elif fcc:
-            lattice_type = "fcc"
+            lattice_name = "fcc"
         elif tbc:
-            lattice_type = "tetragonal body centred"
+            lattice_name = "tetragonal body centred"
         elif base_mono:
-            lattice_type = "base centred monoclinic 1"
+            lattice_name = "base centred monoclinic 1"
         elif rhombo:
-            lattice_type = "rhombohedral"
+            lattice_name = "rhombohedral"
         else:
             pass
 
@@ -343,22 +369,22 @@ def classifier(a1, a2, a3, basis):
         # Hexagonal
         # simple monoclinic, a=b or a=c or b=c
         if bcc:
-            lattice_type = "bcc"
+            lattice_name = "bcc"
         # tbc actually gives a false positive for regular bcc.
         elif tbc:
-            lattice_type = "tetragonal body centred"
+            lattice_name = "tetragonal body centred"
         elif tfc:
-            lattice_type = "tetragonal face centred"
+            lattice_name = "tetragonal face centred"
         elif tbase:
-            lattice_type = "base centred cubic"
+            lattice_name = "base centred cubic"
         elif ortho:
-            lattice_type = "tetragonal"
+            lattice_name = "tetragonal"
         elif hexa:
-            lattice_type = "hexagonal 2"
+            lattice_name = "hexagonal 2"
         elif base_mono:
-            lattice_type = "base centred monoclinic 2"
+            lattice_name = "base centred monoclinic 2"
         elif ortho2:
-            lattice_type = "simple monoclinic"
+            lattice_name = "simple monoclinic"
         else:
             pass
     else:
@@ -372,30 +398,37 @@ def classifier(a1, a2, a3, basis):
         # Base centered Monoclinic
         # Triclinic
         if ortho:
-            lattice_type = "orthorhombic"
+            lattice_name = "orthorhombic"
         elif obc:
-            lattice_type = "orthorhombic body centred"
+            lattice_name = "orthorhombic body centred"
         elif ofc:
-            lattice_type = "orthorhombic face centred"
+            lattice_name = "orthorhombic face centred"
         elif tbase:
-            lattice_type = "tetragonal base centred"
+            lattice_name = "tetragonal base centred"
         elif obase:
-            lattice_type = "orthorhombic base centred"
+            lattice_name = "orthorhombic base centred"
         elif base_mono:
-            lattice_type = "base centred monoclinic 3"
+            lattice_name = "base centred monoclinic 3"
         elif ortho2:
-            lattice_type = "simple monoclinic"
+            lattice_name = "simple monoclinic"
         elif tri:
-            lattice_type = "triclinic"
+            lattice_name = "triclinic"
         else:
             pass
-    return lattice_type
+    return lattice_name
 
 
 def chooser(lattice_name="simple cubic", verbose=False):
     """
     Outputs the chosen lattice and basis
     """
+    # inputs:
+    # - lattice_name:   string
+    #
+    # outputs:
+    # - lattice:        ndarray (3,3)
+    # - basis:          ndarray (3,)/(n,3)
+    # - lattice_name:   string
 
     # Let's just sanitize the input
     lattice_name = lattice_name.lower()
@@ -532,6 +565,13 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
     Calculates the limits on the coordinates (the plot box), and the limits on
     the basis vector ranges.
     """
+    # inputs:
+    # - lim_type:                       string
+    # - a1, a2, a3:                     ndarray (3,)
+    # - min_, max_:                     list (3, int)
+    #
+    # Outputs:
+    # - r_min, r_max, n_min, n_max:     ndarray (3,)
 
     n_min, n_max = np.array(min_), np.array(max_)
     lattice = np.array((a1, a2, a3))
@@ -619,6 +659,11 @@ def parallel(a1, a2):
     """
     returns True if vectors are (anti)parallel and false if they're not
     """
+    # Inputs:
+    # - a1, a2:     ndarray (3,)
+    #
+    # Outputs:
+    # - para:       bool
 
     mag1 = mag(a1)
     mag2 = mag(a2)
@@ -631,6 +676,15 @@ def rotate(a1, a2, a3, basis, R):
     """
     Rotates the whole lattice given the rotation matrix.
     """
+    # inputs:
+    # - a1, a2, a3:     ndarray (3,)
+    # - basis:          ndarray (n,3)
+    # - R:              ndarray (3,3)
+    #
+    # Outputs:
+    # - a1, a2, a3:     ndarray (3,)
+    # - basis:          ndarray (n,3)
+
     return R@a1, R@a2, R@a3, (R@basis.T).T
 
 
@@ -639,6 +693,12 @@ def rot_matrix(v=np.array([1, 1, 1]), theta=np.pi / 4):
     Generates the rotation matrix for rotation about a given vector with a
     given angle. See https://en.wikipedia.org/wiki/Rotation_matrix
     """
+    # Inputs:
+    # - v:      ndarray (3,)
+    # - theta:  float
+    #
+    # Outputs:
+    # - R:      ndarray (3,3)
 
     # Make sure we have a unit vector
     if (v == 0).all():
@@ -658,6 +718,12 @@ def rot_matrix_along(a, b, c):
     creates the rotation matrix which rotates b about a, such that its vector
     rejection coincides with that of c
     """
+    # inputs:
+    # a, b, c:  ndarray (3,)
+    #
+    # outputs:
+    # - theta:  float
+    # - R:      ndarray (3,3)
 
     # First we need the relevant vector rejections
     brej = b - b.dot(a) / (mag(a)**2) * a
@@ -674,6 +740,13 @@ def rotate_face_centred(a1, a2, a3, basis, verbose=False):
     """
     Rotation function for face centred lattices
     """
+    # inputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
+    #
+    # Outputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
 
     ma1 = a1.dot(a1)
     ma2 = a2.dot(a2)
@@ -735,6 +808,13 @@ def rotate_bcm(a1, a2, a3, basis):
     rotation function for base centred monoclinic. Rotates the lattice such
     that a1 is along x, and a2 is in the xy-plane
     """
+    # inputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
+    #
+    # Outputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
 
     x = np.array([1, 0, 0])
     y = np.array([0, 1, 0])
@@ -768,6 +848,13 @@ def rotate_hex(a1, a2, a3, basis):
     """
     Rotator for the hexagonal structure
     """
+    # inputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
+    #
+    # Outputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
 
     mag_a1 = mag(a1)
     mag_a2 = mag(a2)
@@ -870,10 +957,18 @@ def rotate_hex(a1, a2, a3, basis):
     return a1, a2, a3, basis
 
 
-def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
+def rotator(a1, a2, a3, basis, lattice_name=None, verbose=False):
     """
     Rotates the lattice to make plotting gridlines easier
     """
+    # inputs:
+    # - a1, a2, a3:     ndarray (3,)
+    # - basis:          ndarray (n,3)
+    # - lattice_name:   string
+    #
+    # Outputs:
+    # - a1, a2, a3: ndarray (3,)
+    # - basis:      ndarray (n,3)
 
     # We remember, that |a x b| = |a| |b| sin(theta)
     eq = np.isclose
@@ -884,7 +979,7 @@ def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
     ortho12 = eq(0, np.dot(a1, a2))
     ortho31 = eq(0, np.dot(a1, a3))
     ortho23 = eq(0, np.dot(a2, a3))
-    face_centred = "face centred" in latticetype or latticetype == "fcc"
+    face_centred = "face centred" in lattice_name or lattice_name == "fcc"
 
     if verbose:
         print("Before:")
@@ -895,9 +990,9 @@ def rotator(a1, a2, a3, basis, latticetype=None, verbose=False):
         print("orthogonality")
         print(ortho12, ortho31, ortho23)
 
-    if "hexagonal" in latticetype:
+    if "hexagonal" in lattice_name:
         a1, a2, a3, basis = rotate_hex(a1, a2, a3, basis)
-    elif "base centred monoclinic" in latticetype:
+    elif "base centred monoclinic" in lattice_name:
         a1, a2, a3, basis = rotate_bcm(a1, a2, a3, basis)
     elif face_centred:
         a1, a2, a3, basis = rotate_face_centred(a1, a2, a3, basis, verbose)
@@ -1032,6 +1127,12 @@ def create_línes(points, vectors):
     """
     Creates lines along vectors and limits these to the given plot box
     """
+    # inputs:
+    # - points:     ndarray (N,3)
+    # - vectors:    ndarray (n,3)
+    #
+    # outputs:
+    # - lines:      ndarray (N*n,3)
 
     # For each lattice point, we calculate the cosine of the angle between each
     # of the lattice vectors and each of the separation vectors to other
@@ -1090,6 +1191,14 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
     Create gridlines based on the grid_type. Either along lattice vectors or
     the cartesian axes.
     """
+    # inputs:
+    # - a1, a2, a3:         ndarray (3,)
+    # - atomic_positions:   ndarray (n,3)
+    # - lattice_position:   list (n, bools)
+    # - grid_type:          string
+    #
+    # outputs:
+    # - lines:              ndarray (3*n,3)
 
     grid_type = grid_type.lower()
     lines = []
@@ -1170,7 +1279,14 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
-
+    # inputs:
+    # - a1, a2, a3:     ndarray (3,)
+    # - indices:        tuple/list/ndarray (3, int)
+    # - r_min, r_max:   ndarray (3,)
+    #
+    # output:
+    # - d:              ndarray (3,)
+    # - planes:         list(n, tuple(3, ndarray (points,points)))
     h, k, ell = indices
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
@@ -1245,6 +1361,12 @@ def plane_limiter(planes, r_min, r_max):
     Limiter function for the planes, as they have a different data structure to
     the list of points.
     """
+    # Inputs:
+    # - planes:         list(n, tuple(3, ndarray (N,N)))
+    # - r_min, r_max:   ndarray (3,)
+    #
+    # Outputs:
+    # - new_planes:     list(m <= n, tuple(3, ndarray(N,N)))
 
     # We expect a list of tuples, where each tuple has 3 2D-arrays containing
     # the coordinates
@@ -1299,16 +1421,16 @@ def tester(verbose=False):
             a1, a2, a3 = lattice[list(perm)]
 
             # next we classify it
-            lattice_type = classifier(a1, a2, a3, basis)
+            lattice_name = classifier(a1, a2, a3, basis)
 
             if verbose:
                 print("Lattice: {}. Classification: {}. Permutation {}".format(
                       name,
-                      lattice_type,
+                      lattice_name,
                       perm))
             else:
-                if name != lattice_type:
-                    s = "L: {}, C: {}, P: {}".format(name, lattice_type, perm)
+                if name != lattice_name:
+                    s = "L: {}, C: {}, P: {}".format(name, lattice_name, perm)
                     print(s)
     if verbose:
         print("Test done.")
