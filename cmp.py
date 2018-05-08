@@ -34,7 +34,7 @@ def Lattice(
     """
     Creates, limits and plots the lattice
     """
-    
+
     num_plane_points = 20
     if lattice_name is not None:
         lattice, basis, lattice_type = lattices.chooser(lattice_name,
@@ -181,4 +181,166 @@ def Reciprocal(
     Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, min_, max_,
             lattice_name, indices, verbose)
 
-Reciprocal(lattice_name="simple cubic", indices=(1,1,0))
+
+def Scattering(lattice_name='simple cubic',
+               k_in=np.array([0, 0, -3 * np.pi]),
+               scattering_length=np.array([1, 1, 1, 1]),
+               highlight=None,
+               show_all=False,
+               verbose=False):
+    point_sizes = 2
+    detector_screen_position = [0.6, 0.2, 0.3, 0.6]
+    lattice_name = lattice_name.lower()
+    beam_end_z = 1
+    min_, max_ = (-2, -2, -1), (2, 2, 1)
+    grid_type = lattices.latticelines[lattice_name]
+    lim_type = "proper"
+    lattice_colors = ["xkcd:cement",
+                      "xkcd:cornflower blue",
+                      "xkcd:cornflower blue",
+                      "xkcd:cornflower blue"]
+    lattice_sizes = [1, 1, 1, 1]
+    g_col = 'k'
+    g_w = 0.5
+    g_a = 0.6
+    size_default = 36
+    point_sizes *= size_default
+    plane_z = 3
+
+    (a1, a2, a3), basis, _ = lattices.chooser(lattice_name, verbose=verbose)
+    r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
+                                                      min_, max_)
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+     lattice_position) = lattices.generator(a1, a2, a3, basis, lattice_colors,
+                                            lattice_sizes,
+                                            lim_type, n_min, n_max, r_min,
+                                            r_max)
+    objects = [atomic_positions, lattice_coefficients, atomic_colors,
+               atomic_sizes, lattice_position]
+    objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+     lattice_position) = objects
+
+    pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
+                                       lattice_position, grid_type,
+                                       verbose=verbose)
+
+    # Plotting the basics
+    fig = plt.figure(figsize=(12.8, 4.8))
+    ax = fig.gca(projection="3d")
+    ax.set_position([0, 0, 0.5, 1])
+
+    # Plot atoms
+    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+
+    for line in pruned_lines:
+        ax.plot(line[0], line[1], line[2],
+                color=g_col, linewidth=g_w, alpha=g_a)
+
+    # Plotting the beam: First we create the beam display vector
+    k_disp = k_in / lattices.mag(k_in)
+    lambda_ = 2 * np.pi / lattices.mag(k_in)
+    ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
+              color='b', lw=2, pivot='tip', length=lambda_)
+    ax2 = plt.axes(detector_screen_position)
+    ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
+
+    # Scattering stuff
+    intensities, k_out, indices = scattering.calc_scattering(a1, a2, a3, basis,
+                                                             scattering_length,
+                                                             k_in)
+    points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
+
+    if intensities.size == 0:
+        print("There is no scattering for this choice of k_in")
+
+    else:
+        # I assume the points are unique, now that I have deleted the ones
+        # pointing into the crystal
+
+        # Normalize intensities
+        intensities /= np.amax(intensities)
+        # Create the color array
+        colors = np.zeros((intensities.size, 4))
+        colors[:, 3] = intensities
+
+        if highlight is not None:
+            high_index = np.array(highlight)
+            num_ints = high_index.shape
+            extra = 0
+            if num_ints != (3,):
+                print("We need 3 and only 3 indices! Highlighting nothing")
+            else:
+                indices_index = np.where(
+                                        (indices == high_index).all(axis=1))[0]
+                if indices_index.shape != (1,):
+                    print("There is no scattering along {}".format(highlight))
+                else:
+                    d, planes = lattices.reciprocal(a1, a2, a3, high_index,
+                                                    r_min - extra,
+                                                    r_max + extra,
+                                                    points=20)
+                    planes = lattices.plane_limiter(planes, r_min - extra,
+                                                    r_max + extra)
+                    high_intensity = intensities[indices_index]
+                    colors[indices_index] = [1, 0, 0, high_intensity]
+                    for p in planes:
+                        ax.plot_surface(p[0], p[1], p[2], color="r",
+                                        shade=False, alpha=0.2)
+
+        ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
+        ax2.scatter(points[:, 0], points[:, 1], c=colors)
+        for i in range(len(indices)):
+            x, y = points[i, 0:2] - 0.05 * ranges
+            s = indices[i]
+            c = colors[i, :-1]
+            ax2.text(x, y, s, color=c, va='top', ha='right')
+        if show_all:
+            # Plotting outgoing vectors
+            n = k_out.shape[0]
+            k_plot = k_out / lattices.mag(k_in)
+            start_point = np.array((0, 0, beam_end_z))
+            start_points = np.repeat(np.atleast_2d(start_point), n, axis=0)
+            ax.quiver(start_points[:, 0],
+                      start_points[:, 1],
+                      start_points[:, 2],
+                      k_plot[:, 0],
+                      k_plot[:, 1],
+                      k_plot[:, 2],
+                      color='g',
+                      alpha=0.5,
+                      lw=g_w,
+                      length=lambda_)
+
+            # Plotting detection plane
+            x_range = np.array([np.amin(points[:, 0]),
+                                np.amax(points[:, 0])]) * 1.1
+            y_range = np.array([np.amin(points[:, 1]),
+                                np.amax(points[:, 1])]) * 1.1
+            x, y = np.meshgrid(x_range, y_range)
+            z = plane_z * np.ones(x.shape)
+            ax.plot_surface(x, y, z, color='k', alpha=0.2)
+
+            # plotting outgoing lines
+            for p in points:
+                line_x = [start_point[0], p[0]]
+                line_y = [start_point[1], p[1]]
+                line_z = [start_point[2], p[2]]
+                ax.plot(line_x, line_y, line_z, color='k', alpha=0.3, ls='--',
+                        lw=g_w)
+
+            # plotting intersections
+            ax.scatter(points[:, 0], points[:, 1], plane_z)
+
+    ax.set_aspect('equal')
+    ax.set_proj_type('ortho')
+    ax.set_xlim([r_min[0], r_max[0]])
+    ax.set_ylim([r_min[1], r_max[1]])
+    ax.set_zlim([r_min[2], r_max[2]])
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.grid(False)
+    ax.axis('off')
+    ax.axis('equal')
