@@ -1,15 +1,3 @@
-"""
-Next:
-Reciprocal lattice and lattice planes
-Scattering
-- Parameters:
-  - Incident angle
-  - Incident wavelength of light
-  - Start with simple cubic, and 90 degree incident angle (specific case)
-Distortion of Fermi Surface:
-- Transform Hamiltonian to k-space. Transforms from a matrix to just a number
-"""
-
 import itertools
 
 import numpy as np
