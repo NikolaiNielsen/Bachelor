@@ -1,5 +1,8 @@
-# This is the top-level file for the project. This file contains the main
-# functions for each of the subjects dealt with in the thesis.
+# cmp.py is the main file for the project. cmp.py contains the main functions
+# for each of the subjects dealt with in the thesis. This file
+# (documentation.py) contains documentation on how to use these functions and
+# provides annotated examples. This file can be run as is, and the examples
+# given will be executed
 #
 # For now there are three functions:
 # - Lattice: This function takes in a given set of lattice vectors and a basis
@@ -95,6 +98,24 @@
 #   the scattering point out to the points on the detection plane.
 # - verbose: True/False boolean. Prints information useful in debugging. Also
 #   only partially implemented
+#
+# --------------------
+# SETUP
+# --------------------
+# Before using these scripts, the numpy and matplotlib packages should be
+# installed in your python environment. I suggest installing the "anaconda"
+# python stack (https://anaconda.com), which installs python and pretty much
+# any package you need for any type of scientific computing (including
+# matplotlib and numpy, of course).
+#
+# When using these scripts, make sure that the files are in the python path. I
+# recommend doing this by using this folder as your working directory (ie,
+# launch the python shell from this folder, or create a python script in this
+# folder which includes the commands you want to execute)
+#
+# If you are using jupyter notebook, create one in this folder, and include a
+# line with "%matplotlib notebook" (without quotes). This will make the plot
+# windows appear in the notebook, interactively, and not as separate windows
 #
 # --------------------
 # EXAMPLE USE
