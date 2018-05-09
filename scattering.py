@@ -101,6 +101,7 @@ def smart_cubic_k(indices, k0=None, k1=None, k2=None, theta=None, phi=None):
 
     indices = np.array(indices)
     scaler = np.pi * indices.dot(indices)
+    h, j, ell = indices
 
     # Some input sanitization
     if indices.shape != (3,):
@@ -113,9 +114,13 @@ def smart_cubic_k(indices, k0=None, k1=None, k2=None, theta=None, phi=None):
     if angles.all():
         # We check if the values are acceptable
         if 0 <= theta <= np.pi / 2 and 0 <= phi < 2 * np.pi:
-            r = -scaler / (np.sin(theta) * (indices[0] * np.cos(phi) +
-                                            indices[1] * np.sin(phi)) +
-                           indices[2] * np.cos(theta))
+            den = (np.sin(theta) * (h * np.cos(phi) + j * np.sin(phi)) +
+                   ell * np.cos(theta))
+            if den == 0:
+                print("No scattering vector available with these components")
+                return
+
+            r = -scaler / den
             if r < 0:
                 r = -r
             # Also we flip the coordinates, as it otherwise points upwards
@@ -125,14 +130,25 @@ def smart_cubic_k(indices, k0=None, k1=None, k2=None, theta=None, phi=None):
 
         else:
             print("You need 0 <= theta < pi/2 and 0 <= phi <= 2*pi")
+            return
+
     elif np.sum(ks) == 1:
         # Only one unspecified component, so only one if-statement will execute
         if ks[0]:
-            k0 = - (scaler + indices[1] * k1 + indices[2] * k2) / indices[0]
+            if h == 0:
+                print("No scattering vector available with these components")
+                return
+            k0 = - (scaler + j * k1 + ell * k2) / h
         if ks[1]:
-            k1 = - (scaler + indices[0] * k0 + indices[2] * k2) / indices[1]
+            if j == 0:
+                print("No scattering vector available with these components")
+                return
+            k1 = - (scaler + h * k0 + ell * k2) / j
         if ks[2]:
-            k2 = - (scaler + indices[0] * k0 + indices[1] * k1) / indices[2]
+            if ell == 0:
+                print("No scattering vector available with these components")
+                return
+            k2 = - (scaler + h * k0 + j * k1) / ell
 
         if k2 > 0:
             # we flip the sign on k2 to make sure it's negative.
