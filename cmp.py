@@ -195,6 +195,18 @@ def Scattering(lattice_name='simple cubic',
     point_sizes *= size_default
     plane_z = 3
 
+    # input sanitization
+    lattice_name = lattice_name.lower()
+    if lattice_name == "bcc":
+        lattice_name = "conventional bcc"
+    elif lattice_name == "fcc":
+        lattice_name = "conventional fcc"
+    elif lattice_name == "simple cubic":
+        pass
+    else:
+        print("Allowed inputs: 'simple cubic', 'bcc', 'fcc'.")
+        return
+
     (a1, a2, a3), basis, _ = lattices.chooser(lattice_name, verbose=verbose)
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_)
@@ -284,6 +296,25 @@ def Scattering(lattice_name='simple cubic',
             s = indices[i]
             c = colors[i, :-1]
             ax2.text(x, y, s, color=c, va='top', ha='right')
+
+        # Plotting detection plane
+        abs_ex = 0.0
+        rel_ex = 0.1
+        def_y = 2
+        def_x = 2
+        x_min = np.amin(points[:, 0]) * (1 + rel_ex) - abs_ex
+        x_max = np.amax(points[:, 0]) * (1 + rel_ex) + abs_ex
+        y_min = np.amin(points[:, 1]) * (1 + rel_ex) - abs_ex
+        y_max = np.amax(points[:, 1]) * (1 + rel_ex) + abs_ex
+        x_range = np.array([min(x_min, -def_x), max(x_max, def_x)])
+        y_range = np.array([min(y_min, -def_y), max(y_max, def_y)])
+        x, y = np.meshgrid(x_range, y_range)
+        z = plane_z * np.ones(x.shape)
+        ax.plot_surface(x, y, z, color='k', alpha=0.2)
+
+        # plotting intersections
+        ax.scatter(points[:, 0], points[:, 1], plane_z)
+
         if show_all:
             # Plotting outgoing vectors
             n = k_out.shape[0]
@@ -301,15 +332,6 @@ def Scattering(lattice_name='simple cubic',
                       lw=g_w,
                       length=lambda_)
 
-            # Plotting detection plane
-            x_range = np.array([np.amin(points[:, 0]),
-                                np.amax(points[:, 0])]) * 1.1
-            y_range = np.array([np.amin(points[:, 1]),
-                                np.amax(points[:, 1])]) * 1.1
-            x, y = np.meshgrid(x_range, y_range)
-            z = plane_z * np.ones(x.shape)
-            ax.plot_surface(x, y, z, color='k', alpha=0.2)
-
             # plotting outgoing lines
             for p in points:
                 line_x = [start_point[0], p[0]]
@@ -317,9 +339,6 @@ def Scattering(lattice_name='simple cubic',
                 line_z = [start_point[2], p[2]]
                 ax.plot(line_x, line_y, line_z, color='k', alpha=0.3, ls='--',
                         lw=g_w)
-
-            # plotting intersections
-            ax.scatter(points[:, 0], points[:, 1], plane_z)
 
     ax.set_aspect('equal')
     ax.set_proj_type('ortho')
@@ -332,3 +351,4 @@ def Scattering(lattice_name='simple cubic',
     ax.grid(False)
     ax.axis('off')
     ax.axis('equal')
+    plt.show()
