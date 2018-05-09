@@ -171,6 +171,7 @@ def Reciprocal(
 
 
 def Scattering(lattice_name='simple cubic',
+               basis=None,
                k_in=np.array([0, 0, -3 * np.pi]),
                scattering_length=np.array([1, 1, 1, 1]),
                highlight=None,
@@ -196,18 +197,22 @@ def Scattering(lattice_name='simple cubic',
     plane_z = 3
 
     # input sanitization
-    lattice_name = lattice_name.lower()
-    if lattice_name == "bcc":
-        lattice_name = "conventional bcc"
-    elif lattice_name == "fcc":
-        lattice_name = "conventional fcc"
-    elif lattice_name == "simple cubic":
-        pass
+    if basis is not None:
+        a1, a2, a3 = np.eye(3, dtype=int)
     else:
-        print("Allowed inputs: 'simple cubic', 'bcc', 'fcc'.")
-        return
+        lattice_name = lattice_name.lower()
+        if lattice_name == "bcc":
+            lattice_name = "conventional bcc"
+        elif lattice_name == "fcc":
+            lattice_name = "conventional fcc"
+        elif lattice_name == "simple cubic":
+            pass
+        else:
+            print("Allowed inputs: 'simple cubic', 'bcc', 'fcc'.")
+            return
+        lattice, basis, _ = lattices.chooser(lattice_name, verbose=verbose)
+        a1, a2, a3 = lattice
 
-    (a1, a2, a3), basis, _ = lattices.chooser(lattice_name, verbose=verbose)
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
