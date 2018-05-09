@@ -5,6 +5,9 @@
 # No geogebra files
 *.ggb
 
+# No compiled python files
+*.pyc
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
