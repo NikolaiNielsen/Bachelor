@@ -35,7 +35,7 @@ latticelines = {'base centred cubic': 'soft',
                 'zincblende': 'soft',
                 'diamond': 'soft',
                 'wurtzite': 'latticevectors',
-                'undefined': 'latticevectors'}
+                'undetermined': 'latticevectors'}
 
 
 def mag(a):
