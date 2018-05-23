@@ -30,6 +30,11 @@
 	
 	\tableofcontents
 	
+	\section{General implementation}
+	All of the programs in this project will be implemented in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. Numpy adds the necessary tools for handling arrays and linear algebra operations, whilst Matplotlib is used for plotting the results.
+	
+	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function, which takes 4 parameters: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
+	
 	\section{Lattices and crystal structure}
 	There are three parts to the description of a crystal structure. First is the lattice. This is the mathematical "framework" upon which the physical part of the crystal lies. It can be defined in a number of ways, however the one we will use here is the following:
 	
@@ -51,7 +56,56 @@
 	
 	The third part of the crystal structure is the basis. This is a description of the physical objects that make up the structure, and their position in relation to the lattice. In our case the objects are of course atoms. 
 	
+	The basis is specified as a list of vectors that are to be added to the lattice points, specifying the position of the atoms in the crystal.
+	
+	The user can create any type of crystal they want by specifying any set of primitive lattice vector and supplying any desired basis. However a small selection of crystals will be available as presets. These include the 14 Bravais lattices with a 1 atom basis (at $ (0,0,0) $):
+	\begin{table}
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			Simple cubic & base centred cubic (bcc) \\
+			\hline
+			face centred cubic (fcc) & tetragonal \\
+			\hline
+			body centred tetragonal & orthorhombic \\
+			\hline
+			body centred orthorhombic & face centred orthorhombic \\
+			\hline
+			base centred orthorhombic & simple monoclinic \\
+			\hline
+			base centred monoclinic & hexaonal \\
+			\hline
+			triclinic & rhombohedral \\
+			\hline
+		\end{tabular}
+		\caption{The 14 Bravais lattices}
+		\label{tab:bravais}
+	\end{table}
+	
+	Each of these will specify the primitive lattice vectors for a corresponding primitive unit cell. Furthermore the following crystal presets will also be available:
+	\begin{table}
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			fcc, conventional & bcc, conventional \\
+			\hline
+			zincblende & wurtzite \\
+			\hline
+			diamond (zincblende with 1 atom) & \\
+			\hline
+		\end{tabular}
+		\caption{Other available crystal presets}
+		\label{tab:presets}
+	\end{table}
+	Specifications of all of these presets are available in the appendix.
+
+	Mathematically speaking, a lattice is infinite. A physical crystal is, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, each atom would be way too small (if it was feasible, what would be the point of this project then?). So for the purposes of this project, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells. 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure.
+	
+	However, plotting just the atoms will quickly become confusing. Because of this we plot grid lines. For the crystals that can be expressed as a lattice with orthogonal primitive lattice vectors and a basis (cubic, tetragonal and orthorhombic), we usually want to plot orthogonal grid lines, whilst for other crystals plotting grid lines along the lattice vectors will be more useful.
 	
 	
+	\subsection{Implementation}
+	In creating a program that plots crystal structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible.
+		
 	
-\end{document} 
+\end{document}
