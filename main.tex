@@ -30,7 +30,28 @@
 	
 	\tableofcontents
 	
-	\section{Introduction}
-	Hello world
+	\section{Lattices and crystal structure}
+	There are three parts to the description of a crystal structure. First is the lattice. This is the mathematical "framework" upon which the physical part of the crystal lies. It can be defined in a number of ways, however the one we will use here is the following:
 	
-\end{document}
+	\textbf{A lattice is defined as the infinite set of points produces by a linear combination of independent \emph{primitive lattice vectors}, with integer coefficients.}
+	
+	Usually, the primitive lattice vectors are labelled $ \V{a}_i $, and the coefficients $ n_i $, so for a $ d $-dimensional lattice, the lattice points $ \V{R} $ are given by
+	\begin{equation}\label{key}
+		R = \sum_{i = 1}^{d} n_i \V{a}_i
+	\end{equation}
+	For this thesis we will mainly focus on the cases of $ d = 3 $ (visualization of lattices, families of lattice planes and scattering) and $ d = 2 $ (visualization of the Fermi surface).
+	
+	A thing to note, is that the choice of primitive lattice vectors is not unique. A new set of primitive lattice vectors can be created by taking a linear combination of the original primitive lattice vectors, with integer coefficients. If the original set is ordered in a matrix $ A = \begin{pmatrix*} \V{a}_1 & \V{a}_2 & \cdots & \V{a}_n \end{pmatrix*}$, and the new set in a matrix $ B = \begin{pmatrix*} \V{b}_1 & \V{b}_2 & \cdots & \V{b}_n \end{pmatrix*} $, then $ B = MA $, where $ M $ is the matrix containing the coefficients. This matrix must have integer entries, and its inverse likewise.
+	
+	The integer entries of the direct matrix makes sure that any lattice point generated with the new set of primitive lattice vectors will also have integer coefficients when expressed in the old set of primitive lattice vectors. The integer entries of the inverse matrix then makes sure that this process will also happen in reverse.
+	
+	This will come into play when trying to detect the lattice based on the users input of primitive lattice vectors. 
+	
+	The second part is the unit cell. This is the building block of the lattice. It is a region of space which, when stacked will completely tile the space. Like with the choice of primitive lattice vectors, the choice of unit cell is not unique. In particular we distinguish between two type of unit cells: the smallest possible unit cell and everything else. The smallest possible unit cell is called a \textit{primitive} unit cell, and must contain only one lattice point (it cannot contain no lattice points, as then it would not recreate the lattice when tiled). Any unit cell containing more than one lattice point is called a \textit{conventional unit cell}. Usually a conventional unit cell is chosen for ease of calculation (as we will see in the scattering simulation), where the primitive lattice vectors constitute an orthogonal set.
+	
+	The third part of the crystal structure is the basis. This is a description of the physical objects that make up the structure, and their position in relation to the lattice. In our case the objects are of course atoms. 
+	
+	
+	
+	
+\end{document} 
