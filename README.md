@@ -10,10 +10,7 @@ Introduction
 
 Lattice plotting
 - [ ] Step-by-step of the program
-- [ ] Considerations with regards to "pretty" plotting
-      - [ ] Grid lines
-      - [ ] limiting to plot box
-      - [ ] rotating lattices to properly fit plot box
+- [ ] Considerations with regards to "pretty" plotting (gridlines, limiting plot box, rotating lattices)
 
 Reciprocal lattice and scattering
 - [ ] Theory on reciprocal lattice (and lattice planes)
