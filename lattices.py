@@ -595,7 +595,8 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
         r_min = np.sum(lattice.T * n_min, 0)
     elif lim_type.lower() in "proper":
         # We sample all 8 points arising from combinations of min and max:
-        # First we get the permutations:
+        # First we get the permutations. Here True corresponds to a coefficient
+        # from max_ and False corresponds to a coefficient from min_
         perms = list(itertools.product([False, True], repeat=3))
         # We create a boolean array of when to multiply by the max and when not
         # to
