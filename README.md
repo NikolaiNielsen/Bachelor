@@ -11,7 +11,7 @@ Introduction
 
 Lattice plotting
 - [x] Theory on lattices
-- [ ] Step-by-step of the program
+- [x] Step-by-step of the program
 - [ ] Considerations with regards to "pretty" plotting (gridlines, limiting plot box, rotating lattices)
 - [ ] Plots of various lattices
 - [ ] Plots of various "wrongs" (incomplete unit cells)
