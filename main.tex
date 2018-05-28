@@ -41,7 +41,7 @@
 	\textbf{A lattice is defined as the infinite set of points produces by a linear combination of independent \emph{primitive lattice vectors}, with integer coefficients.}
 	
 	Usually, the primitive lattice vectors are labelled $ \V{a}_i $, and the coefficients $ n_i $, so for a $ d $-dimensional lattice, the lattice points $ \V{R} $ are given by
-	\begin{equation}\label{key}
+	\begin{equation}\label{eq:lattice_points}
 		R = \sum_{i = 1}^{d} n_i \V{a}_i
 	\end{equation}
 	For this thesis we will mainly focus on the cases of $ d = 3 $ (visualization of lattices, families of lattice planes and scattering) and $ d = 2 $ (visualization of the Fermi surface).
@@ -123,6 +123,22 @@
 	
 	Five of the Bravais lattices have specialised rotation functions: hexagonal, base centred monoclinic and the three face centred lattices.
 	
-	For the hexagonal, the program detects which primitive lattice vectors constitute the triangular lattice and orients them such that one is along the $ x $-axis and the other is in the $ xy $-plane (easily done by rotating the third primitive lattice vector such that it is parallel with the $ z $-axis). The same approach is used for the base centred monoclinic, but here the program always aligns $ \V{a}_1 $ along the $ x $-axis, and $ \V{a}_2 $ in the $ xy $-plane. Here however, the easy option of rotating $ \V{a}_3 $ is not available. 
+	For the hexagonal, the program detects which primitive lattice vectors constitute the triangular lattice and orients them such that one is along the $ x $-axis and the other is in the $ xy $-plane (easily done by rotating the third primitive lattice vector such that it is parallel with the $ z $-axis). The same approach is used for the base centred monoclinic, but here the program always aligns $ \V{a}_1 $ along the $ x $-axis, and $ \V{a}_2 $ in the $ xy $-plane. Here however, the easy option of rotating $ \V{a}_3 $ is not available. Instead the program uses the fact that the vector rejection of $ \V{a}_2 $ with $ \V{a}_1 $ is orthogonal to $ \V{a}_1 $ (the vector rejection of $ \V{a}_2 $ with $ \V{a}_1 $ being $ \V{a}_2 $ minus the projection of $ \V{a}_2 $ along $ \V{a}_1 $). This vector rejection is then in the $ yz $-plane, and the crystal can be rotated along $ \V{a}_1 $ with the angle the rejection makes with $ \U{y} $: $ \cos \theta = \V{a}_{2,rej} \D \U{y} / |\V{a}_{2,rej}|$.
+	
+	For the face centred lattices, the ideal, rotated lattice is created from the magnitude of the primitive lattice vectors: if $ |\V{a}_1| = a, |\V{a}_2| = b, |\V{a}_3| = c $, then $ \V{a}'_1 = (a/2, b/2, 0), \V{a}'_2 = (a/2, 0, c/2), \V{a}'_3 = (0, b/2, c/2) $. First the crystal is rotated such that $ \V{a}_1 $ aligns with $ \V{a}'_1 $, by using their cross product. Then the crystal is rotated such that the now rotated $ \V{a}_2 $ aligns with $ \V{a}'_2 $, via the vector rejection of $ \V{a}_2 $ with $ \V{a}'_2 $. (\textbf{THIS METHOD AND THE ONE FOR THE HEXAGONAL LATTICE ASSUMES THAT THE PRIMITIVE LATTICE VECTORS ARE SPECIFIED AS IN THE APPENDIX}).
+	
+	Next, the program calculates the limits of the plot box. This is done by calculating the 8 possible vectors arising from linear combinations of the primitive lattice vectors, with coefficients from the specified minimum and maximum coefficients and taking the limits of the plot box as the minimum and maximum values for these 8 vectors. For example, say that the specified minimum and maximum coefficients are $ [0,0,0] $ and $ [2,2,2] $ respectively, then the 8 vectors are $ \V{v}_1 = \V{0}, \V{v}_2 = 2\V{a}_1, \V{v}_3 = 2\V{a}_2, \V{v}_4 = 2\V{a}_3, \V{v}_5 = 2(\V{a}_1+\V{a}_2), \V{v}_6 = 2(\V{a}_1+\V{a}_3), \V{v}_7 = 2(\V{a}_2+\V{a}_3), \V{v}_8 = 2(\V{a}_1+\V{a}_2+ \V{a}_3) $. These form a parallelepiped from $ 2\V{a}_1, 2\V{a}_2, 2\V{a}_3 $, where the plot box is a cuboid, with edges along the cardinal axes, that just contain the aforementioned parallelepiped.
+	
+	With the lattice and basis rotated, and the limits of the plot box found, the crystal is generated. This is done by looping over the three ranges specified by the minimum and maximum coefficients, creating each lattice point $ \V{R} $ by Eq. \eqref{eq:lattice_points}. For each lattice point $ n $ atomic positions are created by adding one of the $ n $ vectors in the basis to the lattice point. Furthermore lists of the colours and sizes associated with each atom are also created at this point. After creating all the atoms, the program deletes any that may lie outside the limits of the plot box.
+	
+	The only thing missing now is to create the grid lines and plot everything. The program has two ways of creating grid lines: along the primitive lattice vectors and along the cardinal axes.
+	
+	Creating grid lines along the primitive lattice vectors works by taking each lattice point $ \V{R}_n $, and finding the lattice point $ \V{R}_m $ the furthest away from it, in the (postive) direction of these lattice vectors, such that $ \V{R}_m = R_n + \alpha \V{a}_i $, where $ \alpha > 0 $, for all $ i \in [1,2,3] $, and creating lines between $ \V{R}_n $ and $ \V{R}_m $. This does create duplicate grid lines, but these do not show on the final plot, since they are all plotted with the same width and colour.
+	
+	Creating grid lines along the cardinal axes works by finding the minimum spacing between lattice points on these axes (called $ a_x, a_y$ and $ a_z $), and using these as the spacing between grid lines. The program then finds the maximum and minimum coordinates of lattice points along the cardinal axes (called $x_{min}, x_{max}$, etc.). This is used to create ranges corresponding to each lattice points on the cardinal axes: The range for the $ x $-axis starting at $ x_{min} $  and ending at $ x_{max} $ with steps of $ a_x $.
+	
+	These ranges then specify a grid of lattice points on the $ xy$, $ xz $ and $ yz $-planes. The program then creates lines orthogonal to these planes, stretching from $ z_{min} $ to $ z_{max} $ for the points in the $ xy $-plane, and similarly for the other two planes.
+	
+	Next a blank figure is created with an orthogonal projection and limits as calculated above. The atoms are plotted with colours and sizes specified by the user. The grid lines are plotted with a uniform size and colour and lastly the primitive lattice vectors are plotted with corresponding labels.
 	
 \end{document}
