@@ -97,7 +97,7 @@
 		\caption{Other available crystal presets}
 		\label{tab:presets}
 	\end{table}
-	Specifications of all of these presets are available in the appendix.
+	Specifications of all of these presets are available in the appendix. (\textbf{LINK TO APPENDIX})
 
 	Mathematically speaking, a lattice is infinite. A physical crystal is, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, each atom would be way too small (if it was feasible, what would be the point of this project then?). So for the purposes of this project, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells. 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure.
 	
@@ -106,6 +106,23 @@
 	
 	\subsection{Implementation}
 	In creating a program that plots crystal structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible.
-		
+	
+	To achieve this, we have to be aware of how Matplotlib handles its 3-dimensional plots. One example of this is that the graphics engine will not hide objects plotted outside of the limits of the figure. This may lead to unpredicted artefacts like atoms "outside" of the crystal (atoms plotted on the edge of the crystal in a unit cell that will not be fully populated).
+	
+	Another problem may be unfilled unit cells, where we expect them to be filled. Say we have specified an fcc lattice, and we want to view the conventional (cubic) unit cell. Plotting just the atoms at the lattice points with coefficients $ n_i \in [0,1,2] $ for all $ i $ will give a parallelepiped and not the anticipated cube. To do this we need to extend the range of coefficients to fill out any incomplete unit cells. In practise this is done by adding the maximum magnitude of coefficients (in this case 2) to the upper range of coefficients, and subtracting it from the lower range. In this case the resulting range of coefficients is $ n_i \in [-2, -1, 0, 1, 2, 3, 4] $.
+	
+	
+	\subsection{Step-by-step}
+	Initially the program will either load the chosen crystal preset in such a way as to make the resulting plot as informative as possible (eg. place lattice vectors along cardinal axes for an orthogonal lattice, to make plotting grid lines easier). If the user manually specifies the lattice and basis, the program will try to classify the lattice according to the specifications in the appendix (\textbf{LINK TO APPENDIX}). Next the program checks whether or not the crystal should be rotated to make plotting prettier.
+	
+	In general the rotation algorithm tries to align one lattice vector with the $ x $-axis. $ \V{a}_1 $ is preferred, but is only chosen to lie along the $ x $-axis if it forms an orthogonal pair with at least one other primitive lattice vector. The second primitive lattice vector of the pair ($\V{a}_2$ being preferred) is then aligned along the $ y $-axis. If the three primitive lattice vectors form an orthogonal set, then the last vector of the set will now be aligned along the $ z $-axis.
+	
+	The actual rotation is done by rotating the whole crystal (each primitive lattice vector and all vectors in the basis) along the cross product between the initial vector and the destination vector. Rotating the crystal such that $ \V{a}_1 $ lies along the $ x $-axis is done by rotating along $ \V{a}_1 \times \U{x} $, with an angle of $ \sin \theta = |\V{a}_1 \times \U{x}| / |\V{a}_1| $.
+	
+	However, this might rotate the crystal the wrong way, depending on the orientation between the two vectors. Because of this the program checks whether or not the rotated initial vector and the destination vector is parallel (that is, if the rotated $ \V{a}_1 $ is parallel to $ \U{x} $). If this is not the case, the whole crystal is rotated about the same vector, with an angle $ -2\theta $.
+	
+	Five of the Bravais lattices have specialised rotation functions: hexagonal, base centred monoclinic and the three face centred lattices.
+	
+	For the hexagonal, the program detects which primitive lattice vectors constitute the triangular lattice and orients them such that one is along the $ x $-axis and the other is in the $ xy $-plane (easily done by rotating the third primitive lattice vector such that it is parallel with the $ z $-axis). The same approach is used for the base centred monoclinic, but here the program always aligns $ \V{a}_1 $ along the $ x $-axis, and $ \V{a}_2 $ in the $ xy $-plane. Here however, the easy option of rotating $ \V{a}_3 $ is not available. 
 	
 \end{document}
