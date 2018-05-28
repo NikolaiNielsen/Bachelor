@@ -7,10 +7,14 @@ Abstract
 Introduction
 - [ ] write motivation for the thesis
 - [ ] General theory (Blochs theorem especially), resulting from large, periodic systems
+- [x] Thoughts on Python
 
 Lattice plotting
+- [x] Theory on lattices
 - [ ] Step-by-step of the program
 - [ ] Considerations with regards to "pretty" plotting (gridlines, limiting plot box, rotating lattices)
+- [ ] Plots of various lattices
+- [ ] Plots of various "wrongs" (incomplete unit cells)
 
 Reciprocal lattice and scattering
 - [ ] Theory on reciprocal lattice (and lattice planes)
