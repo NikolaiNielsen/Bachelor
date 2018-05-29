@@ -3,4 +3,60 @@
 \begin{document}
 	\section{Reciprocal lattice and scattering}
 	\subsection{Theory}
+	The reciprocal lattice is an incredibly useful construct, as it allows for an easy description of wave phenomena, where the main variable is the wave vector $ \V{k} $. The reciprocal lattice is a lattice (as defined in the previous section), but in reciprocal space. This again means that the free variables is not position, but the wave vector.
+	
+	The definition of a reciprocal lattice is all of the points $ \V{G} $, that satisfy
+	\begin{equation}\label{eq:reciprocal_lattice}
+		e^{i \V{G} \D \V{R}} = 1,
+	\end{equation}
+	for any lattice point in real space $ \V{R} $. Further, the primitive lattice vectors of the reciprocal lattice all satisfy the property
+	\begin{equation}\label{key}
+		\V{a}_i \D \V{b}_j = 2\pi \delta_{ij},
+	\end{equation}
+	where $ delta_{ij} $ is the familiar Kronecker delta. This property of the reciprocal lattice vectors is what makes $ \V{G} $ a lattice in reciprocal space. The real space lattice points have the coordinates $ \V{R} = n_1 \V{a}_1 + n_2 \V{a}_2 + n_3 \V{a}_3 $, and say an arbitrary point in the reciprocal space is constructed as
+	\begin{equation}\label{key}
+		\V{G} = m_1 \V{b}_1 + m_2 \V{b}_2 + m_3 \V{b}_3,
+	\end{equation}
+	then plugging these into Eq. \eqref{eq:reciprocal_lattice} we get
+	\begin{equation}\label{key}
+		e^{i (n_1 \V{a}_1 + n_2 \V{a}_2 + n_3 \V{a}_3) \D (m_1 \V{b}_1 + m_2 \V{b}_2 + m_3 \V{b}_3)} = e^{2\pi i (n_1 m_1 + n_2 m_2 + n_3 m_3)},
+	\end{equation}
+	where the second equality follows from the defining property of the primitive lattice vectors in reciprocal space. For $ \V{G} $ to be part of the reciprocal lattice, for any choice of integer $ n_i $, then $ m_i $ need also be integers. As such the form of the reciprocal lattice matches that of the real space lattice.
+	
+	Now, to actually construct the reciprocal primitive lattice vectors, the following formulas are used:
+	\begin{equation}\label{key}
+		\V{b}_1 = \frac{2\pi \, \V{a}_2 \times \V{a}_3}{\V{a}_1 \D (\V{a}_2 \times \V{a}_3)}, \quad \V{b}_2 = \frac{2\pi \, \V{a}_3 \times \V{a}_1}{\V{a}_2 \D (\V{a}_3 \times \V{a}_1)}, \quad \V{b}_3 = \frac{2\pi \, \V{a}_1 \times \V{a}_2}{\V{a}_3 \D (\V{a}_1 \times \V{a}_2)},
+	\end{equation}
+	where the cross product in the numerator ensures the property of the Kronecker delta, and the denominator serves as a sort of normalization, such that the dot product equals 2$ \pi $. Further, by dimensional analysis, $ \V{b}_i $ has dimensions $ \e{m}\inverse $, as expected for wave vectors.
+	
+	The reciprocal lattice can also be understood in terms of families of lattice planes. First, a lattice plane is defined as any plane that contains at least 3 lattice points (this also guarantees that an infinite set of lattice points is contained by the plane, by virtue of the non-uniqueness of the primitive lattice vectors). 
+	
+	A family of lattice planes is an infinite series of parallel planes, equally spaced, such that all points of the lattice is contained in the planes, and that all planes contain lattice points.
+	
+	First consider the series of planes containing the points $ \V{r}_m $, defined by
+	\begin{equation}\label{key}
+		\V{G} \D \V{r}_m = 2\pi m,
+	\end{equation}
+	for some integer $ m $. This form ensures that all lattice points are contained in the planes. The minimum distance between planes can then be calculated from
+	\begin{equation}\label{key}
+		\V{G} \D (\V{r}_2 - \V{r}_1) = 2\pi,
+	\end{equation}
+	as the minimum distance will be when $ (\V{r}_2-\V{r}_1) $ and $ \V{G} $ are parallel, yielding
+	\begin{equation}\label{key}
+		d = \frac{2\pi}{|\V{G}|}.
+	\end{equation}
+	Now any reciprocal lattice vector will give yield a set of equidistant, parallel planes, but not all of these sets will be families of lattice planes. The family of lattice planes in the direction $ \U{G} $ will have have some distance $ d = 2\pi /|\V{G}| $, where $ \V{G} $ is a reciprocal lattice vector. An infinite set of reciprocal lattice vectors share this direction, but increasing the magnitude of the reciprocal lattice vector $ \V{G} $ will decrease the distance between the set of planes, and at some point there will be planes that do not contain any lattice points.
+	
+	As such, there is some minimum magnitude of the reciprocal lattice vector that defines a given family of lattice planes. This means that for a family of lattice planes, the distance is $ d = 2\pi /| \V{G}_{min}| $.
+	
+	\subsubsection{The Brillouin zone}
+	In the one dimensional tight binding example, any plane wave with wave vector $ k $ and $ k + G_m = k + 2\pi m/a $ are physically equivalent. The wave vector is only defined up to a factor of $ 2 \pi / a $. This means that the wave vector can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $, which is called the first Brillouin zone.
+	
+	The same principle applies to higher dimensions. The first Brillouin zone is defined as any point $ \V{k} $ in reciprocal space, that is closer to $ \V{0} $ than any other point on the reciprocal lattice. The $ n $'th Brillouin zone is then defined as any point $ \V{k} $, where $ \V{0} $ is the $ n $'th nearest point on the reciprocal lattice.
+	
+	For a 2 dimensional, square lattice the first Brillouin zone corresponds to a square with sides $ 2\pi /a $, centred on the origin.
+	
+	\subsubsection{Scattering}
+	
+	
 \end{document}

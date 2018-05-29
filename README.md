@@ -7,6 +7,7 @@ Abstract
 Introduction
 - [ ] write motivation for the thesis
 - [ ] General theory (Blochs theorem especially), resulting from large, periodic systems
+- [ ] General theory: 1D tight-binding chain to illustrate examples
 - [x] Thoughts on Python
 
 Lattice plotting
@@ -17,7 +18,7 @@ Lattice plotting
 - [ ] Plots of various "wrongs" (incomplete unit cells)
 
 Reciprocal lattice and scattering
-- [ ] Theory on reciprocal lattice (and lattice planes)
+- [x] Theory on reciprocal lattice (and lattice planes)
 - [ ] Theory on scattering (Laue and Bragg conditions, and how they relate for calculation of scattering amplitudes)
 - [ ] Simulating a "real" neutron scattering experiment
 - [ ] Step-by-step of program
