@@ -57,6 +57,39 @@
 	For a 2 dimensional, square lattice the first Brillouin zone corresponds to a square with sides $ 2\pi /a $, centred on the origin.
 	
 	\subsubsection{Scattering}
+	We start with Fermi's Golden Rule \textbf{REF}, which is a measure of the transition rate between states. It is given as
+	\begin{equation}\label{eq:Scat_fermi}
+		\Gamma(\V{k}', \V{k}) = \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}),
+	\end{equation}
+	where the matrix element is
+	\begin{equation}\label{eq:Scat_mat_el_initial}
+		\braket{\V{k}' | V | \V{k}} = \infint \frac{e^{-i \V{k}'\D\V{r}}}{\sqrt{L^3}} V(\V{r}) \frac{e^{i \V{k}\D\V{r}}}{\sqrt{L^3}} \ud \V{r} = \frac{1}{L^3} \infint e^{-i(\V{k}'-\V{k}) \D \V{r}} \, V(\V{r}) \ud \V{r}.
+	\end{equation}
+	This is just the Fourier transform of the potential! Further, we assume the potential is periodic in the unit cell, such that $ V(\V{r} + \V{R}) =  V(\V{r}) $ for any lattice point $ \V{R} $. With this, we can define $ \V{r} = \V{R} + \V{x} $ where $ \V{x} $ is a position within the unit cell, and then split up the integral into an infinite sum over lattice points:
+	\begin{equation}\label{eq:Scat_mat_el}
+		\braket{\V{k}' | V | \V{k}} = \frac{1}{L^3}\infint e^{-i(\V{k}'-\V{k})\D(\V{R}+\V{x})} V(\V{R}+ \V{x}) \ud \V{x} = \frac{1}{L^3} \sum_{\V{R}} e^{-i(\V{k}'-\V{k}) \D \V{R}}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}.
+	\end{equation}
+	Now, this sum of complex exponentials has two possible outcomes. If $ \V{k}'-\V{k} $ is a reciprocal lattice vector, all the terms are unity and the sum adds up to the total number of unit cells in the crystal. If $ \V{k}'-\V{k} $ is not a reciprocal lattice vector, then the terms will just oscillate, like roots of unity, summing to 0. This condition is called the Laue condition:
+	\begin{equation}\label{eq:Scat_Laue}
+		\V{k}' - \V{k} =  \V{G}
+	\end{equation}
 	
+	Furthermore, when the scattered wave leaves the crystal, it has to have the same magnitude of the wave vector as the incoming wave, as required from the delta function in Fermi's Golden Rule:
+	\begin{equation}\label{eq:Scat_E_cons}
+		|\V{k}'| = |\V{k}|
+	\end{equation}
+	Together these two conditions are statements of conservation of crystal momentum (\textbf{BUT WHY?}) and energy respectively.
 	
+	These are the two conditions for scattering on a crystal, but what about the scattering amplitudes? This is where the integral in Eq. \eqref{eq:Scat_mat_el} comes in. It turns out \textbf{REF} that the intensity of the scattered wave vector is proportional to the absolute square of this integral, called the \textit{structure factor}:
+	\begin{equation}\label{key}
+		I \propto |S(\V{G})|^2, \quad S(\V{G}) = \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}
+	\end{equation}
+	This is as far as is workable without specifying the form of the potential. For now we will assume we are working with neutron scattering. Since neutrons are not charged, they only scatter from the atomic cores by the nuclear force, and not from electrons. For this reason we model the potential of each atom in the unit cell as a delta function with some appropriate potential strength associated:
+	\begin{equation}\label{key}
+		V(\V{x}) \sum_{\text{atoms} \,j} f_j \delta(\V{x}-\V{x}_j)
+	\end{equation}
+	where the potential strength is called the \textit{form factor}. With this potential, the structure factor becomes
+	\begin{equation}\label{key}
+		S(\V{G}) = \sum_{\text{atoms} \,j} f_j e^{i \V{G} \D \V{x}_j}
+	\end{equation}
 \end{document}
