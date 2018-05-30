@@ -213,6 +213,7 @@ def Scattering(lattice_name='simple cubic',
         lattice, basis, _ = lattices.chooser(lattice_name, verbose=verbose)
         a1, a2, a3 = lattice
 
+    # Calculating stuff for plotting the crystal
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
@@ -230,10 +231,24 @@ def Scattering(lattice_name='simple cubic',
                                        lattice_position, grid_type,
                                        verbose=verbose)
 
+    # Create the neutron beam display vector
+    k_disp = k_in / lattices.mag(k_in)
+    lambda_ = 2 * np.pi / lattices.mag(k_in)
+
+    # Scattering stuff
+    intensities, k_out, indices = scattering.calc_scattering(a1, a2, a3, basis,
+                                                             scattering_length,
+                                                             k_in)
+    points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
+
     # Plotting the basics
     fig = plt.figure(figsize=(12.8, 4.8))
     ax = fig.gca(projection="3d")
     ax.set_position([0, 0, 0.5, 1])
+
+    # Create second set of axes for detection screen
+    ax2 = plt.axes(detector_screen_position)
+    ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
 
     # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
@@ -244,18 +259,8 @@ def Scattering(lattice_name='simple cubic',
                 color=g_col, linewidth=g_w, alpha=g_a)
 
     # Plotting the beam: First we create the beam display vector
-    k_disp = k_in / lattices.mag(k_in)
-    lambda_ = 2 * np.pi / lattices.mag(k_in)
     ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
               color='b', lw=2, pivot='tip', length=lambda_)
-    ax2 = plt.axes(detector_screen_position)
-    ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
-
-    # Scattering stuff
-    intensities, k_out, indices = scattering.calc_scattering(a1, a2, a3, basis,
-                                                             scattering_length,
-                                                             k_in)
-    points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
 
     if intensities.size == 0:
         print("There is no scattering for this choice of k_in")
@@ -271,18 +276,17 @@ def Scattering(lattice_name='simple cubic',
         colors[:, 3] = intensities
 
         if highlight is not None:
-            high_index = np.array(highlight)
-            num_ints = high_index.shape
+            hi_index = np.array(highlight)
+            num_ints = hi_index.shape
             extra = 0
             if num_ints != (3,):
                 print("We need 3 and only 3 indices! Highlighting nothing")
             else:
-                indices_index = np.where(
-                                        (indices == high_index).all(axis=1))[0]
+                indices_index = np.where((indices == hi_index).all(axis=1))[0]
                 if indices_index.shape != (1,):
                     print("There is no scattering along {}".format(highlight))
                 else:
-                    d, planes = lattices.reciprocal(a1, a2, a3, high_index,
+                    d, planes = lattices.reciprocal(a1, a2, a3, hi_index,
                                                     r_min - extra,
                                                     r_max + extra,
                                                     points=20)

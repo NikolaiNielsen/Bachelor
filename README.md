@@ -19,8 +19,8 @@ Lattice plotting
 
 Reciprocal lattice and scattering
 - [x] Theory on reciprocal lattice (and lattice planes)
-- [ ] Theory on scattering (Laue and Bragg conditions, and how they relate for calculation of scattering amplitudes)
-- [ ] Simulating a "real" neutron scattering experiment
+- [x] Theory on scattering (Laue and Bragg conditions, and how they relate for calculation of scattering amplitudes)
+- [x] Simulating a "real" neutron scattering experiment
 - [ ] Step-by-step of program
 - [ ] plots of lattice planes
 - [ ] plots of scattering simulation
