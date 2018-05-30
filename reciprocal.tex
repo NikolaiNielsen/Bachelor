@@ -57,7 +57,9 @@
 	For a 2 dimensional, square lattice the first Brillouin zone corresponds to a square with sides $ 2\pi /a $, centred on the origin.
 	
 	\subsubsection{Scattering}
-	We start with Fermi's Golden Rule \textbf{REF}, which is a measure of the transition rate between states. It is given as
+	In a scattering experiment, an incoming collection of waves (be it an electrons, neutrons, x-ray photons or something completely different) with wave vector $ \V{k} $ is incident upon a crystal. Some of these will be scattered into states with wave vector $ \V{k}' $ whilst others will pass on through. 
+	
+	To find the general conditions for scattering, we start with Fermi's Golden Rule \textbf{REF}, which is a measure of the transition rate between states. It is given as
 	\begin{equation}\label{eq:Scat_fermi}
 		\Gamma(\V{k}', \V{k}) = \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}),
 	\end{equation}
@@ -71,25 +73,45 @@
 	\end{equation}
 	Now, this sum of complex exponentials has two possible outcomes. If $ \V{k}'-\V{k} $ is a reciprocal lattice vector, all the terms are unity and the sum adds up to the total number of unit cells in the crystal. If $ \V{k}'-\V{k} $ is not a reciprocal lattice vector, then the terms will just oscillate, like roots of unity, summing to 0. This condition is called the Laue condition:
 	\begin{equation}\label{eq:Scat_Laue}
-		\V{k}' - \V{k} =  \V{G}
+		\V{k}' - \V{k} =  \V{G}.
 	\end{equation}
 	
 	Furthermore, when the scattered wave leaves the crystal, it has to have the same magnitude of the wave vector as the incoming wave, as required from the delta function in Fermi's Golden Rule:
 	\begin{equation}\label{eq:Scat_E_cons}
-		|\V{k}'| = |\V{k}|
+		|\V{k}'| = |\V{k}|.
 	\end{equation}
 	Together these two conditions are statements of conservation of crystal momentum (\textbf{BUT WHY?}) and energy respectively.
 	
 	These are the two conditions for scattering on a crystal, but what about the scattering amplitudes? This is where the integral in Eq. \eqref{eq:Scat_mat_el} comes in. It turns out \textbf{REF} that the intensity of the scattered wave vector is proportional to the absolute square of this integral, called the \textit{structure factor}:
 	\begin{equation}\label{key}
-		I \propto |S(\V{G})|^2, \quad S(\V{G}) = \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}
+		I \propto |S(\V{G})|^2, \quad S(\V{G}) = \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}.
 	\end{equation}
 	This is as far as is workable without specifying the form of the potential. For now we will assume we are working with neutron scattering. Since neutrons are not charged, they only scatter from the atomic cores by the nuclear force, and not from electrons. For this reason we model the potential of each atom in the unit cell as a delta function with some appropriate potential strength associated:
 	\begin{equation}\label{key}
-		V(\V{x}) \sum_{\text{atoms} \,j} f_j \delta(\V{x}-\V{x}_j)
+		V(\V{x}) \sum_{\text{atoms} \,j} f_j \delta(\V{x}-\V{x}_j),
 	\end{equation}
 	where the potential strength is called the \textit{form factor}. With this potential, the structure factor becomes
 	\begin{equation}\label{key}
-		S(\V{G}) = \sum_{\text{atoms} \,j} f_j e^{i \V{G} \D \V{x}_j}
+		S(\V{G}) = \sum_{\text{atoms} \,j} f_j e^{i \V{G} \D \V{x}_j}.
 	\end{equation}
+	
+	For the purposes of the program, we will further restrict the available lattice to a simple cubic with a basis. This will allow us to illustrate the core ideas of scattering whilst keeping any clutter to a minimum.
+	
+	One thing this allows us to show is systemic absences. For a cubic lattice with a basis, the structure factor becomes
+	\begin{equation}\label{key}
+		S(\V{G}) = S_{hkl} = \sum_{\text{atoms}\, j} f_j e^{i (h\V{b}_1 + k\V{b}_2 + l\V{b}_3) \D \V{x}_j} = \sum_{\text{atoms}\, j} f_j e^{2\pi i (hx_j + ky_j + lz_j)}
+	\end{equation}
+	where the coordinates of $ \V{x}_j $ are in units of the lattice constant $ a $. For a bcc lattice, which corresponds to a simple cubic lattice, with two identical atoms at $ (0,0,0) $ and $ (1/2, 1/2, 1/2) $ (in units of the lattice constant), the structure factor becomes
+	\begin{equation}\label{key}
+		S_{hkl} = f\ (1 + e^{2\pi i (h/2 + k/2 + l/2)}) = f\ (1 + e^{\pi i (h+k+l)}) = f \ (1+ (-1)^{h+k+l}),
+	\end{equation}
+	meaning that for there to be any scattering for a bcc lattice, $ h+k+l $ must be even. This is what is known as a systemic absence. There is also a systemic absence for fcc lattices, which can be thought of as a simple cubic lattice, with identical atoms at $ (0,0,0), (1/2, 1/2, 0), (1/2, 0, 1/2) $ and $ (0, 1/2, 1/2) $:
+	\begin{equation}\label{key}
+		S_{hkl} = f\ (1 + e^{\pi i (h+k)} + e^{\pi i (k+l)} + e^{\pi i (h+l)}).
+	\end{equation}
+	Here all of $ h+k, k+l $ and $ h+l $ must be even, corresponding to $ h,k,l $ all being either even or odd. As such there are systemic absences in both bcc and fcc lattices, but not simple cubic lattices, where all combinations of $ h,k $ and $ l $ can lead to scattering.
+	
+	\subsection{Implementation}
+	
+	
 \end{document}
