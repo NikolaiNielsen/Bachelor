@@ -26,8 +26,8 @@ Reciprocal lattice and scattering
 - [ ] plots of scattering simulation
 
 2D Band structure
-- [ ] periodic potentials and V_G
-- [ ] Fourier transform of the Schrödingers equation
-- [ ] Discretising the equation and creating the matrix equation
+- [x] periodic potentials and V_G
+- [x] Fourier transform of the Schrödingers equation
+- [x] Discretising the equation and creating the matrix equation
 - [ ] Step-by-step of the program
 - [ ] plots of 2D band structure for different V0 and maybe different potentials?
