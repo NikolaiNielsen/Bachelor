@@ -79,7 +79,7 @@
 	
 	Allowing the set of next smallest values for $ \V{G} $ would then constitute a first order perturbation, where the particle is allowed to scatter into these states. Further allowing a larger set of $ \V{G} $ will give a more accurate calculation of the dispersion relation for the particle, until finally it becomes exact when the full, infinite spectrum of values for $ \V{G} $ is included.
 	
-	
+	\subsection{Implementation}
 	So far in these calculations we have not specified the dimensionality of the system. In the following however, we will restrict ourselves to two dimensions and a square lattice with lattice spacing $ a $. The reciprocal lattice vectors $ \V{G} $ can then be indexed with the coefficients $ m_1 $ and $ m_2 $, as $ \V{G} = \frac{2\pi}{a} (m_1 \U{x} + m_2 \U{y}) $. This also means that the sum over $ \V{G} $ can be expressed as a double sum over $ m_1 $ and $ m_2 $ in the allowed range of coefficients, where we order the sum as first varying $ m_2 $ and then $ m_1 $
 	
 	To describe the matrix it is helpful to first describe the vector in the equation. Let us call this $ \ket{\psi} $. This consists of $ \tilde{\psi} (\V{k}+\V{G}) $ for all the allowed $ \V{G} $. Let us also call these $ \psi[m_1, m_2] $:
@@ -161,7 +161,39 @@
 			0 				& 0				& 0				& 0					& V\coef{1, 1}		& V\coef{1, 0}		& 0				& V\coef{0, 1}		& V\coef{0, 0}
 		\end{pmatrix}.
 	\end{equation}
-	
+	Specific potentials implemented in the program include a two dimensional Dirac Comb, and a harmonic potential:
+	\begin{equation}\label{key}
+		V_{\text{dirac}}(\V{r}) = V_0 \sum_{\V{R}} \delta(\V{r}-\V{R}), \quad V_{\text{harmonic}}(\V{r}) = V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}}.
+	\end{equation}
+	$ V\coef{m_1, m_2} $ for the Dirac Comb potential is easily calculated. We let the unit cell run from $ -a/2 $ to $ a/2 $ in both $ x $ and $ y $, to make sure the delta functions are well within the integration limits. Then it just becomes:
+	\begin{equation}\label{key}
+		V\coef{m_1, m_2} = V_0 \int_{-a/2}^{a/2} \int_{-a/2}^{a/2} \ud x \ud y \ e^{i 2\pi (m_1 x + m_2 y)/a} \delta(\V{r}) = V_0
+	\end{equation}
+	For the harmonic potential we let the unit cell run from $ 0 $ to $ a $ in both directions and get
+	\begin{equation}\label{key}
+		V\coef{m_1, m_2} = V_0 \int_{0}^{a} \int_0^a \ud x \ud y \ e^{i 2\pi(m_1x + m_2y)/a} \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}}
+	\end{equation}
+	This can be split into two integrals, $ I_1 $ and $ I_2 $. The first is
+	\begin{align}\label{key}
+		I_1 &=  V_0 \int_{0}^{a} \int_0^a \ud x \ud y \ e^{i 2\pi(m_1x + m_2y)/a}\cos\pp{\frac{2\pi}{a} x}, \\
+		&= \frac{V_0}{2} \int_{0}^{a} \ud y\ e^{i 2\pi m_2 y / a} \int_{0}^{a} \ud x \ e^{i 2\pi m_1 x/a} \bb{e^{i 2\pi x/a} + e^{-i 2\pi x/a}}, \\
+		&= \frac{V_0}{2} \int_0^a \ud y\  e^{i 2\pi m_2 y / a} \int_{0}^{a} \ud x\ \bb{e^{i 2\pi(m_1+1) x/a} + e^{-i 2\pi (m_1-1)x/a}}
+	\end{align}
+	Now if $ m_2 = 0 $, the integrand in the $ y $-integral is just 1, and the whole integral evaluates to $ a $. If $ m_2 \neq 0 $ this is not the case. However, the antiderivative evaluated at both ends is the same, and the whole integral is 0:
+	\begin{equation}\label{key}
+		\int_{0}^{a} \ud y\ e^{i 2\pi m_2 y/a} = \frac{a}{i 2\pi m_2} \bb{e^{i2\pi m_2 y /a}}_0^a = 0
+	\end{equation}
+	The same goes for the integrals in $ x $, but with $ m_1 \pm 1 $ instead of $ m_2 $. As such
+	\begin{equation}\label{key}
+		I_1 = \frac{V_0 a^2}{2} \bb{\delta_{m_2,0} (\delta_{m_1, 1} + \delta_{m_1, -1})},
+	\end{equation}
+	with a similar result for $ I_2 $. $ V\coef{m_1, m_2} $ is then
+	\begin{equation}\label{key}
+		V\coef{m_1, m_2} = \begin{cases}
+			\frac{V_0 a^2}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\} \\
+			0					& \text{else}
+		\end{cases}
+	\end{equation}
 	
 	
 \end{document}
