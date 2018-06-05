@@ -83,7 +83,7 @@
 	Together these two conditions are statements of conservation of crystal momentum (\textbf{BUT WHY?}) and energy respectively.
 	
 	These are the two conditions for scattering on a crystal, but what about the scattering amplitudes? This is where the integral in Eq. \eqref{eq:Scat_mat_el} comes in. It turns out \textbf{REF} that the intensity of the scattered wave vector is proportional to the absolute square of this integral, called the \textit{structure factor}:
-	\begin{equation}\label{key}
+	\begin{equation}
 		I \propto |S(\V{G})|^2, \quad S(\V{G}) = \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}.
 	\end{equation}
 	This is as far as is workable without specifying the form of the potential. For now we will assume we are working with neutron scattering. Since neutrons are not charged, they only scatter from the atomic cores by the nuclear force, and not from electrons. For this reason we model the potential of each atom in the unit cell as a delta function with some appropriate potential strength associated:
@@ -129,11 +129,11 @@
 	Left are only a handful, if any, of scattered wave vectors. For each of these, the impact point of the scattered wave vector on the detection plane has to be calculated. This is done by calculating the intersection between a line and a plane. The line is defined by the point of impact $ \V{p}_0 $ of the incident wave vector along with the scattered wave vector $ \V{k}' $. The plane is defined as mentioned above, with $ z=5 $.
 	
 	In this case the intersection happens when
-	\begin{equation}\label{key}
+	\begin{equation}
 		p_{0,z} + t\D k'_z = 5,
 	\end{equation}
 	for some value of $ t $. This value of $ t $ can then be used to calculate the point of intersection as
-	\begin{equation}\label{key}
+	\begin{equation}
 		\V{p} = \V{p}_0 + t \V{k}'.
 	\end{equation}
 	These points are then plotted in the first figure along with the detection plane and the incoming wave vector (scaled so its length is equal to the wavelength).
@@ -145,13 +145,13 @@
 	The second is a "highlighting" feature. This feature works by taking a set of Miller indices and highlighting the scattering associated with said set (if scattering occurs for this reciprocal lattice vector). It plots the relevant scattering event in a different colour, and plots the associated lattice planes.
 	
 	These planes are created in one of two ways. If the plane is \textit{not} perpendicular to the $ xy $-plane (corresponding to a normal vector $ \V{n} $ with a $ z $-component different from 0) the equation of the plane is used with the origin as the starting point $ \V{r}_0 $. For the normal vector, the program uses the displacement vector $ \V{d} = 2\pi \U{G} / |\V{G}| $:
-	\begin{equation}\label{key}
+	\begin{equation}
 		0 = \V{d} \D (\V{r}-\V{r}_0) = \V{n} \D \V{r}, \quad \Leftrightarrow \quad z = -\frac{d_x x + d_y y}{d_z}.
 	\end{equation}
 	The program then calculates the $ z $-component of the plane from a given array of $ x $ and $ y $-values. This, of course, only creates one plane. Each subsequent plane is created by displacing the original plane by an amount $ d/\cos \theta = d^2/d_z$. This process is repeated in the positive direction until the smallest $ z $-value of the uppermost plane is outside of the plot box, and likewise in the negative direction, yielding a full set of parallel planes, spaced by $ \V{d} $ (at least within the plot box).
 	
 	However, if the plane \textit{is} perpendicular to the $ xy $-plane, this method does not work. Here the program creates a plane from the span of two vectors perpendicular to the displacement vector. Since the plane is perpendicular to the $ xy $-plane, one such vector is $ \U{z} $, the unit vector in the $ z $-direction. Then the second vector can just be taken as the cross product between $ \V{d} $ and $ \U{z} $. Again the origin is taken as the starting point:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\V{r} = \V{r}_0 + s \U{z} + t (\U{z} \times \V{d}).
 	\end{equation}
 	To get any subsequent planes, an integer multiple of the displacement vector $ \V{d} $ is added to the starting plane.

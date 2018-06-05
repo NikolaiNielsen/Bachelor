@@ -8,82 +8,82 @@
 		V(\V{r}+\V{R}) = V(\V{r})
 	\end{equation}
 	Due to this periodicity, the potential can also be expressed as a sum over reciprocal lattice vectors. To see this, we start with the potential operator:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\hat{V} = \infint \ud \V{r} \, V(\V{r}) \ket{\V{r}}\bra{\V{r}}
 	\end{equation}
 	Inserting two continuous identities for $ \V{k} $ and $ \V{k}' $, which is the equivalent of taking the Fourier transform of the potential: 
-	\begin{align}\label{key}
+	\begin{align}
 		\hat{V} &= \infint \ud \V{r}\ V(\V{r}) \bb{\infint \ud \V{k}' \ket{\V{k}'} \bra{\V{k}'}} \ket{\V{r}}\bra{\V{r}} \bb{\infint \ud \V{k} \ket{\V{k}} \bra{\V{k}}}, \\
 		&= \infint \ud\V{r} \infint \ud \V{k}' \infint \ud \V{k} V(\V{r}) \ket{\V{k}'} \braket{\V{k}' | \V{r}} \braket{\V{r} | \V{k}} \bra{\V{k}}.
 	\end{align}
 	The two middle brakets are $ \braket{\V{k}'| \V{r}}= \sqrt{v}\inverse e^{-i \V{k}' \D \V{r}} $ and $ \braket{\V{r} | \V{k}} = \sqrt{v}\inverse e^{i \V{k} \D \V{r}} $,  where $ v $ is the volume of the material and $ \sqrt{v}\inverse $ is the normalization factor. This then becomes
-	\begin{align}\label{key}
+	\begin{align}
 		\hat{V} &= \frac{1}{v} \infint \ud\V{r} \infint \ud \V{k}' \infint \ud \V{k}\, V(\V{r}) e^{-i(\V{k}'-\V{k}) \D \V{r}} \ket{\V{k}'} \bra{\V{k}}.
 	\end{align}
 	Next we use a trick from before: letting $ \V{r} = \V{R} + \V{x} $. This allows us to write the operator as
-	\begin{equation}\label{key}
+	\begin{equation}
 		\hat{V} = \frac{1}{v} \sum_{\V{R}} e^{i(\V{k}-\V{k}') \D \V{R}} \infint \ud \V{k}' \infint \ud \V{k} \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{-i (\V{k}'-\V{k}) \D \V{x}} \ket{\V{k}'} \bra{\V{k}}
 	\end{equation}
 	This sum, like before, equals 0 for $ \V{k}-\V{k}' \neq \V{G} $. However, when $ \V{k}-\V{k}' = \V{G} $ this sum becomes infinite (given the infinite amount of lattice points) \textbf{THERE NEEDS TO BE JUSTIFICATION FOR THIS FOR FINITE MATERIALS}, with a prefactor of $ (2\pi)^D/v $ \textbf{INSERT REFERENCE TO SIMON}. This then gives
-	\begin{align}\label{key}
+	\begin{align}
 		\hat{V} &= \frac{(2\pi)^D}{v^2} \sum_{G} \delta(\V{k}-\V{k}'-\V{G}) \infint \ud \V{k}' \infint \ud \V{k} \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{i \V{G} \D \V{x}} \ket{\V{k}'} \bra{\V{k}}, \\
 		&= \frac{(2\pi)^D}{v^2} \sum_{G} \infint \ud \V{k}\ V_{\V{G}} \ket{\V{k}-\V{G}} \bra{\V{k}},
 	\end{align}
 	where $ V_{\V{G}} $ is the Fourier transform of the potential, in $ \V{G} $, over the unit cell. Now, inserting two additional identities, but this time for $ \V{r} $ and $ \V{r}' $ gives
-	\begin{align}\label{key}
+	\begin{align}
 		\hat{V} &= \frac{(2\pi)^D}{v^2} \sum_{G} \infint \ud \V{k} \ V_{\V{G}} \bb{\infint \ud \V{r}' \ket{\V{r}'} \bra{\V{r}'}} \ket{\V{k}-\V{G}} \bra{\V{k}} \bb{\infint \ud \V{r} \ket{\V{r}} \bra{\V{r}} }, \\
 		&= \frac{(2\pi)^D}{v^2} \sum_{G} \infint \ud \V{k} \infint \ud \V{r}' \infint \ud \V{r} \   V_{\V{G}} \frac{1}{v} e^{i (\V{k}-\V{G}) \D \V{r}} e^{-i \V{k} \D \V{r}'} \ket{\V{r}'} \bra{\V{r}}, \\
 		&= \frac{(2\pi)^D}{v^3} \sum_{G} \infint \ud \V{k} \infint \ud \V{r}' \infint \ud \V{r} \  V_{\V{G}} \  e^{-i \V{G} \D \V{r}} e^{i \V{k} \D (\V{r}-\V{r}')} \ket{\V{r}'} \bra{\V{r}}.
 	\end{align}
 	We can get rid of two of these integrals, if we use the fact that
-	\begin{equation}\label{key}
+	\begin{equation}
 		\delta(\V{r}-\V{r}') = \frac{1}{(2\pi)^D} \infint \ud \V{k}\  e^{i \V{k} \D (\V{r}-\V{r}')},
 	\end{equation}
 	as we then get
-	\begin{equation}\label{key}
+	\begin{equation}
 		\hat{V} = \frac{(2\pi)^{2D}}{v^3} \sum_{\V{G}} \infint \ud \V{r} \ V_{\V{G}}\ e^{-i \V{G} \D \V{r}} \ket{\V{r}} \bra{\V{r}}
 	\end{equation}
 	which, if the prefactors and the sum is taken inside the integral, is the same form as we started with! Thus we get our desired result of
-	\begin{equation}\label{key}
+	\begin{equation}
 		V(\V{r}) =  \frac{(2\pi)^{2D}}{v^3} \sum_{\V{G}} V_{\V{G}} \,e^{-i \V{G} \D \V{r}}, \quad V_{\V{G}} = \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{i \V{G} \D \V{x}}.
 	\end{equation}
 	\textbf{EXPLAIN PREFACTORS OR GET RID OF THEM}
 	
 	
 	This allows us to write the Schrödingers equation in a form where the dispersion relation is easily calculated numerically. First we Fourier transform the equation:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\infint e^{-i \V{k} \D \V{r}} \bb{\frac{\V{p}^2}{2m} + V(\V{r})}\psi(\V{r}) \ud \V{r}= \infint e^{-i\V{k} \D \V{r}}\, E\, \psi(\V{r}) \ud \V{r} = E \,\tilde{\psi}(\V{k}).
 	\end{equation}
 	The kinetic energy term is just
-	\begin{equation}\label{key}
+	\begin{equation}
 		-\frac{\hbar^2}{2m}\infint e^{-i \V{k} \D \V{r}}\, \nabla^2\psi(\V{r}) \ud \V{r} = \frac{\hbar^2 \V{k}^2}{2m}\tilde{\psi(\V{k})},
 	\end{equation}
 	whilst the potential energy term is
-	\begin{align}\label{key}
+	\begin{align}
 		\mathcal{F}[V(\V{r}) \psi(\V{r})] &= \infint e^{-i \V{k} \D \V{r}}\, V(\V{r})\, \psi(\V{r}) \ud \V{r} = \infint e^{-i \V{k}\D \V{r}} \bb{\sum_{\V{G}} e^{i \V{G} \D \V{r}}, V_{\V{G}} }\psi (\V{r}) \ud \V{r}, \\
 		&= \sum_{\V{G}} V_{\V{G}} \infint e^{-i(\V{k}-\V{G})\D \V{r}}\, \psi(\V{r}) \ud \V{r},
 	\end{align}
 	where the integral is just the Fourier transform of the wave function, in $ \V{k}-\V{G} $:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\mathcal{F}[V(\V{r}) \psi(\V{r})] = \sum_{\V{G}} V_{\V{G}} \, \tilde{\psi}(\V{k}-\V{G}).
 	\end{equation}
 	With this expression, the whole equation becomes
-	\begin{equation}\label{key}
+	\begin{equation}
 		\sum_{\V{G}} \bb{\frac{\hbar^2 \V{k}^2}{2m} \delta_{\V{G},0} + V_{\V{G}} } \tilde{\psi}(\V{k}-\V{G}) = E\, \tilde{\psi}(\V{k}).
 	\end{equation}
 	This equation gives the energy for a single value of $ \V{k} $, by relating the state $ \tilde{\psi}(\V{k}) $ to all other states with the same crystal momentum. If we then consider all the different equations for states with the same crystal momentum $ \tilde{\psi} (\V{k}-\V{G}) $, we can describe them all as a matrix equation, where the eigenvalues are the energies for the state with wave vector $ \V{k} $, in all of the different bands. The first (lowest) eigenvalue is thus the energy of $ \tilde{\psi} (\V{k}) $ in the lowest band.
 	
 	To calculate the dispersion relation for a given lattice and potential we then need to find the eigenvalue of the above matrix equation for a range of different $ \V{k} $. However, due to the unbounded nature of $ \V{G} $, the matrix and vector will both have an infinite amount of elements. For the purposes of the program we need to only allow some set of $ \V{G} $, making the matrix and vector finite dimensional.
 	
-	This can be thought of through the lens of perturbation theory. If we have a free particle (corresponding to only allowing one value of $ \V{G} $, namely 0), we just get a $ 1\times 1$ "matrix", whose eigenvalue trivially is the energy of a free particle. 
+	This can be thought of through the lens of perturbation theory. If we have a free particle (corresponding to no allowed value of $ \V{G} $), we just get a $ 1\times 1$ "matrix", whose eigenvalue trivially is the energy of a free particle. Adding the potential for $ \V{G} = 0 $ gives the first order perturbation, shifting the state by some constant energy (the matrix equation still only has one allowed state).
 	
-	Allowing the set of next smallest values for $ \V{G} $ would then constitute a first order perturbation, where the particle is allowed to scatter into these states. Further allowing a larger set of $ \V{G} $ will give a more accurate calculation of the dispersion relation for the particle, until finally it becomes exact when the full, infinite spectrum of values for $ \V{G} $ is included.
+	Allowing the set of next smallest values for $ \V{G} $ would then constitute a second order perturbation, where the particle is allowed to scatter into these states. Further allowing a larger set of $ \V{G} $ will give a more accurate calculation of the dispersion relation for the particle, until finally it becomes exact when the full, infinite spectrum of values for $ \V{G} $ is included.
 	
 	\subsection{Implementation}
-	So far in these calculations we have not specified the dimensionality of the system. In the following however, we will restrict ourselves to two dimensions and a square lattice with lattice spacing $ a $. The reciprocal lattice vectors $ \V{G} $ can then be indexed with the coefficients $ m_1 $ and $ m_2 $, as $ \V{G} = \frac{2\pi}{a} (m_1 \U{x} + m_2 \U{y}) $. This also means that the sum over $ \V{G} $ can be expressed as a double sum over $ m_1 $ and $ m_2 $ in the allowed range of coefficients, where we order the sum as first varying $ m_2 $ and then $ m_1 $
+	So far in these calculations we have not specified the dimensionality of the system. In the following however, we will restrict ourselves to two dimensions and a square lattice with lattice spacing $ a $. The reciprocal lattice vectors $ \V{G} $ can then be indexed with the coefficients $ m_1 $ and $ m_2 $, as $ \V{G} = \frac{2\pi}{a} (m_1 \U{x} + m_2 \U{y}) $. This also means that the sum over $ \V{G} $ can be expressed as a double sum over $ m_1 $ and $ m_2 $. 
 	
 	To describe the matrix it is helpful to first describe the vector in the equation. Let us call this $ \ket{\psi} $. This consists of $ \tilde{\psi} (\V{k}+\V{G}) $ for all the allowed $ \V{G} $. Let us also call these $ \psi[m_1, m_2] $:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\ket{\psi} = \begin{pmatrix}
 		\vdots \\ \tilde{\psi}(\V{k}-\V{G}_1) \\ \tilde{\psi}(\V{k}) \\ \tilde{\psi}(\V{k}+\V{G}_1) \\ \vdots
 		\end{pmatrix} = \begin{pmatrix}
@@ -94,7 +94,7 @@
 
 	The matrix in the above equation can be split into two different matrices: One for the kinetic energy $ T $, which is just a diagonal matrix, and one for the potential energy $ V $. The diagonal elements of the kinetic energy matrix are just the energy of the state, if no potential was present:
 	
-	\begin{equation}\label{key}
+	\begin{equation}
 		T = \frac{\hbar^2}{2m} \begin{pmatrix}
 			\ddots	& 		 			&			& 					& \\
 					& (\V{k}-\V{G}_1)^2	& 			& 					& \\
@@ -103,31 +103,32 @@
 					&					&			&					& \ddots
 		\end{pmatrix}.
 	\end{equation}
-	The potential energy matrix is a bit more complicated. It is best described with an example. Say we allow $ m_1, m_2 \in \{-1,0,1\} $. This gives 9 pairs of coefficients, ordered as
-	\begin{equation}\label{key}
+	The potential energy matrix is a bit more complicated. It is best described with an example. Say we allow $ m_1, m_2 \in \{-1,0,1\} $. The sum still has an infinite amount of terms, but we only allow 9 of these in out matrix equation. These terms have pairs of coefficients for $ \psi $ that are in the ordered list
+	\begin{equation}
 		[m_1, m_2] \in \{ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 0], [0, 1], [1,-1], [1, 0], [1,1]  \}.
 	\end{equation}
 	
-	If we then calculate the row equation for $ m_1 = -1, m_2 = 0 $ (which is the second row) we get
+	If we then calculate (part of) the row equation for $ m_1 = -1, m_2 = 0 $ (which is the second row) we get
 	\begin{align*}
-		E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -1}^{1}\sum_{m'_2 = -1}^{1} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2}, \\
-		= {} & V\coef{-1, -1} \psi\coef{-2, -1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, 1} \\
-		& + V\coef{0, -1} \psi\coef{-1, -1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, 1} \\
-		&+ V\coef{1, -1} \psi \coef{0,-1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, 1}
+		E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -\infty}^{\infty}\sum_{m'_2 = -\infty}^{\infty} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2}, \\
+		= {} & \dots +  V\coef{-2, -1}\psi\coef{1,1} + V\coef{-2, 0} \psi\coef{1, 0} + V\coef{-2, 1}\psi\coef{1,-1} +  \dots  \\
+		& + V\coef{-1, -1} \psi\coef{-2, 1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, -1} + \dots\\
+		& + V\coef{0, -1} \psi\coef{-1, 1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, -1} + \dots\\
+		&+ V\coef{1, -1} \psi \coef{0,1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, -1} + \dots
 	\end{align*}
-	Now, the first three terms are "disallowed" states, i.e. they have coefficients outside of the allowed range. These we discard as an artefact of the approximation we use (this further illuminates the fact that we need an infinite matrix to calculate the dispersion relation exactly). The last 6 terms are "allowed" states however. The corresponding line in the matrix is then
+	Now, the 4th to 6th  shown terms contain "disallowed" states, i.e. they have coefficients for $ \psi $ outside of the allowed range. The other 9 shown terms are "allowed" states however. Because $ \psi\coef{-1,-1} $, which is multiplied by $ V\coef{0, 1} $, is the first pair of coefficients in the ordered set of allowed coefficients, this factor will also be the first element in the corresponding row of the matrix. This row is:
 	\begin{equation}
 		\begin{pmatrix}
-			V\coef{0, -1} &  V\coef{0, 0} & V\coef{0, 1} & V\coef{1, -1} & V\coef{1, 0} & V\coef{1,1} & 0 & 0 & 0 
-		\end{pmatrix},
+			V\coef{0, 1} &  V\coef{0, 0} & V\coef{0, -1} & V\coef{1, 1} & V\coef{1, 0} & V\coef{1,-1} & V\coef{-2, 1} & V\coef{-2, 0} & V\coef{-2, -1}
+		\end{pmatrix}.
 	\end{equation}
-	because $ \psi\coef{-1,-1} $, which has the coefficient $ V\coef{0, -1} $, is the first pair of coefficients in the ordered set of allowed coefficients. This illuminates the structure of the potential energy matrix. The algorithm for constructing it is as follows:
+	
+	This illuminates the structure of the potential energy matrix. The algorithm for constructing it is as follows:
 	
 	\begin{enumerate}
 		\item Choose a range of values for $ m_1 $ and $ m_2 $ and arrange them in an oriented set.
 		\item For each pair of coefficients in this set, ($ [m_1, m_2] $, corresponding to some row), calculate $ [m_1-m_1', m_2-m_2'] $, where $ [m_1', m_2'] $ is all the pairs of coefficients from the same set, and corresponds to the columns of the matrix.
-		\item If $ [m_1-m_1', m_2-m_2'] $ is in the set of ordered coefficients, the corresponding matrix element will have the value $ V\coef{m_1-m_1', m_2-m_2'} $. (The corresponding matrix element is the one with row/column corresponding to the position of $ [m_1, m_2]/[m_1', m_2'] $ in the ordered set) 
-		\item If $ [m_1-m_1', m_2-m_2'] $ is not in the ordered set, the matrix element is 0. This corresponds to the particle being scattered into a state with we do not "allow" in this case. 
+		\item This new pair of coefficients, $ [m_1-m_1', m_2-m_2'] $, will be coefficients for the potential at the corresponding matrix element: $ V\coef{m_1-m_1', m_2-m_2'} $. (The corresponding matrix element is the one with row/column corresponding to the position of $ [m_1, m_2]/[m_1', m_2'] $ in the ordered set). 
 	\end{enumerate}
 	With this algorithm in mind, we can see a couple of characteristics of the matrix:
 	\begin{itemize}
@@ -140,60 +141,84 @@
 	
 	With all of this in mind, the potential energy matrix for $ m_1, m_2 \in \{-1, 0, 1\} $ is a $ 9 \times 9 $ matrix with the following coefficients:
 	
-	\begin{equation}\label{key}
+	\begin{equation}
 		V = \begin{pmatrix}
-			V\coef{0, 0}	& V\coef{0, -1}	& 0				& V\coef{-1, 0}		& V\coef{-1, -1}	& 0					& 0				& 0					& 0 \\
+			V\coef{0, 0}	& V\coef{0, -1}	& V\coef{0, -2}	& V\coef{-1, 0}		& V\coef{-1, -1}	& V\coef{-1, -2}	& V\coef{-2, 0}	& V\coef{-2, -1}	& V\coef{-2, -2} \\
 			
-			V\coef{0, 1}	& V\coef{0, 0}	& V\coef{0, -1}	& V\coef{-1, 1}		& V\coef{-1, 0}		& V\coef{-1, -1}	& 0 			& 0 				& 0 \\
+			V\coef{0, 1}	& V\coef{0, 0}	& V\coef{0, -1}	& V\coef{-1, 1}		& V\coef{-1, 0}		& V\coef{-1, -1}	& V\coef{-2, 1}	& V\coef{-2, 0}		& V\coef{-2, -1} \\
 			
-			0				& V\coef{0, 1}	& V\coef{0, 0}	& 0					& V\coef{-1, 1} 	& V\coef{-1, 0}		& 0				& 0					& 0 \\
+			V\coef{0, 2}	& V\coef{0, 1}	& V\coef{0, 0}	& V\coef{-1, 2}		& V\coef{-1, 1} 	& V\coef{-1, 0}	& V\coef{-2, 2}	& V\coef{-2, 1}		& V\coef{-2, 0} \\
 			
-			V\coef{1, 0}	& V\coef{1, -1}	& 0				& V\coef{0, 0}		& V\coef{0, -1}		& 0					& V\coef{-1, 0}	& V\coef{-1, -1}	& 0 \\
+			V\coef{1, 0}	& V\coef{1, -1}	& V\coef{1, -2}	& V\coef{0, 0}		& V\coef{0, -1}		& V\coef{0, -2}	& V\coef{-1, 0}	& V\coef{-1, -1}	& V\coef{-1, -2} \\
 			
-			V\coef{1, 1} 	& V\coef{1, 0}	& V\coef{1, -1}	& V\coef{0, 1}		& V\coef{0, 0}		& V\coef{0,-1}		& V\coef{-1, 1}	& V\coef{-1, 0}		& V\coef{-1, -1} \\
+			V\coef{1, 1} 	& V\coef{1, 0}	& V\coef{1, -1}	& V\coef{0, 1}		& V\coef{0, 0}		& V\coef{0,-1}	& V\coef{-1, 1}	& V\coef{-1, 0}		& V\coef{-1, -1} \\
 			
-			0				& V\coef{1, 1}	& V\coef{1, 0}	& 0					& V\coef{0,1}		& V\coef{0, 0}		& 0				& V\coef{-1, 1}		& V\coef{-1, 0} \\
+			V\coef{1, 2}	& V\coef{1, 1}	& V\coef{1, 0}	& V\coef{0, 2}		& V\coef{0, 1}		& V\coef{0, 0}	& V\coef{-1, 2}	& V\coef{-1, 1}		& V\coef{-1, 0} \\
 			
-			0				& 0				& 0				& V\coef{1, 0}		& V\coef{1, -1}		& 0					& V\coef{0, 0}	& V\coef{0, -1}		& 0 \\
+			V\coef{2, 0}	& V\coef{2, -1}	& V\coef{2, -2}	& V\coef{1, 0}		& V\coef{1, -1}		& V\coef{1, -2}	& V\coef{0, 0}	& V\coef{0, -1}		& V\coef{0, -2} \\
 			
-			0				& 0				& 0				& V\coef{1, 1}		& V\coef{1, 0}		& V\coef{1, -1}		& V\coef{0, 1}	& V\coef{0, 0}		& V\coef{0, -1} \\
+			V\coef{2, 1}	& V\coef{2, 0}	& V\coef{2, -1}	& V\coef{1, 1}		& V\coef{1, 0}		& V\coef{1, -1}	& V\coef{0, 1}	& V\coef{0, 0}		& V\coef{0, -1} \\
 			
-			0 				& 0				& 0				& 0					& V\coef{1, 1}		& V\coef{1, 0}		& 0				& V\coef{0, 1}		& V\coef{0, 0}
+			V\coef{2, 2}	& V\coef{2, 1}	& V\coef{2, 0}	& V\coef{1, 2}		& V\coef{1, 1}		& V\coef{1, 0}	& V\coef{0, 2}	& V\coef{0, 1}		& V\coef{0, 0}
 		\end{pmatrix}.
 	\end{equation}
 	Specific potentials implemented in the program include a two dimensional Dirac Comb, and a harmonic potential:
-	\begin{equation}\label{key}
+	\begin{equation}
 		V_{\text{dirac}}(\V{r}) = V_0 \sum_{\V{R}} \delta(\V{r}-\V{R}), \quad V_{\text{harmonic}}(\V{r}) = V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}}.
 	\end{equation}
 	$ V\coef{m_1, m_2} $ for the Dirac Comb potential is easily calculated. We let the unit cell run from $ -a/2 $ to $ a/2 $ in both $ x $ and $ y $, to make sure the delta functions are well within the integration limits. Then it just becomes:
-	\begin{equation}\label{key}
-		V\coef{m_1, m_2} = V_0 \int_{-a/2}^{a/2} \int_{-a/2}^{a/2} \ud x \ud y \ e^{i 2\pi (m_1 x + m_2 y)/a} \delta(\V{r}) = V_0
+	\begin{equation}
+		V\coef{m_1, m_2} = V_0 \int_{-a/2}^{a/2} \int_{-a/2}^{a/2} \ud x \ud y \ e^{i 2\pi (m_1 x + m_2 y)/a} \delta(\V{r}) = V_0,
 	\end{equation}
-	For the harmonic potential we let the unit cell run from $ 0 $ to $ a $ in both directions and get
-	\begin{equation}\label{key}
+	and the potential matrix is just a matrix full of ones, scaled by $ V_0 $. For the harmonic potential we let the unit cell run from $ 0 $ to $ a $ in both directions and get
+	\begin{equation}
 		V\coef{m_1, m_2} = V_0 \int_{0}^{a} \int_0^a \ud x \ud y \ e^{i 2\pi(m_1x + m_2y)/a} \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}}
 	\end{equation}
 	This can be split into two integrals, $ I_1 $ and $ I_2 $. The first is
-	\begin{align}\label{key}
+	\begin{align}
 		I_1 &=  V_0 \int_{0}^{a} \int_0^a \ud x \ud y \ e^{i 2\pi(m_1x + m_2y)/a}\cos\pp{\frac{2\pi}{a} x}, \\
 		&= \frac{V_0}{2} \int_{0}^{a} \ud y\ e^{i 2\pi m_2 y / a} \int_{0}^{a} \ud x \ e^{i 2\pi m_1 x/a} \bb{e^{i 2\pi x/a} + e^{-i 2\pi x/a}}, \\
 		&= \frac{V_0}{2} \int_0^a \ud y\  e^{i 2\pi m_2 y / a} \int_{0}^{a} \ud x\ \bb{e^{i 2\pi(m_1+1) x/a} + e^{-i 2\pi (m_1-1)x/a}}
 	\end{align}
 	Now if $ m_2 = 0 $, the integrand in the $ y $-integral is just 1, and the whole integral evaluates to $ a $. If $ m_2 \neq 0 $ this is not the case. However, the antiderivative evaluated at both ends is the same, and the whole integral is 0:
-	\begin{equation}\label{key}
+	\begin{equation}
 		\int_{0}^{a} \ud y\ e^{i 2\pi m_2 y/a} = \frac{a}{i 2\pi m_2} \bb{e^{i2\pi m_2 y /a}}_0^a = 0
 	\end{equation}
 	The same goes for the integrals in $ x $, but with $ m_1 \pm 1 $ instead of $ m_2 $. As such
-	\begin{equation}\label{key}
+	\begin{equation}
 		I_1 = \frac{V_0 a^2}{2} \bb{\delta_{m_2,0} (\delta_{m_1, 1} + \delta_{m_1, -1})},
 	\end{equation}
 	with a similar result for $ I_2 $. $ V\coef{m_1, m_2} $ is then
-	\begin{equation}\label{key}
+	\begin{equation}
 		V\coef{m_1, m_2} = \begin{cases}
-			\frac{V_0 a^2}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\} \\
-			0					& \text{else}
+			\frac{V_0 a^2}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\}, \\
+			0					& \text{else}.
 		\end{cases}
 	\end{equation}
+	And the potential energy matrix is
+	\begin{equation}
+		V_{\text{harmonic}} = \frac{V_0 a^2}{2} \begin{pmatrix}
+		1 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+		1 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 0 \\
+		0 & 1 & 1 & 0 & 0 & 1 & 0 & 0 & 0 \\
+		1 & 0 & 0 & 1 & 1 & 0 & 1 & 0 & 0 \\
+		0 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 0 \\
+		0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 & 1 \\
+		0 & 0 & 0 & 1 & 0 & 0 & 1 & 1 & 0 \\
+		0 & 0 & 0 & 0 & 1 & 0 & 1 & 1 & 1 \\
+		0 & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 1
+		\end{pmatrix}
+	\end{equation}
+	With this we have the full Hamiltonian matrix, and we can solve it for a range of $ \V{k} $ to get the dispersion relation for a particle in a square lattice.
+	
+	To calculate this, the program needs values for $ V_0 $, $ a $ and $ \hbar^2/2m $ along with the range of coefficients for $ \V{G} $. With this the Hamiltonian matrix is created. The program also takes a value for the number of points in the first Brillouin-zone in $ k $-space and creates linearly spaced points from $ -\pi/a $ to $ \pi/a $.
+	
+	For each point in the Brillouin zone the program then creates the corresponding kinetic energy matrix, adds the potential energy matrix, and finds the eigenvalues for the resulting matrix. These values are stored in a multidimensional array (represented as a series of matrices, each with size $ n_k \times n_k $, where $ n_k $ is the number of points in the Brillouin zone, in each direction). When the energies for all coordinates are calculated, the lowest energies for each of the points (corresponding to the first matrix in the multidimensional array) will then be the dispersion of the particle in the first band.
+	
+	Things missing
+	\begin{itemize}
+		\item Getting the fermi surface/sea for monovalent/divalent atoms.
+	\end{itemize}
 	
 	
 \end{document}

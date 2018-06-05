@@ -14,9 +14,7 @@
 	
 	A thing to note, is that the choice of primitive lattice vectors is not unique. A new set of primitive lattice vectors can be created by taking a linear combination of the original primitive lattice vectors, with integer coefficients. If the original set is ordered in a matrix $ A = \begin{pmatrix*} \V{a}_1 & \V{a}_2 & \cdots & \V{a}_n \end{pmatrix*}$, and the new set in a matrix $ B = \begin{pmatrix*} \V{b}_1 & \V{b}_2 & \cdots & \V{b}_n \end{pmatrix*} $, then $ B = MA $, where $ M $ is the matrix containing the coefficients. This matrix must have integer entries, and its inverse likewise.
 	
-	The integer entries of the direct matrix makes sure that any lattice point generated with the new set of primitive lattice vectors will also have integer coefficients when expressed in the old set of primitive lattice vectors. The integer entries of the inverse matrix then makes sure that this process will also happen in reverse.
-	
-	This will come into play when trying to detect the lattice based on the users input of primitive lattice vectors. 
+	The integer entries of the direct matrix makes sure that any lattice point generated with the new set of primitive lattice vectors will also have integer coefficients when expressed in the old set of primitive lattice vectors. The integer entries of the inverse matrix then makes sure that this process will also happen in reverse. This characteristic will come into play when trying to detect the lattice based on the users input of primitive lattice vectors. 
 	
 	The second part is the unit cell. This is the building block of the lattice. It is a region of space which, when stacked will completely tile the space. Like with the choice of primitive lattice vectors, the choice of unit cell is not unique. In particular we distinguish between two type of unit cells: the smallest possible unit cell and everything else. The smallest possible unit cell is called a \textit{primitive} unit cell, and must contain only one lattice point (it cannot contain no lattice points, as then it would not recreate the lattice when tiled). Any unit cell containing more than one lattice point is called a \textit{conventional unit cell}. Usually a conventional unit cell is chosen for ease of calculation (as we will see in the scattering simulation), where the primitive lattice vectors constitute an orthogonal set.
 	
@@ -24,7 +22,7 @@
 	
 	The basis is specified as a list of vectors that are to be added to the lattice points, specifying the position of the atoms in the crystal.
 	
-	The user can create any type of crystal they want by specifying any set of primitive lattice vector and supplying any desired basis. However a small selection of crystals will be available as presets. These include the 14 Bravais lattices with a 1 atom basis (at $ (0,0,0) $):
+	The user can create any type of crystal they want by specifying any set of primitive lattice vector and supplying any desired basis. However a small selection of crystals will be available as presets. These include the 14 Bravais lattices with a 1 atom basis (at $ (0,0,0) $), named in \textbf{INSERT REF TO TABLE}. Each of these will specify the primitive lattice vectors for a corresponding primitive unit cell. Furthermore five other crystal presets will be available, named in \textbf{ANOTHER REF}. Specifications of all of these presets are available in the appendix. (\textbf{LINK TO APPENDIX}).
 	\begin{table}
 		\centering
 		\begin{tabular}{|l|l|}
@@ -47,8 +45,6 @@
 		\caption{The 14 Bravais lattices}
 		\label{tab:bravais}
 	\end{table}
-	
-	Each of these will specify the primitive lattice vectors for a corresponding primitive unit cell. Furthermore the following crystal presets will also be available:
 	\begin{table}
 		\centering
 		\begin{tabular}{|l|l|}
@@ -63,20 +59,26 @@
 		\caption{Other available crystal presets}
 		\label{tab:presets}
 	\end{table}
-	Specifications of all of these presets are available in the appendix. (\textbf{LINK TO APPENDIX})
-	
-	Mathematically speaking, a lattice is infinite. A physical crystal is, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, each atom would be way too small (if it was feasible, what would be the point of this project then?). So for the purposes of this project, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells. 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure.
-	
-	However, plotting just the atoms will quickly become confusing. Because of this we plot grid lines. For the crystals that can be expressed as a lattice with orthogonal primitive lattice vectors and a basis (cubic, tetragonal and orthorhombic), we usually want to plot orthogonal grid lines, whilst for other crystals plotting grid lines along the lattice vectors will be more useful.
-	
 	
 	\subsection{Implementation}
-	In creating a program that plots crystal structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible.
+	Mathematically speaking, a lattice is infinite. A physical crystal, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, each atom would be way too small (if it was feasible, what would be the point of this project then?). So for the purposes of this project, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells. 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure. As such, in the following we assume that $ n_i \in \{0, 1, 2\} $.
 	
-	To achieve this, we have to be aware of how Matplotlib handles its 3-dimensional plots. One example of this is that the graphics engine will not hide objects plotted outside of the limits of the figure. This may lead to unpredicted artefacts like atoms "outside" of the crystal (atoms plotted on the edge of the crystal in a unit cell that will not be fully populated).
+	In creating a program that plots these structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible. This constitutes plotting only full unit cells: no unit cell can have missing atoms. However, the screen is still just a two dimensional projection of the actual three dimensional phenomena and without some form of depth perception, the crystal will just look like a weird two dimensional pattern. This is what grid lines fix. They give the required depth perception to allow the user to comprehend the crystal as a three dimensional structure, and not as a two dimensional sheet of dots. 
 	
-	Another problem may be unfilled unit cells, where we expect them to be filled. Say we have specified an fcc lattice, and we want to view the conventional (cubic) unit cell. Plotting just the atoms at the lattice points with coefficients $ n_i \in [0,1,2] $ for all $ i $ will give a parallelepiped and not the anticipated cube. To do this we need to extend the range of coefficients to fill out any incomplete unit cells. In practise this is done by adding the maximum magnitude of coefficients (in this case 2) to the upper range of coefficients, and subtracting it from the lower range. In this case the resulting range of coefficients is $ n_i \in [-2, -1, 0, 1, 2, 3, 4] $.
+	For the crystals that can be expressed as a lattice with orthogonal primitive lattice vectors and a basis (cubic, tetragonal and orthorhombic), we usually want to plot orthogonal grid lines, whilst for other crystals plotting grid lines along the lattice vectors will be more useful.
 	
+	In the case of plotting primitive unit cells, the ones furthest away from the origin (say with $ n_1 = n_2 = n_3 = 2 $) may not be filled. Say the basis consists of only one atom. Then this atom will just be placed on the lattice points, and there is no problem, as this is the edge of the unit cell. However, if the basis consists of two atoms (or more), where one is placed at $ (0,0,0) $ and the other has some positive coordinates, then this second atom will be in a unit cell which is not supposed to be plotted (it would necessitate plotting the lattice points corresponding to $ n_i = 3 $). A way to correct for this is to write each plotted atom as a linear combination of the primitive lattice vectors with coefficients $ n'_i $ (where the coefficients here are real numbers, as they do not necessarily align with the lattice points). If the coefficients are $ 0 \leq n_i \leq 2 $ for all $ n'_i $, then we plot the point.
+	
+	For plotting conventional unit cells when the user inputs primitive lattice vectors (for cubic, tetragonal and orthorhombic lattices), we need something similar. It is done by calculating the lengths of the cuboid plot box that just contains the parallelepiped arising from plotting the lattice points with the specified coefficients ($ n_i \in \{0, 1, 2\}$).
+	
+	To calculate this, the program creates the 8 possible vectors arising from linear combinations of the primitive lattice vectors, with coefficients from the minimum and maximum coefficients and taking the limits of the plot box as the minimum and maximum values for these 8 vectors. For the specified lattice points, these 8 vectors are:
+	\begin{equation}
+		\begin{array}{llll}
+			\V{v}_1 = \V{0}, & \V{v}_2 = 2\V{a}_1, & \V{v}_3 = 2\V{a}_2, & \V{v}_4 = 2\V{a}_3, \\
+			\V{v}_5 = 2(\V{a}_1+\V{a}_2), & \V{v}_6 = 2(\V{a}_1+\V{a}_3), & \V{v}_7 = 2(\V{a}_2+\V{a}_3), &\V{v}_8 = 2(\V{a}_1+\V{a}_2+ \V{a}_3).
+		\end{array}
+	\end{equation}
+	These are the vertices of the aforementioned parallelepiped. The side lengths of the plot box are then the maximum values of the coordinates minus the minimum values, and any atom outside this plot box is not plotted.  
 	
 	\subsection{Step-by-step}
 	Initially the program will either load the chosen crystal preset in such a way as to make the resulting plot as informative as possible (eg. place lattice vectors along cardinal axes for an orthogonal lattice, to make plotting grid lines easier). If the user manually specifies the lattice and basis, the program will try to classify the lattice according to the specifications in the appendix (\textbf{LINK TO APPENDIX}). Next the program checks whether or not the crystal should be rotated to make plotting prettier.
@@ -93,9 +95,7 @@
 	
 	For the face centred lattices, the ideal, rotated lattice is created from the magnitude of the primitive lattice vectors: if $ |\V{a}_1| = a, |\V{a}_2| = b, |\V{a}_3| = c $, then $ \V{a}'_1 = (a/2, b/2, 0), \V{a}'_2 = (a/2, 0, c/2), \V{a}'_3 = (0, b/2, c/2) $. First the crystal is rotated such that $ \V{a}_1 $ aligns with $ \V{a}'_1 $, by using their cross product. Then the crystal is rotated such that the now rotated $ \V{a}_2 $ aligns with $ \V{a}'_2 $, via the vector rejection of $ \V{a}_2 $ with $ \V{a}'_2 $. (\textbf{THIS METHOD AND THE ONE FOR THE HEXAGONAL LATTICE ASSUMES THAT THE PRIMITIVE LATTICE VECTORS ARE SPECIFIED AS IN THE APPENDIX}).
 	
-	Next, the program calculates the limits of the plot box. This is done by calculating the 8 possible vectors arising from linear combinations of the primitive lattice vectors, with coefficients from the specified minimum and maximum coefficients and taking the limits of the plot box as the minimum and maximum values for these 8 vectors. For example, say that the specified minimum and maximum coefficients are $ [0,0,0] $ and $ [2,2,2] $ respectively, then the 8 vectors are $ \V{v}_1 = \V{0}, \V{v}_2 = 2\V{a}_1, \V{v}_3 = 2\V{a}_2, \V{v}_4 = 2\V{a}_3, \V{v}_5 = 2(\V{a}_1+\V{a}_2), \V{v}_6 = 2(\V{a}_1+\V{a}_3), \V{v}_7 = 2(\V{a}_2+\V{a}_3), \V{v}_8 = 2(\V{a}_1+\V{a}_2+ \V{a}_3) $. These form a parallelepiped from $ 2\V{a}_1, 2\V{a}_2, 2\V{a}_3 $, where the plot box is a cuboid, with edges along the cardinal axes, that just contain the aforementioned parallelepiped.
-	
-	With the lattice and basis rotated, and the limits of the plot box found, the crystal is generated. This is done by looping over the three ranges specified by the minimum and maximum coefficients, creating each lattice point $ \V{R} $ by Eq. \eqref{eq:lattice_points}. For each lattice point $ n $ atomic positions are created by adding one of the $ n $ vectors in the basis to the lattice point. Furthermore lists of the colours and sizes associated with each atom are also created at this point. After creating all the atoms, the program deletes any that may lie outside the limits of the plot box.
+	With the lattice and basis rotated, the program finds the limits of the plot box as written above, after which the crystal is generated. This is done by looping over the three ranges specified by the minimum and maximum coefficients, creating each lattice point $ \V{R} $ by Eq. \eqref{eq:lattice_points}. For each lattice point $ n $ atomic positions are created by adding one of the $ n $ vectors in the basis to the lattice point. Furthermore lists of the colours and sizes associated with each atom are also created at this point. After creating all the atoms, the program deletes any that may lie outside the limits of the plot box.
 	
 	The only thing missing now is to create the grid lines and plot everything. The program has two ways of creating grid lines: along the primitive lattice vectors and along the cardinal axes.
 	
