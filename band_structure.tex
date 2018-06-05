@@ -3,6 +3,7 @@
 \begin{document}
 	
 	\section{Band structure}
+	\subsection{Theory}
 	In a crystal, the potential must necessarily be periodic in the unit cell, otherwise the discrete translational symmetry is broken. As such the following equation holds for any lattice vector $ \V{R} $:
 	\begin{equation}\label{eq:band_period_V}
 		V(\V{r}+\V{R}) = V(\V{r})
@@ -215,10 +216,11 @@
 	
 	For each point in the Brillouin zone the program then creates the corresponding kinetic energy matrix, adds the potential energy matrix, and finds the eigenvalues for the resulting matrix. These values are stored in a multidimensional array (represented as a series of matrices, each with size $ n_k \times n_k $, where $ n_k $ is the number of points in the Brillouin zone, in each direction). When the energies for all coordinates are calculated, the lowest energies for each of the points (corresponding to the first matrix in the multidimensional array) will then be the dispersion of the particle in the first band.
 	
-	Things missing
-	\begin{itemize}
-		\item Getting the fermi surface/sea for monovalent/divalent atoms.
-	\end{itemize}
+	However, we want to find the Fermi sea and surface, and not just the dispersion relation. For a crystal with monovalent atoms the electrons fill up half a band, corresponding to half the area of the first Brillouin zone (in two dimensions). To represent this we use the fact that we have discretised the Brillouin zone into $ n_k^2 $ points. The Fermi sea is then the values of $ \V{k} $ with have an energy lower than the $ n_k^2/2 $'th lowest energy.
+	
+	So to plot only the Fermi sea for a 2D material, we order the energies in the band from lowest to highest, find the middle value, and only plot points that have an energy lower than, or equal to, this energy.
+	
+	For divalent atoms a whole band is filled, and the occupied states may spill into the second Brillouin zone. As such we need to calculate the dispersion for states in this zone as well. Then we order the energies of the band, take the energy of the $ n_k^2 $'th point as the Fermi energy, and plot all points whose energy is lower than or equal to it.
 	
 	
 \end{document}
