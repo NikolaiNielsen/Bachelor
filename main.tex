@@ -37,6 +37,8 @@
 	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function, which takes 4 parameters: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
 	
 	\newpage
+	\subfile{introduction.tex}
+	
 	\subfile{lattices.tex}
 	
 	\subfile{reciprocal.tex}

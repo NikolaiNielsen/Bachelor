@@ -1,0 +1,36 @@
+\documentclass[main.tex]{subfiles}
+
+
+\begin{document}
+	\section{Introduction}
+	
+	
+	\subsection{Nearly Free Electron model in one dimension}
+	As an introduction to band structures in one dimension we look at the "low potential" limit, namely the nearly free electron model. In this model we assume that electrons are essentially free, but experience some small periodic potential that we treat as a perturbation.
+	
+	In general, the Hamiltonian is
+	\begin{equation}\label{key}
+		H = H_0 + H', \quad H_0 = \frac{\V{p}^2}{2m}, \quad H' = V(\V{r}) = V(\V{r} + \V{R})
+	\end{equation}
+	where $ \V{R} $ is any lattice vector.
+	
+	
+	
+	\subsection{Blochs Theorem}
+	In the previous section we considered the case of an electron in a weak periodic potential, where the wave function is essentially a plane wave. But this is not necessarily the case for real materials. So can we be sure that we can treat the wave function as plane waves even when the potential strength is cranked up? It turns out we can, and the proof of that lies with Blochs theorem.
+	
+	The assumption here is that we are working with a periodic potential, such that $ V(\V{r} + \V{R}) $ for all lattice points. As such the full Hamiltonian has a discrete translational symmetry, which means that all translation operators $ \hat{T}_{\V{R}} $ (that translate by any lattice vector $ \V{R} $) commute with the Hamiltonian: $ [\hat{H}, \hat{T}_{\V{R}}] = 0$. This further means that we can simultaneously diagonalize these operators and find a shared basis of eigenstates.
+	
+	The eigenvalue of the translation operator must have a magnitude of unity, as it otherwise would break the translation symmetry inherent to the system. So the only possible eigenvalue is a phase shift. Further we need all translation operators to commute with each other, and $ \hat{T}_{\V{R}_1} \hat{T}_{\V{R}_2} = \hat{T}_{\V{R}_1 + \V{R}_2} $. With these restrictions the only possible eigenvalue is
+	\begin{equation}\label{key}
+		\hat{T}_{\V{R}} \psi(\V{r}) = e^{i\V{k} \D\V{R}} \psi(\V{r}) = \psi(\V{r}+\V{R}),
+	\end{equation}
+	where the last equality is just the definition of the translation operator. This means we can write the wave function as a plane wave times some function that has the same periodicity as the crystal:
+	\begin{equation}\label{key}
+		\psi(\V{r}) = e^{i\V{k} \D \V{r}} u(\V{r}),
+	\end{equation}
+	where $ u(\V{r}) $ carries this periodicity of the crystal.
+	
+	
+	
+\end{document}

@@ -6,7 +6,7 @@ Abstract
 
 Introduction
 - [ ] write motivation for the thesis
-- [ ] General theory (Blochs theorem especially), resulting from large, periodic systems
+- [x] General theory (Blochs theorem especially), resulting from large, periodic systems
 - [ ] General theory: 1D tight-binding chain to illustrate examples
 - [x] Thoughts on Python
 
