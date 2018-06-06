@@ -37,6 +37,33 @@ latticelines = {'base centred cubic': 'soft',
                 'wurtzite': 'latticevectors',
                 'undetermined': 'latticevectors'}
 
+unitcells = {'base centred cubic': 'conventional',
+             'base centred monoclinic 1': 'primitive',
+             'base centred monoclinic 2': 'primitive',
+             'base centred monoclinic 3': 'primitive',
+             'bcc': 'conventional',
+             'conventional bcc': 'conventional',
+             'conventional fcc': 'conventional',
+             'fcc': 'conventional',
+             'hexagonal 1': 'hexagonal',
+             'hexagonal 2': 'hexagonal',
+             'orthorhombic': 'conventional',
+             'orthorhombic base centred': 'conventional',
+             'orthorhombic body centred': 'conventional',
+             'orthorhombic face centred': 'conventional',
+             'rhombohedral': 'primitive',
+             'simple cubic': 'conventional',
+             'simple monoclinic': 'primitive',
+             'tetragonal': 'conventional',
+             'tetragonal base centred': 'conventional',
+             'tetragonal body centred': 'conventional',
+             'tetragonal face centred': 'conventional',
+             'triclinic': 'primitive',
+             'zincblende': 'conventional',
+             'diamond': 'conventional',
+             'wurtzite': 'primitive',
+             'undetermined': 'primitive'}
+
 
 def mag(a):
     """
@@ -560,7 +587,8 @@ def chooser(lattice_name="simple cubic", verbose=False):
     return lattice, basis, lattice_name
 
 
-def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
+def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
+                type_="primitive"):
     """
     Calculates the limits on the coordinates (the plot box), and the limits on
     the basis vector ranges.
@@ -575,7 +603,7 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
 
     n_min, n_max = np.array(min_), np.array(max_)
     lattice = np.array((a1, a2, a3))
-    # For dynamic limits we pass min_ and max_ as limits of basis vector range
+    # For dynamic limits we pass min_ and max_ asq limits of basis vector range
     # and calculate coordinate limit based on basis vector range
     if lim_type.lower() in "individual":
         # Take the max value for each of the cardinal directions, for the
@@ -625,23 +653,36 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
     # to allow for "spillage". The value is the maximal value of the max_
     # array. Also, let's make sure n_min / max are arrays of integers. Don't
     # worry, they've already been rounded
-    returns = (r_min, r_max, n_min.astype('int') - np.max(max_),
-               n_max.astype('int') + np.max(max_))
+
+    if type_ == "primitive":
+        returns = (r_min, r_max, n_min.astype('int'), n_max.astype('int'))
+    elif type_ == "conventional":
+        returns = (r_min, r_max, n_min.astype('int') - np.max(max_),
+                   n_max.astype('int') + np.max(max_))
     return returns
 
 
-def limiter(l, objects, r_min=np.array([0, 0, 0]), r_max=np.array([2, 2, 2])):
+def limiter(points, objects, min_=np.array([0, 0, 0]),
+            max_=np.array([2, 2, 2]), type_="primitive",
+            lattice=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
     """
     A function to highlight points that are outside the limits of the plot
     """
 
-    num, _ = np.shape(l)
-    # loop over all row IDs. Add the row ID to the list if all coordinates of
-    # the corresponding point are smaller than those of r_min, or larger than
-    # those of r_max
+    num, _ = np.shape(points)
 
+    if type_ == "primitive":
+        # We express all points in coefficients of the primitive lattice
+        # vectors. If the coefficients are larger than max_ or smaller than
+        # min_ they are outside the range
+        points = points @ np.linalg.inv(lattice)
+
+    # loop over all row IDs. Add the row ID to the list if all coordinates
+    # of the corresponding point are smaller than those of min_, or larger
+    # than those of max_
     rows = [row_id for row_id in range(num) if
-            ((r_min > l[row_id, ]).any() or (l[row_id, ] > r_max).any())]
+            ((min_ > points[row_id, ]).any() or
+             (points[row_id, ] > max_).any())]
 
     limited_objects = []
     for object_ in objects:

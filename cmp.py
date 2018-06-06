@@ -18,7 +18,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        indices=None, verbose=False):
+        type_=None, indices=None, verbose=False):
     """
     Creates, limits and plots the lattice
     """
@@ -76,29 +76,46 @@ def Lattice(
         for i in range(n_basis):
             sizes.append(s)
 
-    # Choosing gridline type. First the default settings.
+    # Choosing gridline and unit cell type. First the default settings.
     latticelines = lattices.latticelines
+    unitcells = lattices.unitcells
 
-    # This isn't really pretty, but it works. If the Gridtype is already set,
-    # we use that value. If not, and the latticetype is undefined we choose the
-    # default type (latticevectors). Otherwise (when the latticetype is
-    # defined) we choose the gridtype appropriate for the lattice
-    if grid_type is not None:
-        pass
-    else:
+    if grid_type is None:
         grid_type = latticelines[lattice_type]
+
+    if type_ is None:
+        type_ = unitcells[lattice_type]
+    else:
+        try:
+            type_ = type_.lower()
+        except AttributeError:
+            print('Please input a string for type_. Giving primitive')
+            type_ = "primitive"
+
+        if type_ not in ["primitive", "conventional"]:
+            print(("Input either 'primitive' or 'conventional' for type."
+                   " Giving 'primitive'"))
+            type_ = "primitive"
+
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
-                                                      min_, max_)
+                                                      min_, max_, type_=type_)
 
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                             lim_type, n_min, n_max, r_min,
                                             r_max)
+
+    # if we plot the conventional cell we want to give r_min and r_max to
+    # limiter. If not we want to give n_min and n_max
+    if type_ == "conventional":
+        lim_min, lim_max = r_min, r_max
+    else:
+        lim_min, lim_max = n_min, n_max
     # Objects to limit to the plot-box
     objects = [atomic_positions, lattice_coefficients, atomic_colors,
                atomic_sizes, lattice_position]
-    objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
+    objects = lattices.limiter(atomic_positions, objects, lim_min, lim_max)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
 
@@ -198,6 +215,7 @@ def Scattering(lattice_name='simple cubic',
     point_sizes *= size_default
     plane_z = 3
     beam_end_z = max_[2]
+    unit_cell_type = "conventional"
     # input sanitization
     if basis is not None:
         a1, a2, a3 = np.eye(3, dtype=int)
@@ -217,7 +235,8 @@ def Scattering(lattice_name='simple cubic',
 
     # Calculating stuff for plotting the crystal
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
-                                                      min_, max_)
+                                                      min_, max_,
+                                                      unit_cell_type)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = lattices.generator(a1, a2, a3, basis, atom_colors,
                                             atom_sizes,
@@ -225,7 +244,8 @@ def Scattering(lattice_name='simple cubic',
                                             r_max)
     objects = [atomic_positions, lattice_coefficients, atomic_colors,
                atomic_sizes, lattice_position]
-    objects = lattices.limiter(atomic_positions, objects, r_min, r_max)
+    objects = lattices.limiter(atomic_positions, objects, r_min, r_max,
+                               unit_cell_type)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
 
