@@ -568,7 +568,7 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2]):
     # inputs:
     # - lim_type:                       string
     # - a1, a2, a3:                     ndarray (3,)
-    # - min_, max_:                     list (3, int)
+    # - max_:                           list (3, int)
     #
     # Outputs:
     # - r_min, r_max, n_min, n_max:     ndarray (3,)

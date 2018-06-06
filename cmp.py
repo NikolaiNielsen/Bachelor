@@ -12,16 +12,19 @@ eq = np.isclose
 
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
-     [0, 0, 0], [2, 2, 2])
+     [2, 2, 2])
 
 
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
-        lim_type=d[6], grid_type=None, min_=d[8], max_=d[9], lattice_name=None,
+        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         indices=None, verbose=False):
     """
     Creates, limits and plots the lattice
     """
+
+    # Minimum coefficients for lattice vectors
+    min_ = [0, 0, 0]
 
     num_plane_points = 20
     if lattice_name is not None:
@@ -164,9 +167,9 @@ def Lattice(
 
 def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
-        lim_type=d[6], grid_type=None, min_=d[8], max_=d[9], lattice_name=None,
+        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         indices=(1, 1, 1), verbose=False):
-    Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, min_, max_,
+    Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, max_,
             lattice_name, indices, verbose)
 
 
@@ -180,22 +183,21 @@ def Scattering(lattice_name='simple cubic',
     point_sizes = 2
     detector_screen_position = [0.6, 0.2, 0.3, 0.6]
     lattice_name = lattice_name.lower()
-    beam_end_z = 1
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     grid_type = lattices.latticelines[lattice_name]
     lim_type = "proper"
-    lattice_colors = ["xkcd:cement",
-                      "xkcd:cornflower blue",
-                      "xkcd:cornflower blue",
-                      "xkcd:cornflower blue"]
-    lattice_sizes = [1, 1, 1, 1]
+    atom_colors = ["xkcd:cement",
+                   "xkcd:cornflower blue",
+                   "xkcd:cornflower blue",
+                   "xkcd:cornflower blue"]
+    atom_sizes = [1, 1, 1, 1]
     g_col = 'k'
     g_w = 0.5
     g_a = 0.6
     size_default = 36
     point_sizes *= size_default
     plane_z = 3
-
+    beam_end_z = max_[2]
     # input sanitization
     if basis is not None:
         a1, a2, a3 = np.eye(3, dtype=int)
@@ -217,8 +219,8 @@ def Scattering(lattice_name='simple cubic',
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
-     lattice_position) = lattices.generator(a1, a2, a3, basis, lattice_colors,
-                                            lattice_sizes,
+     lattice_position) = lattices.generator(a1, a2, a3, basis, atom_colors,
+                                            atom_sizes,
                                             lim_type, n_min, n_max, r_min,
                                             r_max)
     objects = [atomic_positions, lattice_coefficients, atomic_colors,
