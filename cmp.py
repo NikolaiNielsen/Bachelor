@@ -1,12 +1,10 @@
-import itertools
-
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 import lattices
 import scattering
+import band_structure
 
 eq = np.isclose
 
@@ -382,4 +380,37 @@ def Scattering(lattice_name='simple cubic',
     ax.grid(False)
     ax.axis('off')
     ax.axis('equal')
+    plt.show()
+
+
+def Band_structure(V0=0, n_k=101, G_range=[-1, 0, 1], potential="harmonic"):
+
+    potentials = {"harmonic": band_structure.VG_cos,
+                  "dirac": band_structure.VG_dirac}
+    class_name = potential.__class__.__name__
+    if class_name not in ["function", "str"]:
+        print(("Please input either 'dirac', 'harmonic' or the name of your "
+               "own potential function. Giving harmonic."))
+        potential = band_structure.VG_cos
+    elif class_name == "str":
+        if potential.lower() not in ["dirac", "harmonic"]:
+            print(("Please input either 'dirac' or 'harmonic' as the "
+                   "potential. Giving harmonic."))
+            potential = band_structure.VG_cos
+        potential = potentials[potential.lower()]
+
+    o = band_structure.calc_band_structure(V0=V0, n_k=n_k, G_range=G_range,
+                                           potential=potential)
+    kxs, kys, band, max_E = o
+    max_E_mat = max_E * np.ones((n_k, n_k))
+    max_k = np.amax(kxs)
+    min_k = np.amin(kxs)
+
+    fig = plt.figure()
+    ax = fig.gca(projection="3d")
+    ax.plot_surface(kxs, kys, band)
+    ax.plot_surface(kxs, kys, max_E_mat, alpha=0.5)
+    ax.set_xlim([min_k, max_k])
+    ax.set_ylim([min_k, max_k])
+
     plt.show()
