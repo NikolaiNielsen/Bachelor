@@ -98,22 +98,18 @@ def Lattice(
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_, type_=type_)
-
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
-     lattice_position) = lattices.generator(a1, a2, a3, basis, colors, sizes,
-                                            lim_type, n_min, n_max, r_min,
-                                            r_max)
-
+    
     # if we plot the conventional cell we want to give r_min and r_max to
     # limiter. If not we want to give n_min and n_max
     if type_ == "conventional":
         lim_min, lim_max = r_min, r_max
     else:
         lim_min, lim_max = n_min, n_max
+
+    objects = lattices.generator(a1, a2, a3, basis, colors, sizes,
+                                 n_min, n_max)
     # Objects to limit to the plot-box
-    objects = [atomic_positions, lattice_coefficients, atomic_colors,
-               atomic_sizes, lattice_position]
-    objects = lattices.limiter(atomic_positions, objects, lim_min, lim_max)
+    objects = lattices.limiter(objects[0], objects, lim_min, lim_max)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
 
@@ -170,8 +166,7 @@ def Lattice(
     ax.set_ylim([r_min[1], r_max[1]])
     ax.set_zlim([r_min[2], r_max[2]])
     ax.grid(False)
-    plt.axis('equal')
-    plt.axis('off')
+    ax.axis('off')
 
     # make the panes transparent (the plot box)
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -190,11 +185,13 @@ def Reciprocal(
 
 def Scattering(lattice_name='simple cubic',
                basis=None,
-               k_in=np.array([0, 0, -3 * np.pi]),
+               k_in=np.array([0, 0, -1.5]),
                scattering_length=np.array([1, 1, 1, 1]),
                highlight=None,
                show_all=False,
+               normalize=True,
                verbose=False):
+    k_in = np.array(k_in)
     point_sizes = 2
     detector_screen_position = [0.6, 0.2, 0.3, 0.6]
     lattice_name = lattice_name.lower()
@@ -230,19 +227,18 @@ def Scattering(lattice_name='simple cubic',
             return
         lattice, basis, _ = lattices.chooser(lattice_name, verbose=verbose)
         a1, a2, a3 = lattice
-
+    
+    # Normalizing wave vector (multiplying by k0 = 2Pi/a)
+    if normalize:
+        k_in *= 2 * np.pi
+    
     # Calculating stuff for plotting the crystal
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_cell_type)
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
-     lattice_position) = lattices.generator(a1, a2, a3, basis, atom_colors,
-                                            atom_sizes,
-                                            lim_type, n_min, n_max, r_min,
-                                            r_max)
-    objects = [atomic_positions, lattice_coefficients, atomic_colors,
-               atomic_sizes, lattice_position]
-    objects = lattices.limiter(atomic_positions, objects, r_min, r_max,
+    objects = lattices.generator(a1, a2, a3, basis, atom_colors,
+                                 atom_sizes, n_min, n_max)
+    objects = lattices.limiter(objects[0], objects, r_min, r_max,
                                unit_cell_type)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
@@ -371,15 +367,13 @@ def Scattering(lattice_name='simple cubic',
 
     ax.set_aspect('equal')
     ax.set_proj_type('ortho')
-    ax.set_xlim([r_min[0], r_max[0]])
-    ax.set_ylim([r_min[1], r_max[1]])
-    ax.set_zlim([r_min[2], r_max[2]])
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.grid(False)
     ax.axis('off')
-    ax.axis('equal')
+    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = $' + '{}'.format(k_in))
+    ax2.set_title(r'Detection screen')
     plt.show()
 
 

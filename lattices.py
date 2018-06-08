@@ -83,27 +83,25 @@ def mag(a):
         return np.linalg.norm(a, axis=1)
 
 
-def generator(a1, a2, a3, basis, colors, sizes, lim_type, n_min, n_max,
-              r_min, r_max, grid_type=None, verbose=False):
+def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
     """
     Generates the atomic positions of the lattice, from the lattice- and basis-
     vectors
     """
     # inputs:
-    # - a1, a2, a3:                     ndarray (3,)
-    # - basis:                          ndarray (n,3)
-    # - colors:                         list (n, strings)
-    # - sizes:                          list (n, ints)
-    # - lim_type, gridtype:             string
-    # - n_min, n_max, r_min, r_max:     ndarray (3,)
-    # - verbose:                        Bool
+    # - a1, a2, a3:             ndarray (3,)
+    # - basis:                  ndarray (n,3)
+    # - colors:                 list (n, strings)
+    # - sizes:                  list (n, ints)
+    # - n_min, n_max:           ndarray (3,)
+    # - verbose:                Bool
     #
     # Outputs:
-    # - atomic_positions:               ndarray (n,3)
-    # - lattice_coefficients:           ndarray (n,3)
-    # - atomic_colors:                  list (n, strings)
-    # - atomic_sizes:                   list (n, ints)
-    # - lattice_position:               list (n, bools)
+    # - atomic_positions:       ndarray (n,3)
+    # - lattice_coefficients:   ndarray (n,3)
+    # - atomic_colors:          list (n, strings)
+    # - atomic_sizes:           list (n, ints)
+    # - lattice_position:       list (n, bools)
     length_basis = np.shape(basis)
     if len(length_basis) == 1:
         n_basis = 1
