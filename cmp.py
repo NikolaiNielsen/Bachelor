@@ -181,10 +181,34 @@ def Lattice(
 
 def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
-        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
+        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None, type_=None,
         indices=(1, 1, 1), verbose=False, returns=False):
-    Lattice(a1, a2, a3, basis, colors, sizes, lim_type, grid_type, max_,
-            lattice_name, indices, verbose, returns)
+    if returns:
+        fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
+                          basis=basis,
+                          colors=colors,
+                          sizes=sizes,
+                          lim_type=lim_type,
+                          grid_type=grid_type,
+                          max_=max_,
+                          type_=type_,
+                          lattice_name=lattice_name,
+                          indices=indices,
+                          verbose=verbose,
+                          returns=True)
+        return fig, ax
+    else:
+        Lattice(a1=a1, a2=a2, a3=a3,
+                basis=basis,
+                colors=colors,
+                sizes=sizes,
+                lim_type=lim_type,
+                grid_type=grid_type,
+                max_=max_,
+                type_=type_,
+                lattice_name=lattice_name,
+                indices=indices,
+                verbose=verbose)
 
 
 def Scattering(lattice_name='simple cubic',
