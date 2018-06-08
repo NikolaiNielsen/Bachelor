@@ -220,9 +220,9 @@ def Scattering(lattice_name='simple cubic',
                normalize=True,
                verbose=False,
                returns=False):
+
     k_in = np.array(k_in)
     point_sizes = 2
-    detector_screen_position = [0.6, 0.2, 0.3, 0.6]
     lattice_name = lattice_name.lower()
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     grid_type = lattices.latticelines[lattice_name]
@@ -237,7 +237,7 @@ def Scattering(lattice_name='simple cubic',
     g_a = 0.6
     size_default = 36
     point_sizes *= size_default
-    plane_z = 3
+    plane_z = 2
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
     # input sanitization
@@ -258,6 +258,7 @@ def Scattering(lattice_name='simple cubic',
         a1, a2, a3 = lattice
     
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
+    k_title = np.copy(k_in)
     if normalize:
         k_in *= 2 * np.pi
     
@@ -286,10 +287,12 @@ def Scattering(lattice_name='simple cubic',
                                                              k_in)
     points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
 
+
     # Plotting the basics
-    fig = plt.figure(figsize=(12.8, 4.8))
+    detector_screen_position = [0.7, 0.2, 0.25, 0.625]
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.gca(projection="3d")
-    ax.set_position([0, 0, 0.5, 1])
+    ax.set_position([0, 0, 0.7, 1])
 
     # Create second set of axes for detection screen
     ax2 = plt.axes(detector_screen_position)
@@ -399,10 +402,19 @@ def Scattering(lattice_name='simple cubic',
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    
+    
+    # Some limit trickery. We make the plot box cubic:
+    plot_max = np.amax(r_max)
+    plot_min = np.amin(r_min)
+    ax.set_xlim(plot_min, plot_max)
+    ax.set_ylim(plot_min, plot_max)
+    ax.set_zlim(plot_min, plot_max)
+    
     ax.grid(False)
     ax.axis('off')
-    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = $' + '{}'.format(k_in))
-    ax2.set_title(r'Detection screen')
+    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' + '{}'.format(k_title))
+    ax2.set_title('Detection screen.\nScattering lengths: {}'.format(scattering_length))
     if returns:
         return fig, ax, ax2
     plt.show()
@@ -437,5 +449,4 @@ def Band_structure(V0=0, n_k=101, G_range=[-1, 0, 1], potential="harmonic"):
     ax.plot_surface(kxs, kys, max_E_mat, alpha=0.5)
     ax.set_xlim([min_k, max_k])
     ax.set_ylim([min_k, max_k])
-
     plt.show()
