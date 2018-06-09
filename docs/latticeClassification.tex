@@ -1,41 +1,8 @@
-% Nikolai Nielsens "Fysiske Fag" preamble
-\documentclass[a4paper,10pt]{article} 	% A4 papir, 10pt størrelse
-\usepackage[danish]{babel}
-\usepackage{Nikolai} 					% Min hjemmelavede pakke
-\usepackage[dvipsnames]{xcolor}
-
-% Margen
-\usepackage[margin=1in]{geometry}
-
-% Max antal kolonner i en matrix. Default er 10
-%\setcounter{MaxMatrixCols}{20}
-
-% Hvor dybt skal kapitler labeles?
-%\setcounter{secnumdepth}{4}	
-%\setcounter{tocdepth}{4}
-
-% Hvilket nummer skal der startes med i sections? (n-1)
-%\setcounter{section}{0}	
-
-% Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
-\numberwithin{equation}{section}
-
-
-% Header
-%\usepackage{fancyhdr}
-%\head{}
-%\pagestyle{fancy}
-
-%Titel
-\title{Lattice classification}
-\author{}
-\date{}
+\documentclass[main.tex]{subfiles}
 
 \begin{document}
-	\selectlanguage{danish}
-	\maketitle
-
-	\section{Face Centered cubic. Primitive}
+	\section{Lattice Classification}
+	\paragraph{Face Centered cubic. Primitive}
 	$a_1 = (1/2, 1/2, 0),\ a_2 = (1/2, 0, 1/2),\ a_3 = (0, 1/2, 1/2)$
 	
 	Internal angles all 60 degrees ($\cos \theta = 1/2$). 45 degrees with respect to two cardinal axis ($\cos \theta = \sqrt{2}/2$), Orthogonal with respect to last. All lengths equal ($\sqrt{2}/2$)

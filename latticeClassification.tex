@@ -1,0 +1,195 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+	\section{Lattice Classification}
+	As mentioned in the main text, the choice of primitive lattice vectors is not unique, and the following is just an example of one such choice. It is however the choice used in the program for classification.
+	
+	
+	\subsection*{Cubic lattices}
+	All of these lattices can be described with a cubic conventional unit cell, with side lengths $ a $. All vectors as such in units of $ a $.
+	
+	\subsubsection*{Simple cubic}
+	The simplest lattice. Orthogonal axes and lattice vectors of equal lengths:
+	\begin{equation*}
+		\V{a_1} = (1,0,0), \quad \V{a_2} = (0,1,0), \quad \V{a_3} = (0,0,1)
+	\end{equation*}
+	
+	\subsubsection*{Face Centered cubic}
+	In the primitive unit cell we chose
+	\begin{equation*}
+		\V{a_1} = (1/2, 1/2, 0),\quad \V{a_2} = (1/2, 0, 1/2),\quad \V{a_3} = (0, 1/2, 1/2).
+	\end{equation*}
+	With this choice, all internal angles are 60 degrees ($\cos \theta = 1/2$). They each form 45 degree angles with respect to two cardinal axis ($\cos \theta = \sqrt{2}/2$), and are orthogonal with respect to last. All lengths equal ($\sqrt{2}/2$).
+	
+	In a conventional unit cell, the primitive lattice vectors are the same as the simple cubic lattice, but the basis consists of four (row) vectors:
+	\begin{equation*}
+		\text{basis} = \begin{pmatrix}
+			0 & 0 & 0 \\
+			1/2 & 1/2 & 0 \\
+			1/2 & 0 & 1/2 \\
+			0 & 1/2 & 1/2
+		\end{pmatrix}
+	\end{equation*}
+	
+	\subsubsection*{Body centered cubic}
+	The choice of primitive lattice vectors is
+	\begin{equation*}
+		\V{a_1} = (1,0,0),\quad \V{a_2} = (0,1,0),\quad \V{a_3} = (1/2,1/2,1/2).
+	\end{equation*}
+	The internal angles for this choice are: $\V{a_1}$ and $\V{a_2}$ are orthogonal. $\V{a_1}$ and $\V{a_2}$ with $\V{a_3}$ has $\cos \theta = \sqrt{3}/3 $ (roughly 54.74 degrees). $ \V{a_1} $ and $ \V{a_2} $ have length 1, while $ \V{a_3} $ has length $\sqrt{3}/2$.
+	
+	For the conventional unit cell we have a two atom basis:
+	\begin{equation*}
+		\text{basis} = \begin{pmatrix}
+		0 & 0 & 0 \\
+		1/2 & 1/2 & 1/2
+		\end{pmatrix}
+	\end{equation*}
+	
+	\subsection*{Tetragonal}
+	Tetragonal lattices also have orthogonal axes. But the difference between them and cubic lattices, is that tetragonal lattices only have 2 primitive lattice vectors of same length. As such we choose
+	\begin{equation*}
+		\V{a_1} = (a, 0, 0), \quad \V{a_2} = (0, a, 0), \quad \V{a_3}=(0, 0, b)
+	\end{equation*}
+	This is also the choice of primitive lattice vectors with conventional unit cells for the following variants of the tetragonal lattice:
+	
+	\subsubsection*{Body centered}
+	This almost has the same primitive lattice vectors as the body centred cubic lattice, except that we increase the $ z $-coordinate on $\V{a_3}$:
+	\begin{equation*}
+		\V{a_3}= (a/2,a/2,b/2).
+	\end{equation*}
+	Then $\cos \theta = a/\sqrt{2a^2+b^2} $ is the angle between $ \V{a_1} $ (or $ \V{a_2} $) and $ \V{a_3} $. And we have $|\V{a_3}| = \frac{\sqrt{2a^2+b^2}}{2}$, giving $ \cos \theta = |\V{a_1}|/2|\V{a_3}|$:
+	\begin{align*}
+		\V{a_1} &= (a,0,0), \quad \V{a_2} = (0,a,0), \quad \V{a_3} = (a/2,a/2,b/2) \\
+		|\V{a_1}| &= a = |\V{a_2}|, \quad |\V{a_3}| = \frac{\sqrt{2a^2+b^2}}{2}, \\
+		\cos \theta_{12} &= 0, \quad \cos \theta_{23} = \cos \theta_{31} = \frac{|\V{a_1}|}{2|\V{a_3}|}  = \frac{|\V{a_2}|}{2 |\V{a_3}|}
+	\end{align*}
+	
+	\subsubsection*{Face centered}
+	Again we just increase the $ z $-coordinate for the primitive lattice vectors, and get:
+	\begin{align*}
+		\V{a_1} &= (a/2,a/2,0), \quad \V{a_2} = (a/2,0,b/2), \quad \V{a_3} = (0,a/2,b/2),\\
+		|\V{a_1}| &= \frac{\sqrt{2}}{2} a, \quad |\V{a_2}| = \frac{\sqrt{a^2+b^2}}{2} = |\V{a_3}|, \\
+		\cos \theta_{12} & = \frac{|\V{a_1}|}{2|\V{a_2}|} = \cos \theta_{31} = \frac{|\V{a_1}|}{2 |\V{a_3}|}, \quad \cos \theta_{23} = \frac{b^2}{a^2+b^2} = \frac{2\V{a_2}^2 - \V{a_1}^2}{2\V{a_2}^2} = \frac{2\V{a_3}^2 - \V{a_1}^2}{2\V{a_3}^2}
+	\end{align*}
+	\subsubsection*{base centered}
+	The base centred tetragonal lattice is like a tetragonal lattice, but with an atom in the middle of the base of each unit cell:
+	\begin{align*}
+		\V{a_1} &= (a/2,a/2,0), \quad \V{a_2} = (0,a,0), \quad \V{a_3} = (0,0,b) \\
+		|\V{a_1}| &= \frac{\sqrt{2}}{2} a, \quad |\V{a_2}| = a, \quad |\V{a_3}| = b \\
+		\cos \theta_{12} &= \frac{\sqrt{2}}{2}, \quad \cos \theta_{31} = \cos\theta_{23} = 0
+	\end{align*}
+	
+	\subsection*{Orthorhombic}
+	The orthorhombic lattice still has orthogonal primitive lattice vectors, but they are all of different magnitudes: Let's assume the conventional unit cell has 
+	\begin{equation*}
+		\V{a_1} = (a,0,0),\quad \V{a_2} = (0,b,0),\quad \V{a_3} = (0,0,c)
+	\end{equation*}
+	
+	\subsubsection*{Body centered}
+	\begin{align*}
+		\V{a_1} &= (a, 0, 0), \quad \V{a_2} = (0,b,0), \quad \V{a_3} = (a/2, b/2, c/2), \\
+		|\V{a_1}| &= a,\quad |\V{a_2}| = b, \quad |\V{a_3}| = \frac{\sqrt{a^2+b^2+c^2}}{2}, \\
+		\cos \theta_{12} &= 0,\quad \cos \theta_{31} = \frac{a}{\sqrt{a^2+b^2+c^2}} = \frac{|\V{a_1}|}{2|\V{a_3}|}, \\
+		\cos \theta_{23} &= \frac{b}{\sqrt{a^2+b^2+c^2}} = \frac{|\V{a_2}|}{2|\V{a_3}|}
+	\end{align*}
+	And the third length, $ c $, can be expressed as $ c^2 = 4\V{a_3}^2-\V{a_1}^2-\V{a_2}^2 $
+	
+	These two last are also the angles $ \V{a_3} $ make the $ x $-axis and $ y $-axis respectively. Angle with $ z $-axis is $\cos\theta_{3z} = \frac{c}{\sqrt{a^2+b^2+c^2}} = 2(4\V{a_3}^2-\V{a_1}^2-\V{a_2}^2)/|\V{a_3}|$
+	
+	\subsubsection*{Face centered}
+	\begin{align*} 
+	\V{a_1} &= (a/2,b/2,0), \quad \V{a_2} = (a/2,0,c/2), \quad \V{a_3} = (0,b/2,c/2), \\
+	|\V{a_1}| &= \frac{\sqrt{a^2+b^2}}{2}, \quad |\V{a_2}| = \frac{\sqrt{a^2+c^2}}{2}, \quad |\V{a_3}| = \frac{\sqrt{b^2+c^2}}{2} \\
+	\cos \theta_{12} &= \frac{a^2}{\sqrt{a^2+c^2} \cdot \sqrt{a^2+b^2}}, \\
+	\cos \theta_{31} &= \frac{b^2}{\sqrt{b^2+c^2} \cdot \sqrt{a^2+b^2}},\\
+	\cos \theta_{23} &= \frac{c^2}{\sqrt{a^2+c^2} \cdot \sqrt{b^2+c^2}},
+	\end{align*}
+	and the spacings are
+	\begin{equation*}
+		a^2 = 2 (\V{a_1}^2+\V{a_2}^2-\V{a_3}^2), \ b^2 = 2(\V{a_1}^2-\V{a_2}^2+\V{a_3}^2), \ c^2 = 2(-\V{a_1}^2+\V{a_2}^2+\V{a_3}^2).
+	\end{equation*}
+	As such the angles can be written
+	\begin{equation*}
+		\cos \theta_{12} = \frac{\V{a_1}^2+\V{a_2}^2-\V{a_3}^2}{2 \cdot |\V{a_1}| \cdot |\V{a_2}|}, \quad
+		\cos \theta_{31} = \frac{\V{a_1}^2-\V{a_2}^2+\V{a_3}^2}{2 \cdot |\V{a_1}| \cdot |\V{a_3}|}, \quad
+		\cos \theta_{23} = \frac{-\V{a_1}^2+\V{a_2}^2+\V{a_3}^2}{2 \cdot |\V{a_2}| \cdot |\V{a_3}|}
+	\end{equation*}
+	
+	
+	\subsubsection*{Base centered}
+	\begin{align*}
+		\V{a_1} &= (a,0,0),\quad \V{a_2} = (a/2,b/2,0),\quad \V{a_3} = (0,0,c) \\
+		|\V{a_2}|^2 &= \frac{a^2+b^2}{4}, \quad b^2 = 4\V{a_2}^2-\V{a_1}^2, \\
+		\cos \theta_{12} &= \frac{a}{\sqrt{a^2+b^2}} = \frac{|\V{a_1}|}{2|\V{a_2}|}, \quad \cos\theta_{31} = \cos \theta_{23} = 0
+	\end{align*}
+	
+	
+	\subsection*{Simple monoclinic}
+	The simple monoclinic lattice can be viewed as an infinite series of rectangular lattices stacked on top of each other, but with each by some amount with respect to the one below it. We have:
+	\begin{equation*}
+		|\V{a_1}| = a,\ |\V{a_2}| = b,\ |\V{a_3}| = c, \quad \cos \theta_{12} = \cos \theta_{23} = 0, \ \cos \theta_{31} \neq 0,
+	\end{equation*}
+	where $\V{a_1}$ and $\V{a_2}$ are along the $ x $ and $ y $-axes, respectively. $\V{a_3} = c \cdot (\cos \theta_{31},0,\sin \theta_{31})$
+	
+	\subsection*{Base centered monoclinic}
+	\begin{align*}
+	\V{a_1} &= (a,0,0),\quad \V{a_2} =(a/2, b/2,0),\quad \V{a_3} = c \cdot (\cos \theta_{31},0,\sin \theta_{31}) \\
+	|\V{a_1}| &= a,\quad |\V{a_2}| = \frac{\sqrt{a^2+b^2}}{2}, \quad |\V{a_3}| = c \\
+	\cos \theta_{12} &= \frac{|\V{a_1}|}{2|\V{a_2}|}, \quad	\cos \theta_{23} = \frac{a\cos\theta_{31}}{\sqrt{a^2+b^2}} = \frac{\V{a_1} \cdot \V{a_3}}{2 \cdot |\V{a_2}| \cdot |\V{a_3}|}
+	\end{align*}
+	
+	
+	\subsection*{Hexagonal}
+	The hexagonal lattice is an infinite series of triangular lattices, regularly stacked on top of each other. $\V{a_1}$ and $\V{a_2}$ are orthogonal to $\V{a_3}$, and 60 degrees between them:
+	\begin{align*}
+		\V{a_1} &= a \D (1,0,0),\ \V{a_2} = a \D (1/2,\sqrt{3}/2,0),\ \V{a_3} = (0,0,b) \\
+		|\V{a_1}| &= |\V{a_2}| \neq |\V{a_3}| \quad \cos \theta_{12} = 1/2, \ \cos \theta_{31} = \cos \theta_{23} = 0
+	\end{align*}
+	
+	\subsection*{Triclinic}
+	For this lattice we have no equal sides, nor any equal angles:
+	\begin{equation*}
+	|\V{a_1}| \neq |\V{a_2}| \neq |\V{a_3}|, \quad \theta_{12} \neq \theta_{31} \neq \theta_{23}.
+	\end{equation*}
+	An example (from \url{aflowlib.org/CrystalDatabase/triclinic_lattice.html}) is
+	\begin{align*}
+		\V{a_1} &= (a, 0, 0), \quad \V{a_2} = b\D (\cos \gamma, \sin \gamma, 0), \quad \V{a_3} = (c_x, c_y, c_z), \\
+		c_x &= c \cos \beta, \quad c_y = c \frac{\cos \theta - \cos \beta \D \cos \gamma}{\sin \gamma}, \quad c_z = \sqrt{c^2 - c_x^2 - c_y^2}
+	\end{align*}
+	where $ \gamma $ is the angle between $ \V{a_1} $ and $ \V{a_2} $, $ \beta $ is the angle between $ \V{a_1} $ and $ \V{a_3} $, and $ \theta $ is the angle between $ \V{a_2} $ and $ \V{a_3} $.
+	
+	
+	\subsection*{Rhombohedral}
+	$|\V{a_1}| = |\V{a_2}| = |\V{a_3}|$ and $\theta_{12} = \theta_{31} = \theta_{23}$ but they're not right angles. An example is
+	\begin{equation*}
+		\V{a_1} = (a,b,b), \quad \V{a_2} = (b,a,b), \quad \V{a_3} = (b,b,a),
+	\end{equation*}
+	which looks like the addition of a simple cubic lattice and a face centred cubic one, with different lattice spacings.
+	
+	\subsection*{Wurtzite}
+	The Wurtzite lattice is made up of equally spaced triangular lattices (with 120 degrees instead of 60 degrees), with a 4 atom basis:
+	\begin{align*}
+		\V{a_1} &= a \D (1/2, -\sqrt{3}/2, 0), \quad \V{a_2} = a \D (1/2, \sqrt{3}/2, 0), \quad \V{a_3} = (0,0, b), \\
+		\text{basis} &= \begin{pmatrix}
+		0 & 0 & 0 \\
+		0 & -a \sqrt{3}/3 & b/2 \\
+		0 & 0 & u\D b \\
+		0 & -a \sqrt{3}/3 & (1/2 + u) \D b
+		\end{pmatrix}
+	\end{align*}
+	where $ u \approx 3/8 $ (for the preset in the program we use $ u=3/8 $).
+	
+	\subsection*{Zincblende (and diamond)}
+	The Zincblende is a two atom face centred cubic crystal:
+	\begin{align*}
+		\V{a_1} &= (1/2, 1/2, 0), \quad \V{a_2} = (1/2, 0, 1/2), \quad \V{a_3} = (0, 1/2, 1/2), \\
+		\text{basis} &= \begin{pmatrix}
+		0 & 0 & 0 \\
+		1/4 & 1/4 & 1/4
+		\end{pmatrix}
+	\end{align*}
+\end{document}
+
+
+
