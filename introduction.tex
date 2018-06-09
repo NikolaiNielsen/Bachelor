@@ -10,9 +10,51 @@
 	
 	In general, the Hamiltonian is
 	\begin{equation}\label{key}
-		H = H_0 + H', \quad H_0 = \frac{\V{p}^2}{2m}, \quad H' = V(\V{r}) = V(\V{r} + \V{R})
+		H = H_0 + H', \quad H_0 = \frac{p^2}{2m}, \quad H' = V(x) = V(x + na), n \in \mathbb{Z}
 	\end{equation}
-	where $ \V{R} $ is any lattice vector.
+	where $ a $ is the spacing between atoms. In this case we are dealing with plane waves (at least to zeroth order in perturbation theory) $ \ket{k} $, with zeroth order energies $ E_0(k)= \hbar^2 k^2/2m $. Now, to calculate anything in perturbation theory, we need the matrix elements of the potential $ \braket{k' | V | k} $. These are
+	\begin{equation}\label{key}
+		\braket{k' | V | k} = \infint \ud x e^{-i(k'-k)x} V(x) \equiv V_{k'-k}.
+	\end{equation}
+	Due to the periodicity of the potential we can write this integral as a sum of integrals by setting $ x=x'+na $
+	\begin{equation}\label{key}
+		\braket{k' | V | k} = \sum_{n = -\infty}^{\infty} e^{-i(k'-k) na} \int_{0}^{a} \ud x' e^{-i(k'-k)x'} V(x').
+	\end{equation}
+	This sum is infinite for a discrete set of values $ k'-k $, namely
+	\begin{equation}\label{key}
+		k'-k = \frac{2\pi j}{a} \equiv G_j, \quad j \in \mathbb{Z}
+	\end{equation}
+	where $ G_j $ is called a reciprocal lattice vector (with $ x_n=na $ being a direct lattice vector). If $ k'-k $ is not a reciprocal lattice vector, then this sum is just 0, akin to how roots of unity sum to 0.(\textbf{REF FOR THIS?})
+	
+	Due to this, there is only a discrete set of values in $ k $-space that contribute to the energy (and wave function) of $ \ket{k} $, meaning that $ \ket{k} $ can only scatter into another state if it is separated by a reciprocal lattice vector. Further interesting things happen if the energies of some other plane waves are equal to that of $ \ket{k} $. Due to the parabolic dispersion of the plane waves, the first case where these conditions apply is for $ k $ around $ \pi/a $ and $ k'=k + G_{-1} \approx -\pi/a $. Here $ E_0(k) = E_0(k') $, and we are at a reciprocal lattice vector (the smallest non-trivial one, in fact). Due to this we need to treat the problem in degenerate perturbation theory.
+	
+	For this case, there are 4 relevant matrix elements:
+	\begin{align}
+		\braket{k|H|k} = E_0(k) + V_0, \quad \braket{k'|H|k'} = E_0(k+G_{-1}) + V_0, \quad \braket{k'|H|k} = \braket{k|H|k'}^* = V_G.
+	\end{align}
+	For simplicity we assume $ V_0 = 0 $, as it is just a constant. Around these values of $ k $ and $ k' $ we take the wave function as $ \ket{\psi} = \alpha \ket{k} + \beta \ket{k+G_{-1}} $, which means that the energy can be found as the eigenvalue to the Hamiltonian in this "two-dimensional" subspace of these two plane waves:
+	\begin{equation}\label{key}
+		\begin{pmatrix}
+			E_0(k) & V_G^* \\ V_G & E_0(k+G_{-1})
+		\end{pmatrix} \begin{pmatrix}
+		\alpha \\ \beta
+		\end{pmatrix} = E \begin{pmatrix}
+		\alpha \\ \beta
+		\end{pmatrix}, \quad \Rightarrow \quad (E_0(k)-E)(E_0(k+G_{-1})-E) - |V_G|^2 = 0.
+	\end{equation}
+	In the simple case of $ k $ being exactly $ \pi/a $, the energy is just $ E_{\pm} = E_0(k) \pm | V_G| $, which means there is a band gap of $ 2|V_G| $ at $ \pm \pi/a $. In the not-so-simple case of $ k = \pi/a - \delta $, where $ \delta $ is some small (positive) number, we get
+	\begin{equation}\label{key}
+		E_0(k) = \frac{\hbar^2}{2m}\bb{\pp{\frac{\pi}{a}}^2 + \delta^2 - \frac{2\pi}{a}}, \quad E_0(k+G_{-1}) = \frac{\hbar^2}{2m} \bb{\pp{\frac{\pi}{a}}^2 + \delta^2 + \frac{2\pi}{a}},
+	\end{equation}
+	with an eigenenergy of
+	\begin{equation}\label{key}
+		E_{\pm} = \frac{\hbar^2}{2m} \bb{\pp{\frac{\pi}{a}}^2 + \delta^2 } \pm |V_G| \sqrt{1+ \pp{\frac{2\pi\hbar^2 \delta}{2m |V_G|}}^2 }.
+	\end{equation}
+	As we are dealing with $ \delta \approx 0 $, we expand the square root to second order and get
+	\begin{equation}\label{key}
+		E_{\pm} = \frac{\hbar^2 \pi^2}{2m a^2} \pm |V_G| + \frac{\hbar^2 \delta^2}{2m} \bb{1 \pm \frac{\hbar^2 \pi^2}{m a^2 |V_G|}}
+	\end{equation}
+	where the second term in brackets is larger than unity (for small perturbations) \textbf{REF}, such that the dispersion is a negative parabola in $ \delta $, for $ E_- $. This all means that for $ k =\pi/a$ (or equivalently $ -\pi/a $), a gap appears in the dispersion relation, and the energy in the lower branch is lowered, such that $ \partial E/ \partial k =0$. As it turns out this is happens for any reciprocal lattice vector, with $ k = j \pi/a $ and $ k'=-j \pi /a = k+G_{-j}$. These characteristics (scattering only being allowed for states separated by reciprocal lattice vectors, and bands of energy appearing at regular intervals) also appear in systems of higher dimensions, as we will see in sections \ref{seq:scattering} and \ref{seq:band_structure}.
 	
 	
 	
