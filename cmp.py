@@ -420,7 +420,7 @@ def Scattering(lattice_name='simple cubic',
     plt.show()
 
 
-def Band_structure(V0=0, n_k=101, G_range=[-1, 0, 1], potential="harmonic"):
+def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic", contour=False, returns=False):
 
     potentials = {"harmonic": band_structure.VG_cos,
                   "dirac": band_structure.VG_dirac}
@@ -443,10 +443,28 @@ def Band_structure(V0=0, n_k=101, G_range=[-1, 0, 1], potential="harmonic"):
     max_k = np.amax(kxs)
     min_k = np.amin(kxs)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.gca(projection="3d")
-    ax.plot_surface(kxs, kys, band)
+    ax.set_position([0.05, 0, 0.5, 1])
+    
+    if contour:
+        ax.contour(kxs, kys, band)
+    else:
+        ax.plot_surface(kxs, kys, band)
     ax.plot_surface(kxs, kys, max_E_mat, alpha=0.5)
     ax.set_xlim([min_k, max_k])
     ax.set_ylim([min_k, max_k])
+    ax.set_xlabel(r'$k_x/k_0$')
+    ax.set_ylabel(r'$k_y/k_0$')
+    ax.set_zlabel(r'$E/E_0$')
+    ax.set_title('Band structure of square lattice. $V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(max_E,3)))
+    
+    ax2 = plt.axes([0.7, 0.2, 0.25, 0.6])
+    ax2.contour(kxs, kys, band, max_E)
+    ax2.set_xlabel(r'$k_x/k_0$')
+    ax2.set_ylabel(r'$k_y/k_0$')
+    ax2.set_title('Fermi surface')
+    
+    if returns:
+        return fig, ax, ax2
     plt.show()
