@@ -25,7 +25,7 @@
 	\begin{equation}
 		\hat{V} = \frac{1}{v} \sum_{\V{R}} e^{i(\V{k}-\V{k}') \D \V{R}} \infint \ud \V{k}' \infint \ud \V{k} \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{-i (\V{k}'-\V{k}) \D \V{x}} \ket{\V{k}'} \bra{\V{k}}
 	\end{equation}
-	This sum, like before, equals 0 for $ \V{k}-\V{k}' \neq \V{G} $. However, when $ \V{k}-\V{k}' = \V{G} $ this sum becomes infinite (given the infinite amount of lattice points) \textbf{THERE NEEDS TO BE JUSTIFICATION FOR THIS FOR FINITE MATERIALS}, with a prefactor of $ (2\pi)^D/v $ \textbf{INSERT REFERENCE TO SIMON}. This then gives
+	This sum, like before, equals 0 for $ \V{k}-\V{k}' \neq \V{G} $. However, when $ \V{k}-\V{k}' = \V{G} $ this sum becomes infinite (given the infinite amount of lattice points) \textbf{THERE NEEDS TO BE JUSTIFICATION FOR THIS FOR FINITE MATERIALS}, with a prefactor of $ (2\pi)^D/v $ \cite{simon}. This then gives
 	\begin{align}
 		\hat{V} &= \frac{(2\pi)^D}{v^2} \sum_{G} \delta(\V{k}-\V{k}'-\V{G}) \infint \ud \V{k}' \infint \ud \V{k} \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{i \V{G} \D \V{x}} \ket{\V{k}'} \bra{\V{k}}, \\
 		&= \frac{(2\pi)^D}{v^2} \sum_{G} \infint \ud \V{k}\ V_{\V{G}} \ket{\V{k}-\V{G}} \bra{\V{k}},
@@ -36,7 +36,7 @@
 		&= \frac{(2\pi)^D}{v^2} \sum_{G} \infint \ud \V{k} \infint \ud \V{r}' \infint \ud \V{r} \   V_{\V{G}} \frac{1}{v} e^{i (\V{k}-\V{G}) \D \V{r}} e^{-i \V{k} \D \V{r}'} \ket{\V{r}'} \bra{\V{r}}, \\
 		&= \frac{(2\pi)^D}{v^3} \sum_{G} \infint \ud \V{k} \infint \ud \V{r}' \infint \ud \V{r} \  V_{\V{G}} \  e^{-i \V{G} \D \V{r}} e^{i \V{k} \D (\V{r}-\V{r}')} \ket{\V{r}'} \bra{\V{r}}.
 	\end{align}
-	We can get rid of two of these integrals, if we use the fact that
+	We can get rid of two of these integrals, if we use the fact that \cite{riley}
 	\begin{equation}
 		\delta(\V{r}-\V{r}') = \frac{1}{(2\pi)^D} \infint \ud \V{k}\  e^{i \V{k} \D (\V{r}-\V{r}')},
 	\end{equation}
@@ -134,11 +134,9 @@
 	With this algorithm in mind, we can see a couple of characteristics of the matrix:
 	\begin{itemize}
 		\item The diagonal elements are all $ V\coef{0,0} $, corresponding to the state not being scattered into any other state.
-		\item The matrix is hermitian, if $ V\coef{m_1, m_2} = V^*\coef{-m_1, -m_2}$, which is the same condition one gets when using perturbation theory to calculate the band structure in the Nearly Free Electron Model \textbf{INSERT REF}. This is all very fortunate since the potential matrix must necessarily be hermitian for the whole Hamiltonian to be hermitian, which it has to be, since it corresponds to an observable quantity, namely energy.
+		\item The matrix is hermitian, if $ V\coef{m_1, m_2} = V^*\coef{-m_1, -m_2}$, which is the same condition one gets when using perturbation theory to calculate the band structure in the Nearly Free Electron Model, see section \ref{sec:nearly_free}. This is all very fortunate since the potential matrix must necessarily be hermitian for the whole Hamiltonian to be hermitian, which it has to be, since it corresponds to an observable quantity, namely energy.
 	\end{itemize}
-	On the last characteristic: Since the potential is real and symmetric (rather, it is even about any lattice point $ \V{R} $, in both the $ x $ and $ y $-direction), it is guaranteed that $ V\coef{m_1, m_2} = V^*\coef{-m_1, -m_2}$. This is because the Fourier transform of a real and even function is also real. \textbf{I NEED A PROPER REFERENCE FOR THIS}
-	
-	As such, for any periodic potential (that is even in both $ x $ and $ y $ about lattice points) the potential matrix, and therefore also the whole Hamiltonian is hermitian!
+	On the last characteristic: Since the potential is real and symmetric (rather, it is even about any lattice point $ \V{R} $, in both the $ x $ and $ y $-direction), it is guaranteed that $ V\coef{m_1, m_2} = V^*\coef{-m_1, -m_2}$. This is because the Fourier transform of a real and even function is also real \cite{riley}. As such, for any periodic potential (that is even in both $ x $ and $ y $ about lattice points) the potential matrix, and therefore also the whole Hamiltonian is hermitian!
 	
 	With all of this in mind, the potential energy matrix for $ m_1, m_2 \in \{-1, 0, 1\} $ is a $ 9 \times 9 $ matrix with the following coefficients:
 	

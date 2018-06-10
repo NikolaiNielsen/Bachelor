@@ -4,11 +4,29 @@
 \usepackage{Nikolai}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[margin=1in]{geometry}
+\usepackage{wrapfig}
 
-%\setcounter{MaxMatrixCols}{20}
-%\setcounter{secnumdepth}{4}	
-%\setcounter{tocdepth}{4}
-%\setcounter{section}{0}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{Maroon}{RGB}{175,50,53}
+\definecolor{OliveGreen}{RGB}{60,128,49}
+\definecolor{Orange}{RGB}{245,129,55}
+
+\lstset{ %
+	language=python,
+	numbers=left,
+	stepnumber=1,
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false, 
+	tabsize=4,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries\color{Maroon},
+	commentstyle=\itshape\color{OliveGreen},
+	identifierstyle=\color{blue},
+	stringstyle=\color{Orange},
+}
 
 % Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
 \numberwithin{equation}{section}
@@ -40,8 +58,10 @@
 	
 	\subfile{2D_band_structure.tex}
 	
-	\section{References}
+	\subfile{discussion.tex}
 	
+	\bibliography{ref}
+	\bibliographystyle{ieeetr}
 	
 	\newpage
 	\appendix
