@@ -1,7 +1,7 @@
 /materials/*
 .ipynb_checkpoints
 /__pycache__/*
-
+/docs/*
 # No geogebra files
 *.ggb
 
