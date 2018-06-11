@@ -3,9 +3,9 @@
 
 \begin{document}
 	\section{Introduction}
-	In this thesis we look at phenomena arising from the discrete translational symmetry of crystals. As a first example we look at the Nearly Free electron model in one dimension. This model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength.
+	In this thesis we look at phenomena arising from the discrete translational symmetry of crystals. As a first example we look at the nearly free electron model in one dimension. This model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength.
 	
-	\subsection{Nearly Free Electron model in one dimension}\label{sec:nearly_free}
+	\subsection{Nearly Free Electron model in One Dimension}\label{sec:nearly_free}
 	The nearly free electron model is, as the name suggests, a model in which electrons are moving in a medium with a small perturbing potential, such that they are nearly free. As such we assume that electrons are essentially free, but experience some small periodic potential that we treat as a perturbation.
 	
 	In general, the Hamiltonian is
@@ -14,11 +14,11 @@
 	\end{equation}
 	where $ a $ is the spacing between atoms. In this case we are dealing with plane waves (at least to zeroth order in perturbation theory) $ \ket{k} $, with zeroth order energies $ E_0(k)= \hbar^2 k^2/2m $. Now, to calculate anything in perturbation theory, we need the matrix elements of the potential $ \braket{k' | V | k} $. These are
 	\begin{equation}
-		\braket{k' | V | k} = \infint \ud x e^{-i(k'-k)x} V(x) \equiv V_{k'-k}.
+		\braket{k' | V | k} = \infint e^{-i(k'-k)x} V(x) \equiv V_{k'-k}.\ud x
 	\end{equation}
 	Due to the periodicity of the potential we can write this integral as a sum of integrals by setting $ x=x'+na $
 	\begin{equation}
-		\braket{k' | V | k} = \sum_{n = -\infty}^{\infty} e^{-i(k'-k) na} \int_{0}^{a} \ud x' e^{-i(k'-k)x'} V(x').
+		\braket{k' | V | k} = \sum_{n = -\infty}^{\infty} e^{-i(k'-k) na} \int_{0}^{a} e^{-i(k'-k)x'} V(x').\ud x'
 	\end{equation}
 	This sum is infinite for a discrete set of values $ k'-k $, namely
 	\begin{equation}
@@ -55,7 +55,7 @@
 	\end{wrapfigure}
 	with an eigenenergy of
 	\begin{equation}
-		E_{\pm} = \frac{\hbar^2}{2m} \bb{\pp{\frac{\pi}{a}}^2 + \delta^2 } \pm |V_G| \sqrt{1+ \pp{\frac{2\pi\hbar^2 \delta}{2m |V_G|}}^2 }.
+		E_{\pm} = \frac{\hbar^2}{2m} \bb{\pp{\frac{\pi}{a}}^2 + \delta^2 } \pm |V_G| \sqrt{1+ \pp{\frac{2\pi\hbar^2 \delta}{2m a |V_G|}}^2 }.
 	\end{equation}
 	As we are dealing with $ \delta \approx 0 $, we expand the square root to second order and get
 	\begin{equation}
@@ -65,8 +65,8 @@
 	
 	
 	
-	\subsection{Blochs Theorem}
-	In the previous section we considered the case of an electron in a weak periodic potential, where the wave function is essentially a plane wave. But this is not necessarily the case for real materials. So can we be sure that we can treat the wave function as plane waves even when the potential strength is cranked up? It turns out we can, and the proof of that lies with Blochs theorem.
+	\subsection{Bloch's Theorem}
+	In the previous section we considered the case of an electron in a weak periodic potential, where the wave function is essentially a plane wave. But this always the for real materials? Can we really be sure that we can treat the wave function as plane waves even when the potential strength is cranked up? It turns out we can, and the proof of that lies with Bloch's theorem.
 	
 	The assumption here is that we are working with a periodic potential, such that $ V(\V{r} + \V{R}) $ for all lattice points. As such the full Hamiltonian has a discrete translational symmetry, which means that all translation operators $ \hat{T}_{\V{R}} $ (that translate by any lattice vector $ \V{R} $) commute with the Hamiltonian: $ [\hat{H}, \hat{T}_{\V{R}}] = 0$. This further means that we can simultaneously diagonalize these operators and find a shared basis of eigenstates.
 	
