@@ -423,7 +423,7 @@ def Scattering(lattice_name='simple cubic',
     plt.show()
 
 
-def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic", contour=False, returns=False):
+def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic", contours=False, edges=False, returns=False):
 
     potentials = {"harmonic": band_structure.VG_cos,
                   "dirac": band_structure.VG_dirac}
@@ -450,7 +450,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic
     ax = fig.gca(projection="3d")
     ax.set_position([0.05, 0, 0.5, 1])
     
-    if contour:
+    if contours:
         ax.contour(kxs, kys, band)
     else:
         ax.plot_surface(kxs, kys, band)
@@ -461,6 +461,21 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic
     ax.set_ylabel(r'$k_y/k_0$')
     ax.set_zlabel(r'$E/E_0$')
     ax.set_title('Band structure of square lattice. $V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(max_E,3)))
+    
+    # Now we try plotting edges
+    if edges:
+        edge1 = band[0,:]
+        edge2 = band[-1,:]
+        edge3 = band[:,0]
+        edge4 = band[:,-1]
+        k = kxs[0,:]
+        start = -1/2 * np.ones(k.shape)
+        end = 1/2 * np.ones(k.shape)
+        ax.plot(k, start, edge1, c='k')
+        ax.plot(k, end, edge2, c='k')
+        ax.plot(start, k, edge3, c='k')
+        ax.plot(end, k, edge4, c='k')
+    
     
     ax2 = plt.axes([0.7, 0.2, 0.25, 0.6])
     ax2.contour(kxs, kys, band, max_E)
