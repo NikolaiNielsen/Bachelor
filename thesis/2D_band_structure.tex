@@ -21,7 +21,7 @@
 	\begin{align}
 		\hat{V} &= \frac{1}{v} \infint \ud\V{r} \infint \ud \V{k}' \infint \ud \V{k}\, V(\V{r}) e^{-i(\V{k}'-\V{k}) \D \V{r}} \ket{\V{k}'} \bra{\V{k}}.
 	\end{align}
-	Next we use a trick from before: letting $ \V{r} = \V{R} + \V{x} $. This allows us to write the operator as
+	Next we use the now familiar trick of letting $ \V{r} = \V{R} + \V{x} $. This allows us to write the operator as
 	\begin{equation}
 		\hat{V} = \frac{1}{v} \sum_{\V{R}} e^{i(\V{k}-\V{k}') \D \V{R}} \infint \ud \V{k}' \infint \ud \V{k} \int_{\substack{\text{unit-} \\\text{cell}}} \ud \V{x}\ V(\V{x})\  e^{-i (\V{k}'-\V{k}) \D \V{x}} \ket{\V{k}'} \bra{\V{k}}
 	\end{equation}
@@ -210,7 +210,13 @@
 	\end{equation}
 	With this we have the full Hamiltonian matrix, and we can solve it for a range of $ \V{k} $ to get the dispersion relation for a particle in a square lattice.
 	
-	To calculate this, the program needs values for $ V_0 $, $ a $ and $ \hbar^2/2m $ along with the range of coefficients for $ \V{G} $. With this the Hamiltonian matrix is created. The program also takes a value for the number of points in the first Brillouin-zone in $ k $-space and creates linearly spaced points from $ -\pi/a $ to $ \pi/a $.
+	To calculate this, the program needs values for $ V_0 $, $ a $ and $ \hbar^2/2m $ along with the range of coefficients for $ \V{G} $. To make this more simple for the user, we define $ k_0 \equiv 2\pi/a $ (the same factor as in the scattering program) and $ E_0 \equiv \hbar^2 k_0^2/m $. These allow us to rewrite the equation in a dimensionless form:
+	\begin{equation}\label{key}
+		\sum_{\tilde{\V{G}}} \bb{\frac{\tilde{\V{k}}^2}{2} \delta_{\tilde{\V{G}},0} + \tilde{V}_{\tilde{\V{G}}}} \tilde{\psi}(\tilde{\V{k}} - \tilde{\V{G}}) = \tilde{E} \tilde{\psi}(\tilde{\V{k}}),
+	\end{equation}
+	with $ \tilde{\V{G}} \equiv \V{G}/k_0 = m_1 \U{x}+m_2 \U{y} $, $ \tilde{\V{k}} \equiv \V{k}/k_0 $ $ \tilde{V}_{\tilde{\V{G}}} \equiv V_{\V{G}} / E_0$ and $ \tilde{E} \equiv E/E_0 $. This also redefines the first Brillouin zone to be $ -1/2 \leq \tilde{k} \leq 1/2 $ in each direction.
+	
+	With this the Hamiltonian matrix is created. The program also takes a value for the number of points in the first Brillouin-zone in $ k $-space and creates linearly spaced points from $ -\pi/a $ to $ \pi/a $.
 	
 	For each point in the Brillouin zone the program then creates the corresponding kinetic energy matrix, adds the potential energy matrix, and finds the eigenvalues for the resulting matrix. These values are stored in a multidimensional array (represented as a series of matrices, each with size $ n_k \times n_k $, where $ n_k $ is the number of points in the Brillouin zone, in each direction). When the energies for all coordinates are calculated, the lowest energies for each of the points (corresponding to the first matrix in the multidimensional array) will then be the dispersion of the particle in the first band.
 	
@@ -221,12 +227,12 @@
 	For divalent atoms a whole band is filled, and the occupied states may spill into the second Brillouin zone. As such we need to calculate the dispersion for states in this zone as well. Then we order the energies of the band, take the energy of the $ n_k^2 $'th point as the Fermi energy, and plot all points whose energy is lower than or equal to it.
 	
 	\subsection{Examples}
-	Say we just want to find the dispersion of a free particle. Then we just call the program with $ V_0 = 0 $. For good measure we can specify that the potential should be the Dirac potential:
+	Say we just want to find the dispersion of a free particle. Then we just call the program with $ \tilde{V}_0 \equiv V_0/E_0 = 0 $. For good measure we can specify that the potential should be the Dirac potential:
 \begin{lstlisting}
 Band_structure(V0=0,
 			   potential='dirac')
 \end{lstlisting}
-	And if we want the high-potential limit of the harmonic potential (which happens to be $ V_0 = 1 $) we write
+	And if we want the high-potential limit of the harmonic potential (which happens to be $ \tilde{V}_0 = 1 $) we write
 \begin{lstlisting}
 Band_structure(V0=1)
 \end{lstlisting}
