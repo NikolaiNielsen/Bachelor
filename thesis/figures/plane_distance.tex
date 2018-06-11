@@ -1,0 +1,23 @@
+\documentclass[tikz]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{pgf,tikz,pgfplots}
+%\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\pagestyle{empty}
+\begin{document}
+\definecolor{qqwuqq}{rgb}{0.,0.39215686274509803,0.}
+\begin{tikzpicture}[line cap=round,line join=round,>=triangle 45,x=0.75cm,y=0.75cm]
+\clip(-2.,-0.5) rectangle (2.,3.5);
+\draw [shift={(0.,0.)},line width=1.pt,color=qqwuqq,fill=qqwuqq,fill opacity=0.10000000149011612] (0,0) -- (90.:0.39941868946405296) arc (90.:135.:0.39941868946405296) -- cycle;
+\draw [line width=1.pt,domain=-2.:2.] plot(\x,{(-0.--1.*\x)/1.});
+\draw[line width=1.pt,smooth,samples=100,domain=-2.0:2.0] plot(\x,{(\x)+3.0});
+\draw [line width=1.pt] (-1.5,1.5)-- (0.,0.);
+\draw [line width=1.pt,dash pattern=on 3pt off 3pt] (0.,0.)-- (0.,3.);
+\begin{scriptsize}
+\draw[color=black] (-1,0.6) node {$d$};
+\draw[color=black] (0.35,1.6) node {$D$};
+\draw[color=qqwuqq] (-0.2 ,0.7) node {$\theta$};
+\end{scriptsize}
+\end{tikzpicture}
+\end{document}
