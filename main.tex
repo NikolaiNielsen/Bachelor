@@ -3,9 +3,10 @@
 \usepackage[english]{babel}
 \usepackage{Nikolai}
 \usepackage[dvipsnames]{xcolor}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.75in]{geometry}
 \usepackage{wrapfig}
 
+\usepackage{pdfpages}
 
 \usepackage{listings}
 \usepackage{color}
@@ -45,11 +46,19 @@
 
 \begin{document}
 	
-	\maketitle
+	\includepdf[pages=-]{figures/frontpage.pdf}
 	
+	\pagenumbering{roman}
+	
+	\begin{abstract}
+		Hello
+	\end{abstract}
 	\tableofcontents
 	
 	\newpage
+	
+	\pagenumbering{arabic}
+	\setcounter{page}{1}
 	\subfile{introduction.tex}
 	
 	\subfile{lattices.tex}

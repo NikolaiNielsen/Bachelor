@@ -14,7 +14,7 @@
 	
 	A thing to note, is that the choice of primitive lattice vectors is not unique. A new set of primitive lattice vectors can be created by taking a linear combination of the original primitive lattice vectors, with integer coefficients. If the original set is ordered in a matrix $ A = \begin{pmatrix*} \V{a}_1 & \V{a}_2 & \cdots & \V{a}_n \end{pmatrix*}$, and the new set in a matrix $ B = \begin{pmatrix*} \V{b}_1 & \V{b}_2 & \cdots & \V{b}_n \end{pmatrix*} $, then $ B = MA $, where $ M $ is the matrix containing the coefficients. This matrix must have integer entries, and its inverse likewise.
 	
-	The integer entries of the direct matrix makes sure that any lattice point generated with the new set of primitive lattice vectors will also have integer coefficients when expressed in the old set of primitive lattice vectors. The integer entries of the inverse matrix then makes sure that this process will also happen in reverse. This characteristic will come into play when trying to detect the lattice based on the users input of primitive lattice vectors. 
+	The integer entries of the direct matrix makes sure that any lattice point generated with the new set of primitive lattice vectors will also have integer coefficients when expressed in the old set of primitive lattice vectors. The integer entries of the inverse matrix then makes sure that this process will also happen in reverse. This characteristic will come into play when trying to detect the lattice based on the users input of primitive lattice vectors.
 	
 	The second part is the unit cell. This is the building block of the lattice. It is a region of space which, when stacked will completely tile the space. Like with the choice of primitive lattice vectors, the choice of unit cell is not unique. In particular we distinguish between two type of unit cells: the smallest possible unit cell and everything else. The smallest possible unit cell is called a \textit{primitive} unit cell, and must contain only one lattice point (it cannot contain no lattice points, as then it would not recreate the lattice when tiled). Any unit cell containing more than one lattice point is called a \textit{conventional unit cell}. Usually a conventional unit cell is chosen for ease of calculation (as we will see in the scattering simulation), where the primitive lattice vectors constitute an orthogonal set.
 	
@@ -23,7 +23,7 @@
 	The basis is specified as a list of vectors that are to be added to the lattice points, specifying the position of the atoms in the crystal.
 	
 	The user can create any type of crystal they want by specifying any set of primitive lattice vector and supplying any desired basis. However a small selection of crystals will be available as presets. These include the 14 Bravais lattices with a 1 atom basis (at $ (0,0,0) $), named in table \ref{tab:bravais}. Each of these will specify the primitive lattice vectors for a corresponding primitive unit cell. Furthermore five other crystal presets will be available, named in table \ref{tab:presets}. Specifications of all of these presets are available in the appendix \ref{app:lattice}.
-	\begin{table}
+	\begin{table}[H]
 		\centering
 		\begin{tabular}{|l|l|}
 			\hline
@@ -45,7 +45,7 @@
 		\caption{The 14 Bravais lattices}
 		\label{tab:bravais}
 	\end{table}
-	\begin{table}
+	\begin{table}[H]
 		\centering
 		\begin{tabular}{|l|l|}
 			\hline
@@ -60,22 +60,21 @@
 		\label{tab:presets}
 	\end{table}
 	
-	\subsection{Implementation}
+	\subsection{Implementation}	
 	\begin{wrapfigure}{r}{2in}
 		\begin{center}
 			\includegraphics[width=\linewidth]{figures/lattice_unfinished_1.pdf}
 		\end{center}
-		\caption{One conventional unit cell for a BCC lattice. If we naively plot all atoms associated with a lattice point, we will end up with unfinished unit cells.}
+		\caption{One conventional unit cell for a bcc lattice. If we naively plot all atoms associated with a lattice point, we will end up with unfinished unit cells.}
 		\label{fig:lattice_unfinished_1}
 	\end{wrapfigure}
-	
 	Mathematically speaking, a lattice is infinite. A physical crystal, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, each atom would be way too small (if it was feasible, what would be the point of this project then?). So for the purposes of this project, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells. 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure. As such, in the following we assume that $ n_i \in \{0, 1, 2\} $.
 	
 	In creating a program that plots these structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible. This constitutes plotting only full unit cells: no unit cell can have missing atoms. However, the screen is still just a two dimensional projection of the actual three dimensional phenomena and without some form of depth perception, the crystal will just look like a weird two dimensional pattern. This is what grid lines fix. They give the required depth perception to allow the user to comprehend the crystal as a three dimensional structure, and not as a two dimensional sheet of dots. 
 	
 	For the crystals that can be expressed as a lattice with orthogonal primitive lattice vectors and a basis (cubic, tetragonal and orthorhombic), we usually want to plot orthogonal grid lines, whilst for other crystals plotting grid lines along the lattice vectors will be more useful.
 	
-	In the case of plotting primitive unit cells, the ones furthest away from the origin (say with $ n_1 = n_2 = n_3 = 2 $) may not be filled. Say the basis consists of only one atom. Then this atom will just be placed on the lattice points, and there is no problem, as this is the edge of the unit cell. However, if the basis consists of two atoms (or more), where one is placed at $ (0,0,0) $ and the other has some positive coordinates, then this second atom will be in a unit cell which is not supposed to be plotted (it would necessitate plotting the lattice points corresponding to $ n_i = 3 $). An example of this is figure \ref{fig:lattice_unfinished_1}, which shows one unit cell of a simple cubic lattice, with a two atom basis (corresponding to a conventional BCC unit cell). A way to correct for this is to write each plotted atom as a linear combination of the primitive lattice vectors with coefficients $ n'_i $ (where the coefficients here are real numbers, as they do not necessarily align with the lattice points). If the coefficients are $ 0 \leq n'_i \leq 2 $ for all $ n'_i $, then we plot the point.
+	In the case of plotting primitive unit cells, the ones furthest away from the origin (say with $ n_1 = n_2 = n_3 = 2 $) may not be filled. Say the basis consists of only one atom. Then this atom will just be placed on the lattice points, and there is no problem, as this is the edge of the unit cell. However, if the basis consists of two atoms (or more), where one is placed at $ (0,0,0) $ and the other has some positive coordinates, then this second atom will be in a unit cell which is not supposed to be plotted (it would necessitate plotting the lattice points corresponding to $ n_i = 3 $). An example of this is figure \ref{fig:lattice_unfinished_1}, which shows one unit cell of a simple cubic lattice, with a two atom basis (corresponding to a conventional bcc unit cell). A way to correct for this is to write each plotted atom as a linear combination of the primitive lattice vectors with coefficients $ n'_i $ (where the coefficients here are real numbers, as they do not necessarily align with the lattice points). If the coefficients are $ 0 \leq n'_i \leq 2 $ for all $ n'_i $, then we plot the point.
 	
 	For plotting conventional unit cells when the user inputs primitive lattice vectors (for cubic, tetragonal and orthorhombic lattices), we need something similar, otherwise a situation like in figure \ref{fig:lattice_unfinished_2} may occur. To fix this we calculate the side lengths of the cuboid plot box that just contains the parallelepiped arising from plotting the lattice points with the specified coefficients ($ n_i \in \{0, 1, 2\}$), and fill this plot box completely with atoms.
 	
@@ -112,14 +111,6 @@
 	
 	For the face centred lattices, the ideal, rotated lattice is created from the magnitude of the primitive lattice vectors: if $ |\V{a}_1| = a, |\V{a}_2| = b, |\V{a}_3| = c $, then $ \V{a}'_1 = (a/2, b/2, 0), \V{a}'_2 = (a/2, 0, c/2), \V{a}'_3 = (0, b/2, c/2) $. First the crystal is rotated such that $ \V{a}_1 $ aligns with $ \V{a}'_1 $, by using their cross product. Then the crystal is rotated such that the now rotated $ \V{a}_2 $ aligns with $ \V{a}'_2 $, via the vector rejection of $ \V{a}_2 $ with $ \V{a}'_2 $. (\textbf{THIS METHOD AND THE ONE FOR THE HEXAGONAL LATTICE ASSUMES THAT THE PRIMITIVE LATTICE VECTORS ARE SPECIFIED AS IN THE APPENDIX}).
 	
-	\begin{wrapfigure}{r}{2in}
-		\begin{center}
-			\includegraphics[width=\linewidth]{figures/lattice_demo_1.pdf}
-		\end{center}
-		\caption{An attempt to plot eight conventional unit cells for an FCC lattice, by using primitive lattice vectors with coefficients in the set $ \{0, 1, 2\} $. This does not fill out all eight unit cells, so we need to plot more lattice points than this. In practise we need $ \{-2, -1, 0, 1, 2, 3, 4\} $}
-		\label{fig:lattice_demo}
-	\end{wrapfigure}
-	
 	With the lattice and basis rotated, the program finds the limits of the plot box as written above, after which the crystal is generated. This is done by looping over the three ranges specified by the minimum and maximum coefficients, creating each lattice point $ \V{R} $ by Eq. \eqref{eq:lattice_points}. For each lattice point $ n $ atomic positions are created by adding one of the $ n $ vectors in the basis to the lattice point. Furthermore lists of the colours and sizes associated with each atom are also created at this point. After creating all the atoms, the program deletes any that may lie outside the limits of the plot box.
 	
 	The only thing missing now is to create the grid lines and plot everything. The program has two ways of creating grid lines: along the primitive lattice vectors and along the cardinal axes.
@@ -132,12 +123,33 @@
 	
 	Next a blank figure is created with an orthogonal projection and limits as calculated above. The atoms are plotted with colours and sizes specified by the user. The grid lines are plotted with a uniform size and colour and lastly the primitive lattice vectors are plotted with corresponding labels.
 	
-	\subsection{Example}
-	As an example, we plot a simple cubic lattice with a two atom basis (corresponding to the basis of a BCC lattice with conventional unit cells), where the atoms on the lattice points are grey and the body centred atoms are blue (figure \ref{fig:lattice_demo}), we write the following:
+	\subsection{Examples}
+	As an example, we plot a simple cubic lattice with a two atom basis (corresponding to the basis of a bcc lattice with conventional unit cells), where the atoms on the lattice points are grey and the body centred atoms are blue (figure \ref{fig:lattice_demo_1}), we write the following:
 \begin{lstlisting}
 Lattice(lattice_name="conventional bcc",
 		colors=["xkcd:cement", "b"])
 \end{lstlisting}
-	
+	Or we could plot a hexagonal lattice with a one atom basis (figure \ref{fig:lattice_demo_2}):
+\begin{lstlisting}
+Lattice(lattice_name="hexagonal")
+\end{lstlisting}
+
+
+	\begin{figure}[h]
+		\centering
+		\begin{minipage}{.4\textwidth}
+			\centering
+			\includegraphics[width=2in]{figures/lattice_demo_1.pdf}
+			\captionof{figure}{A simple cubic lattice with a two atom basis: One atom on the lattice points and another in the middle of each unit cell.}
+			\label{fig:lattice_demo_1}
+		\end{minipage}%
+		\hfil
+		\begin{minipage}{.4\textwidth}
+			\centering
+			\includegraphics[width=2in]{figures/lattice_demo_2.pdf}
+			\captionof{figure}{A hexagonal lattice, which consists of a series of triangular lattices stacked on top of each other.}
+			\label{fig:lattice_demo_2}
+		\end{minipage}
+	\end{figure}
 	
 \end{document}

@@ -220,5 +220,29 @@
 	
 	For divalent atoms a whole band is filled, and the occupied states may spill into the second Brillouin zone. As such we need to calculate the dispersion for states in this zone as well. Then we order the energies of the band, take the energy of the $ n_k^2 $'th point as the Fermi energy, and plot all points whose energy is lower than or equal to it.
 	
-	
+	\subsection{Examples}
+	Say we just want to find the dispersion of a free particle. Then we just call the program with $ V_0 = 0 $. For good measure we can specify that the potential should be the Dirac potential:
+\begin{lstlisting}
+Band_structure(V0=0,
+			   potential='dirac')
+\end{lstlisting}
+	And if we want the high-potential limit of the harmonic potential (which happens to be $ V_0 = 1 $) we write
+\begin{lstlisting}
+Band_structure(V0=1)
+\end{lstlisting}
+	Because the program defaults to using the harmonic potential. These lines produce figures \ref{fig:band_structure_none} and \ref{fig:band_structure_strong} respectively.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{figures/band_structure_none.pdf}
+		\caption{The dispersion relation for a free particle in a square lattice of monovalent atoms, along with the Fermi surface.}
+		\label{fig:band_structure_none}
+	\end{figure}
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{figures/band_structure_strong.pdf}
+		\caption{The dispersion relation of a particle in a strong harmonic potential, on a square lattice of monovalent atoms, along with the corresponding Fermi surface.}
+		\label{fig:band_structure_strong}
+	\end{figure}
+
 \end{document}

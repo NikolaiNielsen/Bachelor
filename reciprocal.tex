@@ -111,7 +111,7 @@
 	\end{equation}
 	Here all of $ h+k, k+l $ and $ h+l $ must be even, corresponding to $ h,k,l $ all being either even or odd. As such there are systemic absences in both bcc and fcc lattices, but not simple cubic lattices, where all combinations of $ h,k $ and $ l $ can lead to scattering.
 	
-	\subsection{Implementation}
+	\subsection{Implementation}	
 	The scattering program creates two figures. One interactive figure with the physical setup, including the desired crystal structure, incoming probe beam, detector screen and detected scattering events. The second shows only a top down view of the detector screen with the detected scattering events.
 	
 	For the first figure, the scattering program builds upon the lattice plotting program. It plots the desired lattice (simple cubic with a basis), calculates scattering for this crystal given a list of form factors and an incoming wave, and displays the results on a simulated detection screen.
@@ -126,11 +126,9 @@
 	
 	These three criteria (conservation of energy, lack of systemic absence, and proper direction) are all calculated by the program, and if a scattered wave vector does not fulfil all of them, it is discarded.
 	
-	Left are only a handful, if any, of scattered wave vectors. For each of these, the impact point of the scattered wave vector on the detection plane has to be calculated. This is done by calculating the intersection between a line and a plane. The line is defined by the point of impact $ \V{p}_0 $ of the incident wave vector along with the scattered wave vector $ \V{k}' $. The plane is defined as mentioned above, with $ z=5 $.
-	
-	In this case the intersection happens when
+	Left are only a handful, if any, of scattered wave vectors. For each of these, the impact point of the scattered wave vector on the detection plane has to be calculated. This is done by calculating the intersection between a line and a plane. The line is defined by the point of impact $ \V{p}_0 $ of the incident wave vector along with the scattered wave vector $ \V{k}' $. The plane is defined as mentioned above, with $ z=3 $. In this case the intersection happens when
 	\begin{equation}
-		p_{0,z} + t\D k'_z = 5,
+		p_{0,z} + t\D k'_z = 3,
 	\end{equation}
 	for some value of $ t $. This value of $ t $ can then be used to calculate the point of intersection as
 	\begin{equation}
@@ -162,19 +160,52 @@
 	Further, a second program is added alongside the scattering program. This second program just allows the user to plot any crystal, along with any set of lattice planes, defined by a set of Miller indices supplied by the user.
 	
 	\subsection{Examples}
-	Say we want to simulate neutron scattering on a cubic lattice with a two atom basis (one at lattice points, the other at the centre of the unit cell). We set the relative scattering lengths as 1 and 0.5 respectively, and we set $ \V{k}_{in} = (0, 0, -1.5)$ in units of $ 2\pi/a $. This is done by the following line, and produces figure \textbf{FIGREF}
+	\begin{wrapfigure}{r}{2in}
+		\includegraphics[width=2in]{figures/lattice_planes_1.pdf}
+		\caption{A bcc lattice showing the (001) family of lattice planes.}
+		\label{fig:lattice_planes}
+	\end{wrapfigure}
+	Say we want to simulate neutron scattering on a cubic lattice with a four atom basis (one at lattice points, the others at the centre of the faces of the unit cell). We set the relative scattering lengths as 1 for the atoms on the lattice points and 0.5 for the others. We set $ \V{k}_{in} = (0, 0, -1.5)$ in units of $ 2\pi/a $. Lastly we highlight the scattering corresponding to the Miller indices (112). This is all done by the following line, and produces figure \ref{fig:scattering_no_systemic}.
 \begin{lstlisting}
 Scattering(k_in=np.array([0, 0, -1.5])
-		   basis=np.array([[0, 0, 0], [0.5, 0.5, 0.5]]),	
-		   scattering_length=np.array([1,0.5]))
+		   basis=np.array([[0, 0, 0], 
+						   [0.5, 0.5, 0],
+						   [0.5, 0, 0.5],
+						   [0, 0.5, 0.5]]),	
+		   highlight=(1,1,2)
+		   scattering_length=np.array([1, 0.5, 0.5, 0.5]))
 \end{lstlisting}
 
-	If instead we want to plot scattering on a BCC lattice, with the same wave vector, we just set the scattering length for both atoms to 1. If we further want to highlight the scattering corresponding to the Miller indices (112) we write the following, which gives \textbf{FIGUREREF}
+	If instead we want to plot scattering on regular fcc lattice, with the same wave vector, we just set the scattering length for all atoms to 1. This gives figure \ref{fig:scattering_systemic}.
 \begin{lstlisting}
 Scattering(k_in=np.array([0, 0, -1.5])
-		   basis=np.array([[0, 0, 0], [0.5, 0.5, 0.5]]),	
-		   scattering_length=np.array([1,1]),
-		   highlight=(1,1,2))
+		   basis=np.array([[0, 0, 0], 
+						   [0.5, 0.5, 0],
+						   [0.5, 0, 0.5],
+						   [0, 0.5, 0.5]]),	
+		   scattering_length=np.array([1, 0.5, 0.5, 0.5]))
 \end{lstlisting}
-	As a last example, say we just want to plot the family of lattice planes
+	As a last example, say we just want to plot the (001) family of lattice planes for a bcc lattice, then we write the following and get figure \ref{fig:lattice_planes}.
+\begin{lstlisting}
+Reciprocal(lattice_name="bcc",
+		   indices=(0,0,1))
+\end{lstlisting}
+	
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figures/scattering_no_systemic.pdf}
+		\caption{Scattering on a cubic lattice with a four atom basis (one at lattice points and the others on the faces of the unit cell), with form factors of 1 for the lattice point atoms, and 0.5 for the others. The choice of incoming wave vector gives rise to 5 scattering events, corresponding to 5 different sets of miller indices. Note the highlighted point and associated family of planes. They are not lattice planes, which means that for a proper fcc lattice, this set of Miller indices will be subject to systemic absence.}
+		\label{fig:scattering_no_systemic}
+	\end{figure}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figures/scattering_systemic.pdf}
+		\caption{The same scattering setup as in figure \ref{fig:scattering_no_systemic}, but with equal form factors for the four atoms (effectively an fcc lattice). Note the absence of scattering events due to systemic absence, since for each of the sets of Miller indices either $ h+k $, $ k+l $ or $ h+l $ is odd.}
+		\label{fig:scattering_systemic}
+	\end{figure}
+
+	
+
 \end{document}
