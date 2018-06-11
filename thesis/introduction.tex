@@ -3,10 +3,10 @@
 
 \begin{document}
 	\section{Introduction}
-	
+	In this thesis we look at phenomena arising from the discrete translational symmetry of crystals. As a first example we look at the Nearly Free electron model in one dimension. This model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength.
 	
 	\subsection{Nearly Free Electron model in one dimension}\label{sec:nearly_free}
-	As an introduction to band structures in one dimension we look at the "low potential" limit, namely the nearly free electron model. In this model we assume that electrons are essentially free, but experience some small periodic potential that we treat as a perturbation.
+	The nearly free electron model is, as the name suggests, a model in which electrons are moving in a medium with a small perturbing potential, such that they are nearly free. As such we assume that electrons are essentially free, but experience some small periodic potential that we treat as a perturbation.
 	
 	In general, the Hamiltonian is
 	\begin{equation}
@@ -61,7 +61,7 @@
 	\begin{equation}
 		E_{\pm} = \frac{\hbar^2 \pi^2}{2m a^2} \pm |V_G| + \frac{\hbar^2 \delta^2}{2m} \bb{1 \pm \frac{\hbar^2 \pi^2}{m a^2 |V_G|}}
 	\end{equation}
-	where the second term in brackets is larger than unity (for small perturbations) \cite{simon}, such that the dispersion is a negative parabola in $ \delta $, for $ E_- $. This all means that for $ k =\pi/a$ (or equivalently $ -\pi/a $), a gap appears in the dispersion relation, and the energy in the lower branch is lowered, such that $ \partial E/ \partial k =0$ (see figure \ref{fig:nearly_free}). As it turns out this is happens for any reciprocal lattice vector, with $ k = j \pi/a $ and $ k'=-j \pi /a = k+G_{-j}$. These characteristics (scattering only being allowed for states separated by reciprocal lattice vectors, and bands of energy appearing at regular intervals) also appear in systems of higher dimensions, as we will see in sections \ref{seq:scattering} and \ref{seq:band_structure}.
+	where the second term in brackets is larger than unity (for small perturbations) \cite{simon}, such that the dispersion is a negative parabola in $ \delta $, for $ E_- $. This all means that for $ k =\pi/a$ (or equivalently $ -\pi/a $), a gap appears in the dispersion relation, and the energy in the lower branch is lowered, such that $ \partial E/ \partial k =0$ (see figure \ref{fig:nearly_free}). As it turns out this is happens for any reciprocal lattice vector, with $ k = j \pi/a $ and $ k'=-j \pi /a = k+G_{-j}$. These characteristics (scattering only being allowed for states separated by reciprocal lattice vectors, and bands of energy appearing at regular intervals) also appear in systems of higher dimensions, as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
 	
 	
 	
@@ -78,14 +78,19 @@
 	\begin{equation}
 		\psi(\V{r}) = e^{i\V{k} \D \V{r}} u(\V{r}),
 	\end{equation}
-	where $ u(\V{r}) $ carries this periodicity of the crystal.
+	where $ u(\V{r}) $ carries this periodicity of the crystal. As we shall see in section \ref{sec:band_structure}, we can write a periodic function as a sum of plane waves over reciprocal lattice vectors. This then also applies to $ u $, as it is periodic in the unit cell. Due to this, we can write the wave function as
+	\begin{equation}\label{key}
+		\psi(\V{r}) = \sum_{\V{G}} u_{\V{G},\V{k}} e^{i(\V{G} + \V{k}) \D \V{r}},
+	\end{equation}
+	where $ u_{\V{G},\V{k}} $ is some number. This will be important in the context of scattering and band structure as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
+	
 	
 	
 	
 	\subsection{General implementation}
 	All of the programs in this project will be implemented in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. Numpy adds the necessary tools for handling arrays and linear algebra operations, whilst Matplotlib is used for plotting the results.
 	
-	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function, which takes 4 parameters: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
+	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function provided by NumPy, which takes 4 arguments: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
 	
 	
 	

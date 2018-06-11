@@ -1,7 +1,7 @@
 \documentclass[main.tex]{subfiles}
 
 \begin{document}
-	\section{Reciprocal lattice and scattering} \label{seq:scattering}
+	\section{Reciprocal lattice and scattering} \label{sec:scattering}
 	\subsection{Theory}
 	The reciprocal lattice is an incredibly useful construct, as it allows for an easy description of wave phenomena, where the main variable is the wave vector $ \V{k} $. The reciprocal lattice is a lattice (as defined in the previous section), but in reciprocal space. This again means that the free variables is not position, but the wave vector.
 	
@@ -50,7 +50,7 @@
 	As such, there is some minimum magnitude of the reciprocal lattice vector that defines a given family of lattice planes. This means that for a family of lattice planes, the distance is $ d = 2\pi /| \V{G}_{min}| $.
 	
 	\subsubsection{The Brillouin zone}
-	In the one dimensional tight binding example, any plane wave with wave vector $ k $ and $ k + G_m = k + 2\pi m/a $ are physically equivalent. The wave vector is only defined up to a factor of $ 2 \pi / a $. This means that the wave vector can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $, which is called the first Brillouin zone.
+	In discussing Bloch's theorem we see that any wave function in a periodic medium can be expressed as a sum of plane waves, with wave vectors differing by a reciprocal lattice vector. In one dimension we see that changing $ k \to k + 2\pi/a $ yields the same wave function and the states are therefore physically equivalent. This means that the wave vector is only defined up to a factor of $ 2 \pi / a $, and can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $. We call wave vectors in this range \textit{crystal momentum}, and the range itself the \textit{first Brillouin zone}.
 	
 	The same principle applies to higher dimensions. The first Brillouin zone is defined as any point $ \V{k} $ in reciprocal space, that is closer to $ \V{0} $ than any other point on the reciprocal lattice. The $ n $'th Brillouin zone is then defined as any point $ \V{k} $, where $ \V{0} $ is the $ n $'th nearest point on the reciprocal lattice.
 	
@@ -75,14 +75,11 @@
 	\begin{equation}\label{eq:Scat_Laue}
 		\V{k}' - \V{k} =  \V{G}.
 	\end{equation}
-	
 	Furthermore, when the scattered wave leaves the crystal, it has to have the same magnitude of the wave vector as the incoming wave, as required from the delta function in Fermi's Golden Rule:
 	\begin{equation}\label{eq:Scat_E_cons}
 		|\V{k}'| = |\V{k}|.
 	\end{equation}
-	Together these two conditions are statements of conservation of crystal momentum (\textbf{BUT WHY?}) and energy respectively.
-	
-	These are the two conditions for scattering on a crystal, but what about the scattering amplitudes? This is where the integral in Eq. \eqref{eq:Scat_mat_el} comes in. It turns out that the intensity of the scattered wave vector is proportional to the absolute square of this integral, called the \textit{structure factor}: \cite{simon}
+	Together these conditions are statements of conservation of crystal momentum and energy respectively. With the conditions met we still need to find the actual scattering amplitudes. This is where the integral in Eq. \eqref{eq:Scat_mat_el} comes in. It turns out that the intensity of the scattered wave vector is proportional to the absolute square of this integral, called the \textit{structure factor}: \cite{simon}
 	\begin{equation}
 		I \propto |S(\V{G})|^2, \quad S(\V{G}) = \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}.
 	\end{equation}
