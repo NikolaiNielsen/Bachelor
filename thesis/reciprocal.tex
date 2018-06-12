@@ -3,13 +3,13 @@
 \begin{document}
 	\section{Reciprocal lattice and scattering} \label{sec:scattering}
 	\subsection{Theory}
-	The reciprocal lattice is an incredibly useful construct, as it allows for an easy description of wave phenomena, where the main variable is the wave vector $ \V{k} $. The reciprocal lattice is a lattice (as defined in the previous section), but in reciprocal space. This again means that the free variables is not position, but the wave vector.
+	The reciprocal lattice is an incredibly useful construct, as it allows for an easy description of wave phenomena, where the main variable is the wave vector $ \V{k} $. The reciprocal lattice is a lattice (as defined in the previous section), but in reciprocal space. This again means that the free variable is not position, but the wave vector.
 	
 	The definition of a reciprocal lattice is all of the points $ \V{G} $, that satisfy
 	\begin{equation}\label{eq:reciprocal_lattice}
 		e^{i \V{G} \D \V{R}} = 1,
 	\end{equation}
-	for any lattice point in real space $ \V{R} $. Further, the primitive lattice vectors of the reciprocal lattice all satisfy the property
+	for any lattice point in real space $ \V{R} $. Further, the primitive lattice vectors of the reciprocal lattice all satisfy the property \cite{kittel}
 	\begin{equation}\label{eq:rec_prim_def}
 		\V{a}_i \D \V{b}_j = 2\pi \delta_{ij},
 	\end{equation}
@@ -21,17 +21,15 @@
 	\begin{equation}
 		e^{i (n_1 \V{a}_1 + n_2 \V{a}_2 + n_3 \V{a}_3) \D (m_1 \V{b}_1 + m_2 \V{b}_2 + m_3 \V{b}_3)} = e^{2\pi i (n_1 m_1 + n_2 m_2 + n_3 m_3)},
 	\end{equation}
-	where the second equality follows from the defining property of the primitive lattice vectors in reciprocal space. For $ \V{G} $ to be part of the reciprocal lattice, for any choice of integer $ n_i $, then $ m_i $ need also be integers. As such the form of the reciprocal lattice matches that of the real space lattice. Usually (in the case of lattice planes and scattering) we express the 3 coefficients for the reciprocal lattice vectors using Miller indices ($ hkl $), where $ h=m_1, k=m_2, l=m_3 $.
+	where the second equality follows from the defining property of the primitive lattice vectors in reciprocal space. For $ \V{G} $ to be part of the reciprocal lattice, for any choice of integer $ n_i $, then $ m_i $ need also be integers. As such the reciprocal lattice really is a lattice, as defined in section \ref{sec:lattice_theory}, but in the reciprocal space. Usually (in the case of lattice planes and scattering) we express the 3 coefficients for the reciprocal lattice vectors using Miller indices ($ hkl $), where $ h=m_1, k=m_2, l=m_3 $.
 	
 	Now, to actually construct the reciprocal primitive lattice vectors, the following formulas are used:
 	\begin{equation}\label{eq:rec_prim_vec}
 		\V{b}_1 = \frac{2\pi \, \V{a}_2 \times \V{a}_3}{\V{a}_1 \D (\V{a}_2 \times \V{a}_3)}, \quad \V{b}_2 = \frac{2\pi \, \V{a}_3 \times \V{a}_1}{\V{a}_2 \D (\V{a}_3 \times \V{a}_1)}, \quad \V{b}_3 = \frac{2\pi \, \V{a}_1 \times \V{a}_2}{\V{a}_3 \D (\V{a}_1 \times \V{a}_2)},
 	\end{equation}
-	where the cross product in the numerator ensures the property of the Kronecker delta, and the denominator serves as a sort of normalization, such that the dot product equals 2$ \pi $. Further, by dimensional analysis, $ \V{b}_i $ has dimensions $ \e{m}\inverse $, as expected for wave vectors.
+	where the cross product in the numerator ensures that $ \V{a}_i $ and $ \V{b}_j $ are orthogonal to each other for $ i \neq j $, and the denominator serves as a sort of normalization, such that the dot product equals 2$ \pi $. Further, by dimensional analysis, $ \V{b}_i $ has dimensions $ \e{m}\inverse $, as expected for wave vectors.
 	
-	The reciprocal lattice can also be understood in terms of families of lattice planes. First, a lattice plane is defined as any plane that contains at least 3 lattice points (this also guarantees that an infinite set of lattice points is contained by the plane, by virtue of the non-uniqueness of the primitive lattice vectors). 
-	
-	A family of lattice planes is an infinite series of parallel planes, equally spaced, such that all points of the lattice is contained in the planes, and that all planes contain lattice points.
+	The reciprocal lattice can also be understood in terms of families of lattice planes. First, a lattice plane is defined as any plane that contains at least 3 lattice points (this also guarantees that an infinite set of lattice points is contained by the plane, by virtue of the non-uniqueness of the primitive lattice vectors). A family of lattice planes is an infinite series of parallel planes, equally spaced, such that all points of the lattice is contained in the planes, and that all planes contain lattice points.
 	
 	First consider the series of planes containing the points $ \V{r}_m $, defined by
 	\begin{equation}
@@ -50,16 +48,16 @@
 	As such, there is some minimum magnitude of the reciprocal lattice vector that defines a given family of lattice planes. This means that for a family of lattice planes, the distance is $ d = 2\pi /| \V{G}_{min}| $.
 	
 	\subsubsection{The Brillouin zone}
-	In discussing Bloch's theorem we saw that any wave function in a periodic medium can be expressed as a sum of plane waves, with wave vectors differing by a reciprocal lattice vector. In one dimension we see that changing $ k \to k + 2\pi/a $ yields the same wave function and the states are therefore physically equivalent. This means that the wave vector is only defined up to a factor of $ 2 \pi / a $, and can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $. We call momentum for wave vectors in this range \textit{crystal momentum}, and the range itself the \textit{first Brillouin zone}.
+	In discussing Bloch's theorem we saw that any wave function in a periodic medium can be expressed as a sum of plane waves, with wave vectors differing by a reciprocal lattice vector. In one dimension we see that changing $ k \to k + 2\pi/a $ yields the same wave function and the states are therefore physically equivalent. This means that the wave vector is only defined up to a factor of $ 2 \pi / a $, and can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $. We call momentum for wave vectors in this range \textit{crystal momentum}. This range is also called the \textit{first Brillouin zone}, where the $ n $'th Brillouin zone is defined as the set of points $ k $, for which $ 0 $ is the $ n $'th nearest point on the reciprocal lattice. This also generalises to higher dimensions where we just deal with vectors in stead of numbers. So the first Brillouin zone is the set of points $ \V{k} $ for which $ \V{0} $ is the nearest lattice point in reciprocal space.
 	
-	The same principle applies to higher dimensions. The first Brillouin zone is defined as any point $ \V{k} $ in reciprocal space, that is closer to $ \V{0} $ than any other point on the reciprocal lattice. The $ n $'th Brillouin zone is then defined as any point $ \V{k} $, where $ \V{0} $ is the $ n $'th nearest point on the reciprocal lattice.
-	
-	For a 2 dimensional, square lattice the first Brillouin zone corresponds to a square with sides $ 2\pi /a $, centred on the origin.
+	For a 2 dimensional square lattice the first Brillouin zone corresponds to a square with sides $ 2\pi /a $, centred on the origin.
 	
 	\subsubsection{Scattering}
 	In a scattering experiment, an incoming collection of waves (be it electrons, neutrons, x-ray photons or something completely different) with wave vector $ \V{k} $ is incident upon a crystal. Some of these will be scattered into states with wave vector $ \V{k}' $ whilst others will pass on through. 
 	
-	To find the general conditions for scattering, we start with Fermi's Golden Rule \cite{simon}, which is a measure of the transition rate between states. It is given as
+	The following derivation of the scattering criteria and intensities follow that of \cite{simon}.
+	
+	To find the general conditions for scattering, we start with Fermi's Golden Rule, which is a measure of the transition rate between states. It is given as
 	\begin{equation}\label{eq:Scat_fermi}
 		\Gamma(\V{k}', \V{k}) = \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}),
 	\end{equation}
@@ -96,7 +94,7 @@
 	
 	Another thing this allows us to show is systemic absences. For a cubic lattice with a basis, the structure factor becomes
 	\begin{equation}\label{eq:Scat_struct_ortho}
-		S(\V{G}) = S_{hkl} = \sum_{\text{atoms}\, j} f_j e^{i (h\V{b}_1 + k\V{b}_2 + l\V{b}_3) \D \V{x}_j} = \sum_{\text{atoms}\, j} f_j e^{2\pi i (hx_j + ky_j + lz_j)}
+		S(\V{G}) = S_{hkl} = \sum_{\text{atoms}\, j} f_j e^{i (h\V{b}_1 + k\V{b}_2 + l\V{b}_3) \D \V{x}_j} = \sum_{\text{atoms}\, j} f_j e^{2\pi i (hx_j + ky_j + lz_j)},
 	\end{equation}
 	where the coordinates of $ \V{x}_j $ are in units of the lattice constant $ a $. For a bcc lattice, which corresponds to a simple cubic lattice, with two identical atoms at $ (0,0,0) $ and $ (1/2, 1/2, 1/2) $ (again in units of the lattice constant), the structure factor becomes
 	\begin{equation}
@@ -111,17 +109,19 @@
 	\subsection{Implementation}	
 	The scattering program creates one figure with two sets of axes. One interactive set with the physical setup, including the desired crystal structure, incoming probe beam, detector screen and detected scattering events. The second shows only a top down view of the detector screen with the detected scattering events.
 	
-	For the first set of axes, the scattering program builds upon the lattice plotting program. It plots the desired lattice (simple cubic with a basis), calculates scattering for this crystal given a list of form factors and an incoming wave, and displays the results on a simulated detection screen.
+	For the first set of axes, the scattering program builds upon the lattice plotting program. It plots the desired lattice (simple cubic with a basis), calculates scattering for this crystal given a list of form factors and an incoming wave vector, and displays the results on a simulated detection screen. The wave vectors point of impact is kept fixed, but the magnitude and angle of incidence can be changed by the user.
+	
+	On the second set of axes we plot a top down view of the detection plane, along with scattering events and the associated Miller indices. To make the program more user friendly, we (by default) define the incoming wave vector in units of $ 2\pi/a $, such that the user does not need to always include these factors.
 	
 	Calculating the actual scattering is done by first creating the reciprocal lattice with Eq. \eqref{eq:rec_prim_vec}, and next creating an array of reciprocal lattice vectors with indices $ h,k,l \in \{-5, -4, \dots, 5\} $ (excluding $ h=k=l=0 $ as this just results in a "scattered" wave vector equal to the incident wave vector). This of course does not constitute the whole possible range reciprocal lattice vectors, but a line has to be drawn somewhere. This interval includes $ 11^3 - 1 = 1330$ different reciprocal lattice vectors, which should be plenty to get an understanding of scattering.
 	
-	This array of reciprocal lattice vectors is then used to calculate the "scattered" wave vectors by Eq. \eqref{eq:Scat_Laue}. These do not necessarily meet the other criteria of energy conservation, though, and there are further criteria to consider. First is of course any systemic absences. These wave vectors do meet the criteria of both conservation of crystal momentum and energy, but they still do not show up on the detection screen due to the systemic absence.
+	This array of reciprocal lattice vectors is then used to calculate the "scattered" wave vectors by Eq. \eqref{eq:Scat_Laue}. These do not necessarily meet the other criteria of energy conservation, though, and there are further criteria to consider.
 	
-	To calculate the systemic absence of a scattered wave vector, the structure factor for a given reciprocal lattice vector has to be calculated. This is done with Eq. \eqref{eq:Scat_struct}. Next the program calculates the intensity $ I_{hkl}=|S_{hkl}|^2 $ and checks if it is equal to 0. If so, then the scattered wave vector is subject to a systemic absence.
+	The first additional criteria is the direction of the scattered wave vector. The scattered wave vector has to point in the direction of the detection screen, otherwise it will not physically "hit" the screen. In the program the detection screen is placed parallel to the $ xy $-plane, with $ z=z_0, z_0 > 0 $. As such any scattered wave vector will need to have $ k'_z > 0 $ to be detected.
 	
-	The second additional criteria is the direction of the scattered wave vector. The scattered wave vector has to point in the direction of the detection screen, otherwise it will not physically "hit" the screen. In the program the detection screen is placed parallel to the $ xy $-plane, with $ z=z_0, z_0 > 0 $. As such any scattered wave vector will need to have $ k'_z > 0 $ to be detected.
+	Second is any systemic absences. The reason we need to check for this is the fact that we show the Miller indices on the second set of axes. So if we do not filter out any scattering wave vectors, whose intensity is zero, we will get a spot on the detection plane with zero intensity, but the Miller indices still plotted. The systemic absence is calculated by taking the absolute square of  Eq. \eqref{eq:Scat_struct} and checking whether or not it is equal to 0. If so we exclude the wave vector from the scattered events.
 	
-	These three criteria (conservation of energy, lack of systemic absence, and proper direction) are all calculated by the program, and if a scattered wave vector does not fulfil all of them, it is discarded.
+	These three criteria (conservation of energy, proper direction, and a lack of systemic absence) are all calculated by the program, and if a scattered wave vector does not fulfil all of them, it is discarded.
 	
 	Left are only a handful, if any, of scattered wave vectors. For each of these, the impact point of the scattered wave vector on the detection plane has to be calculated. This is done by calculating the intersection between a line and a plane. The line is defined by the point of impact $ \V{p}_0 $ of the incident wave vector along with the scattered wave vector $ \V{k}' $. The plane is defined as mentioned above, with $ z=z_0 $. In this case the intersection happens when
 	\begin{equation}
@@ -131,9 +131,7 @@
 	\begin{equation}
 		\V{p} = \V{p}_0 + t \V{k}'.
 	\end{equation}
-	These points are then plotted in the first figure along with the detection plane and the incoming wave vector (scaled so its length is equal to the wavelength).
-	
-	The points are also shown on the second figure, showing the top down view of the detection plane, along with the Miller indices of the reciprocal lattice vector giving rise to the corresponding scattering events. To make the program more user friendly, we (by default) define the incoming wave vector in units of $ 2\pi/a $, such that the user does not need to always include these factors.
+	These points are then plotted in the first set of axes along with the detection plane and the incoming wave vector (scaled so its length is equal to the wavelength), and on the second set of axes along with the associated Miller indices.
 	
 	Two additional features for the scattering program are also available. The first is the "show all" feature. This plots all outgoing wave-vectors and their associated lines (starting at the impact point for the incident beam, and ending at the intersection between the outgoing wave vector and the detection plane).
 	
@@ -149,7 +147,7 @@
 	\begin{equation}
 		0 = \V{d} \D (\V{r}-\V{r}_0) = \V{n} \D \V{r}, \quad \Leftrightarrow \quad z = -\frac{d_x x + d_y y}{d_z}.
 	\end{equation}
-	The program then calculates the $ z $-component of the plane from a given array of $ x $ and $ y $-values. This, of course, only creates one plane. Each subsequent plane is created by displacing the original plane by an amount $ d/\cos \theta = d^2/d_z$ (see figure \ref{fig:plane_distance}). This process is repeated in the positive direction until the smallest $ z $-value of the uppermost plane is outside of the plot box, and likewise in the negative direction, yielding a full set of parallel planes, spaced by $ \V{d} $ (at least within the plot box).
+	The program then calculates the $ z $-component of the plane from a given array of $ x $ and $ y $-values. This, of course, only creates one plane. Each subsequent plane is created by displacing the original plane vertically by an amount $ d/\cos \theta = d^2/d_z$ (see figure \ref{fig:plane_distance}). This process is repeated in the positive direction until the smallest $ z $-value of the uppermost plane is outside of the plot box, and likewise in the negative direction, yielding a full set of parallel planes, spaced by $ \V{d} $ (at least within the plot box).
 	
 	However, if the plane \textit{is} perpendicular to the $ xy $-plane, this method does not work. Here the program creates a plane from the span of two vectors perpendicular to the displacement vector. Since the plane is perpendicular to the $ xy $-plane, one such vector is $ \U{z} $, the unit vector in the $ z $-direction. Then the second vector can just be taken as the cross product between $ \V{d} $ and $ \U{z} $. Again the origin is taken as the starting point:
 	\begin{equation}
@@ -157,10 +155,10 @@
 	\end{equation}
 	To get any subsequent planes, an integer multiple of the displacement vector $ \V{d} $ is added to the starting plane.
 	
-	For both of these methods the planes need to be limited so they are only plotted within the plot box. This is done by replacing the $ z $-component of any point outside the plot box with \texttt{NaN}, which will cause Matplotlib to not plot the associated point. This is especially pertinent in the second case, where not only the $ z $-component can be outside the plot box, but $ x $ and $ y $-components can be. Because of this $ \U{z}/4 $ and $ (\U{z} \times \U{G})/4 $ are used to increase the resolution of each plane, along with a large range of values for $ s $ and $ t $ (in this case taken to be integers, though the same effect could be achieved by using a more densely packed interval for $ s $ and $ t $ and keeping the original vectors).
+	For both of these methods the planes need to be limited so they are only plotted within the plot box. This is done by replacing the $ z $-component of any point outside the plot box with \texttt{NaN}, which will cause Matplotlib to not plot the associated point. This is especially pertinent in the second case, where not only the $ z $-component may be outside the plot box, but also the $ x $ and $ y $-components may be. Because of this $ \U{z}/4 $ and $ (\U{z} \times \U{G})/4 $ are used to increase the resolution of each plane, along with a large range of values for $ s $ and $ t $ (in this case taken to be integers, though the same effect could be achieved by using a more densely packed interval for $ s $ and $ t $ and keeping the original vectors).
 	
 	 
-	Further, a second program is added alongside the scattering program. This second program just allows the user to plot any crystal, along with any set of lattice planes, defined by a set of Miller indices supplied by the user.
+	Further, a second program is added alongside the scattering program. This second program just allows the user to plot any crystal, along with any family of lattice planes, defined by a set of Miller indices supplied by the user.
 	
 	\subsection{Examples}
 	\begin{wrapfigure}{r}{2in}
@@ -173,7 +171,7 @@
 Reciprocal(lattice_name="bcc",
 		   indices=(0,0,1))
 \end{lstlisting}
-	If instead, we want to simulate neutron scattering on a cubic lattice with a four atom basis (one at lattice points, the others at the centre of the faces of the unit cell). We set the relative scattering lengths as 1 for the atoms on the lattice points and 0.5 for the others. We set $ \V{k}_{in} = (0, 0, -1.5)$ in units of $ 2\pi/a $. Lastly we highlight the scattering corresponding to the Miller indices (112). This is all done by the following line, and produces figure \ref{fig:scattering_no_systemic}.
+	As another example, consider the case of simulating neutron scattering on a cubic lattice with a four atom basis (one at lattice points, the others at the centres of the faces of the unit cell). We set the relative form factors as 1 for the atoms on the lattice points and 0.5 for the others. We set $ \V{k}_{in} = (0, 0, -1.5)$ in units of $ 2\pi/a $. Lastly we highlight the scattering corresponding to the Miller indices (112). This is all done by the following line, and produces figure \ref{fig:scattering_no_systemic}.
 \begin{lstlisting}
 Scattering(k_in=np.array([0, 0, -1.5]),
 		   basis=np.array([[0, 0, 0], 
@@ -181,7 +179,7 @@ Scattering(k_in=np.array([0, 0, -1.5]),
 						   [0.5, 0, 0.5],
 						   [0, 0.5, 0.5]]),	
 		   highlight=(1,1,2),
-		   scattering_length=np.array([1, 0.5, 0.5, 0.5]))
+		   form_factor=np.array([1, 0.5, 0.5, 0.5]))
 \end{lstlisting}
 	But what if we want to plot scattering on regular fcc lattice, with the same wave vector as before? Then we just set the scattering length for all atoms to 1. This gives figure \ref{fig:scattering_systemic}.
 \begin{lstlisting}
@@ -190,8 +188,9 @@ Scattering(k_in=np.array([0, 0, -1.5]),
 						   [0.5, 0.5, 0],
 						   [0.5, 0, 0.5],
 						   [0, 0.5, 0.5]]),	
-		   scattering_length=np.array([1, 0.5, 0.5, 0.5]))
+		   form_factor=np.array([1, 0.5, 0.5, 0.5]))
 \end{lstlisting}
+	Note on this figure the absence of any scattering. This is an example of a systemic absence for the fcc lattice, because not all indices in each of the 5 sets are even (or odd). The highlighted scattering event in figure \ref{fig:scattering_no_systemic} has 2 odd indices and 1 even index.
 	
 	
 	\begin{figure}

@@ -6,33 +6,33 @@
 	In this thesis we look at phenomena arising from the discrete translational symmetry of crystals. As a first example we look at the nearly free electron model in one dimension. This model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength.
 	
 	\subsection{Nearly Free Electron model in One Dimension}\label{sec:nearly_free}
-	The nearly free electron model is, as the name suggests, a model in which electrons are moving in a medium with a small perturbing potential, such that they are nearly free. As such we assume that electrons are essentially free, but experience some small periodic potential that we treat as a perturbation.
+	The nearly free electron model is, as the name suggests, a model in which electrons are moving in a medium with a small perturbing potential, such that they are nearly free. As such we assume that electrons are essentially free, but experience some small periodic potential which we shall treat as a perturbation to the free particle Hamiltonian.
 	
 	In general, the Hamiltonian is
 	\begin{equation}
-		H = H_0 + H', \quad H_0 = \frac{p^2}{2m}, \quad H' = V(x) = V(x + na), n \in \mathbb{Z}
+		H = H_0 + H', \quad H_0 = \frac{p^2}{2m}, \quad H' = V(x) = V(x + na), n \in \mathbb{Z},
 	\end{equation}
-	where $ a $ is the spacing between atoms. In this case we are dealing with plane waves (at least to zeroth order in perturbation theory) $ \ket{k} $, with zeroth order energies $ E_0(k)= \hbar^2 k^2/2m $. Now, to calculate anything in perturbation theory, we need the matrix elements of the potential $ \braket{k' | V | k} $. These are
+	where $ a $ is the spacing between atoms. In zeroth order perturbation theory the electrons are free, and as such described as plane waves: $ \ket{k} = \sqrt{L}\inverse e^{ikx} $, with zeroth order energies $ E_0(k)= \hbar^2 k^2/2m $. Now, to calculate anything in perturbation theory, we need the matrix elements of the potential $ \braket{k' | V | k} $. These are
 	\begin{equation}
-		\braket{k' | V | k} = \infint e^{-i(k'-k)x} V(x) \equiv V_{k'-k}.\ud x
+		\braket{k' | V | k} = \infint e^{-i(k'-k)x} V(x) \equiv V_{k'-k}.\ud x.
 	\end{equation}
 	Due to the periodicity of the potential we can write this integral as a sum of integrals by setting $ x=x'+na $
 	\begin{equation}
-		\braket{k' | V | k} = \sum_{n = -\infty}^{\infty} e^{-i(k'-k) na} \int_{0}^{a} e^{-i(k'-k)x'} V(x').\ud x'
+		\braket{k' | V | k} = \sum_{n = -\infty}^{\infty} e^{-i(k'-k) na} \int_{0}^{a} e^{-i(k'-k)x'} V(x').\ud x'.
 	\end{equation}
 	This sum is infinite for a discrete set of values $ k'-k $, namely
 	\begin{equation}
-		k'-k = \frac{2\pi j}{a} \equiv G_j, \quad j \in \mathbb{Z}
+		k'-k = \frac{2\pi j}{a} \equiv G_j, \quad j \in \mathbb{Z},
 	\end{equation}
-	where $ G_j $ is called a reciprocal lattice vector (with $ x_n=na $ being a direct lattice vector). If $ k'-k $ is not a reciprocal lattice vector, then this sum is just 0, akin to how roots of unity sum to 0.(\textbf{REF FOR THIS?})
+	where $ G_j $ is called a reciprocal lattice vector (with $ x_n=na $ being a direct lattice vector). If $ k'-k $ is not a reciprocal lattice vector, then this sum is just 0, akin to how roots of unity sum to 0.
 	
-	Due to this, there is only a discrete set of values in $ k $-space that contribute to the energy (and wave function) of $ \ket{k} $, meaning that $ \ket{k} $ can only scatter into another state if it is separated by a reciprocal lattice vector. Further interesting things happen if the energies of some other plane waves are equal to that of $ \ket{k} $. Due to the parabolic dispersion of the plane waves, the first case where these conditions apply is for $ k $ around $ \pi/a $ and $ k'=k + G_{-1} \approx -\pi/a $. Here $ E_0(k) = E_0(k') $, and we are at a reciprocal lattice vector (the smallest non-trivial one, in fact). Due to this we need to treat the problem in degenerate perturbation theory.
+	Because the matrix element is nonzero only for a discrete set of values of $ k'-k $, only these will contribute to the energy (and wave function) of $ \ket{k} $, meaning that $ \ket{k} $ can only scatter into another state if it is separated by a reciprocal lattice vector. Further interesting things happen if the energies of these plane waves separated by reciprocal lattice vectors are equal to that of $ \ket{k} $. Due to the parabolic dispersion of the plane waves, the first case where these conditions apply is for $ k $ around $ \pi/a $ and $ k'=-k$. Here $ E_0(k) = E_0(k') $, and the wave vectors are separated by a reciprocal lattice vector (the smallest non-trivial one, in fact, $ G_{-1}=-2\pi/a $). Due to this we need to treat the problem in degenerate perturbation theory.
 	
 	For this case, there are 4 relevant matrix elements:
 	\begin{align}
 		\braket{k|H|k} = E_0(k) + V_0, \quad \braket{k'|H|k'} = E_0(k+G_{-1}) + V_0, \quad \braket{k'|H|k} = \braket{k|H|k'}^* = V_G.
 	\end{align}
-	For simplicity we assume $ V_0 = 0 $, as it is just a constant. Around these values of $ k $ and $ k' $ we take the wave function as $ \ket{\psi} = \alpha \ket{k} + \beta \ket{k+G_{-1}} $, which means that the energy can be found as the eigenvalue to the Hamiltonian in this "two-dimensional" subspace of these two plane waves:
+	For simplicity we assume $ V_0 = 0 $, as it is just a constant. Around these values of $ k $ and $ k' $ we take the wave function as $ \ket{\psi} = \alpha \ket{k} + \beta \ket{k+G_{-1}} $, which means that the energy can be found as the eigenvalue of the Hamiltonian in this two-dimensional subspace of these two plane waves:
 	\begin{equation}
 		\begin{pmatrix}
 			E_0(k) & V_G^* \\ V_G & E_0(k+G_{-1})
@@ -53,22 +53,22 @@
 		\caption{Dispersion relation of electrons in the (nearly) free electron model, for $ -\pi/a \leq k \leq \pi/a $. The solid orange line is for a nearly free electron, whilst the dashed blue line is for a free electron.}
 		\label{fig:nearly_free}
 	\end{wrapfigure}
-	with an eigenenergy of
+	with an eigenenergy of \cite{simon}
 	\begin{equation}
 		E_{\pm} = \frac{\hbar^2}{2m} \bb{\pp{\frac{\pi}{a}}^2 + \delta^2 } \pm |V_G| \sqrt{1+ \pp{\frac{2\pi\hbar^2 \delta}{2m a |V_G|}}^2 }.
 	\end{equation}
 	As we are dealing with $ \delta \approx 0 $, we expand the square root to second order and get
 	\begin{equation}
-		E_{\pm} = \frac{\hbar^2 \pi^2}{2m a^2} \pm |V_G| + \frac{\hbar^2 \delta^2}{2m} \bb{1 \pm \frac{\hbar^2 \pi^2}{m a^2 |V_G|}}
+		E_{\pm} = \frac{\hbar^2 \pi^2}{2m a^2} \pm |V_G| + \frac{\hbar^2 \delta^2}{2m} \bb{1 \pm \frac{\hbar^2 \pi^2}{m a^2 |V_G|}},
 	\end{equation}
-	where the second term in brackets is larger than unity (for small perturbations) \cite{simon}, such that the dispersion is a negative parabola in $ \delta $, for $ E_- $. This all means that for $ k =\pi/a$ (or equivalently $ -\pi/a $), a gap appears in the dispersion relation, and the energy in the lower branch is lowered, such that $ \partial E/ \partial k =0$ (see figure \ref{fig:nearly_free}). As it turns out this is happens for any reciprocal lattice vector, with $ k = j \pi/a $ and $ k'=-j \pi /a = k+G_{-j}$. These characteristics (scattering only being allowed for states separated by reciprocal lattice vectors, and bands of energy appearing at regular intervals) also appear in systems of higher dimensions, as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
+	where the second term in brackets is larger than unity (for small perturbations) \cite{simon}, such that the dispersion is a negative parabola in $ \delta $, for $ E_- $. This all means that for $ k =\pi/a$ (or equivalently $ -\pi/a $), a gap appears in the dispersion relation, and the energy in the lower branch is lowered, such that $ \partial E/ \partial k =0$ (see figure \ref{fig:nearly_free}). As it turns out this is happens for any half reciprocal lattice vector, as then $ k = j \pi/a $ and $ k'=-j \pi /a = k+G_{-j}$ is separated by a reciprocal lattice vector. . These characteristics (scattering only being allowed for states separated by reciprocal lattice vectors, and bands of energy appearing at regular intervals) also appear in systems of higher dimensions, as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
 	
 	
 	
 	\subsection{Bloch's Theorem}
 	In the previous section we considered the case of an electron in a weak periodic potential, where the wave function is essentially a plane wave. But this always the for real materials? Can we really be sure that we can treat the wave function as plane waves even when the potential strength is cranked up? It turns out we can, and the proof of that lies with Bloch's theorem.
 	
-	The assumption here is that we are working with a periodic potential, such that $ V(\V{r} + \V{R}) $ for all lattice points. As such the full Hamiltonian has a discrete translational symmetry, which means that all translation operators $ \hat{T}_{\V{R}} $ (that translate by any lattice vector $ \V{R} $) commute with the Hamiltonian: $ [\hat{H}, \hat{T}_{\V{R}}] = 0$. This further means that we can simultaneously diagonalize these operators and find a shared basis of eigenstates.
+	The assumption here is that we are working with a periodic potential, such that $ V(\V{r} + \V{R}) = V(\V{r}) $ for all lattice points. As such the full Hamiltonian has a discrete translational symmetry, which means that all translation operators $ \hat{T}_{\V{R}} $ (that translate by any lattice vector $ \V{R} $) commute with the Hamiltonian: $ [\hat{H}, \hat{T}_{\V{R}}] = 0$. This further means that we can simultaneously diagonalize these operators and find a shared basis of eigenstates.
 	
 	The eigenvalue of the translation operator must have a magnitude of unity, as it otherwise would break the translation symmetry inherent to the system. So the only possible eigenvalue is a phase shift. Further we need all translation operators to commute with each other, and $ \hat{T}_{\V{R}_1} \hat{T}_{\V{R}_2} = \hat{T}_{\V{R}_1 + \V{R}_2} $. With these restrictions the only possible eigenvalue is
 	\begin{equation}
@@ -79,7 +79,7 @@
 		\psi(\V{r}) = e^{i\V{k} \D \V{r}} u(\V{r}),
 	\end{equation}
 	where $ u(\V{r}) $ carries this periodicity of the crystal. As we shall see in section \ref{sec:band_structure}, we can write a periodic function as a sum of plane waves over reciprocal lattice vectors. This then also applies to $ u $, as it is periodic in the unit cell. Due to this, we can write the wave function as
-	\begin{equation}\label{key}
+	\begin{equation}
 		\psi(\V{r}) = \sum_{\V{G}} u_{\V{G},\V{k}} e^{i(\V{G} + \V{k}) \D \V{r}},
 	\end{equation}
 	where $ u_{\V{G},\V{k}} $ is some number. This will be important in the context of scattering and band structure as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
