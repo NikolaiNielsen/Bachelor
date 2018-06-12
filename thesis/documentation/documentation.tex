@@ -1,0 +1,190 @@
+% Nikolai Nielsens "Fysiske Fag" preamble
+\documentclass[a4paper,11pt]{article}
+\usepackage[english]{babel}
+\usepackage{Nikolai}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{wrapfig}
+
+\usepackage{pdfpages}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{Maroon}{RGB}{175,50,53}
+\definecolor{OliveGreen}{RGB}{60,128,49}
+\definecolor{Orange}{RGB}{245,129,55}
+
+\lstset{ %
+	language=python,
+	numbers=left,
+	stepnumber=1,
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false, 
+	tabsize=4,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries\color{Maroon},
+	commentstyle=\itshape\color{OliveGreen},
+	identifierstyle=\color{blue},
+	stringstyle=\color{Orange},
+}
+
+% Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
+\numberwithin{equation}{section}
+
+\newcommand{\coef}[1]{_{[#1]}}
+
+\title{Documentation for the \texorpdfstring{\texttt{cmp.py}}{cmp.py} script}
+\date{}
+
+\begin{document}
+	\maketitle
+	
+	\section{Introduction}
+	The program in this project is written in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. As such those two packages are all you really need to run the software.
+	
+	It is however recommended that you install \href{https://www.anaconda.com/}{Anaconda}, which is a Python distribution that also includes both NumPy and Matplotlib, along with a wealth of other packages useful for scientific computing. The \href{http://jupyter.org/}{Jupyter} package, especially, is useful, as it allows the user to write a bunch of small scripts (called cells) in a single file (called a notebook), and run the cells individually and quickly, while sharing the workspace between cells (i.e., variables persist between cells). A quick intro to Jupyter notebooks can be found at \href{http://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook Basics.ipynb}{this link}.
+	
+	\section{Installation}
+	As recommended we will install the Anaconda distribution. Download the software from here: \url{https://www.anaconda.com/download/}. Install the software, and when asked if you want to include Anaconda to the path (or something along those lines) say: ``Yes''. This will allow you to start Python from your command line/terminal with the command \texttt{python}.
+	
+	When Anaconda has been installed, you need the files from the project, these can be found on GitHub, at \url{https://github.com/NikolaiNielsen/Bachelor} (Or a \href{https://github.com/NikolaiNielsen/Bachelor/archive/master.zip}{direct download link}).
+	
+	Extract the code from the archive. The files \texttt{cmp.py}, \texttt{lattices.py}, \texttt{scattering.py}, \texttt{band\_structure.py} are all necessary, while \texttt{test.ipynb} includes some code examples.
+	
+	To run the code you can do one of a couple of things:
+	\begin{itemize}
+		\item Start Jupyter notebook (run the command \texttt{jupyter notebook} from the command line/terminal), navigate to the directory where the code is located, start the test notebook (\texttt{test.ipynb}) and write your code there.
+		\item Navigate, using your command line/terminal, to the directory where the code is located and run the command \texttt{python}. This creates an interactive python session where you can type in each command manually.
+	\end{itemize}
+	The reason why you need to navigate to the folder containing the code is because otherwise Python will not know where to look for the package, when you run the first line in the usage section. Python first checks the current working directory and next any other folders added to \texttt{\$PYTHONPATH}. If your current working directory is the directory containing the code, then python can correctly import the package.
+	
+	
+	\section{Usage}
+	The first commands you need to type is
+	\begin{lstlisting}
+from cmp import *
+%matplotlib notebook\end{lstlisting}
+	The first line will import the 4 main functions, \texttt{Lattices}, \texttt{Reciprocal}, \texttt{Scattering} and \texttt{Band\_structure}, along with the numpy package (accessed as \texttt{np}) and pyplot package (a subpackage of matplotlib, accessed as \texttt{plt}). The second line is only needed when using Jupyter notebooks, and makes the plots interactive (this line may need to be executed twice for it to work properly).
+	
+	Now you can start using the 4 functions to plot things. The functions take the following arguments:
+	\subsection{\texorpdfstring{\texttt{Lattice()}}{Lattice}}
+	The desired crystal structure can be specified in two ways:
+	\begin{itemize}
+		\item The name of the Bravais Lattice Type can be specified as the \texttt{lattice\_name} argument, accepting a string value (see table 1 and 2 in the thesis for available names).
+		\item The lattice vectors (\texttt{a1}, \texttt{a2}, \texttt{a3}) can be specified as 3 ndarrays, containing 3 elements each. The \texttt{basis} can be specified as an ndarray, containing $ n $ rows and 3 columns.
+	\end{itemize}
+	There is also a list of optional arguments that can be passed to the Lattice
+	function:
+	\begin{itemize}
+		\item \texttt{colors}: a list/tuple with $ n $ strings specifying the colors of each of the atoms in the basis. A single string can also be given, if only one color is desired. Defaults to plotting 
+		\item \texttt{sizes}: a list/tuple of $ n $ numbers specifying the relative size of the atoms. 2 is the default value.
+		\item \texttt{grid\_type}: either "latticevectors" or "axes". "latticevectors" plots gridlines along the lattice vectors. "axes" tries to plot gridlines parallel to the x, y and z-axes (requires a crystal structure that can be specified as a orthorhombic lattice with basis). Defaults to the preffered type of gridlines for a given Bravais lattice type
+		\item \texttt{max\_}: a list/tuples specifying the maximum amount of lattice points to plot in each direction of the lattice vectors. Defaults to [2,2,2].
+		\item \texttt{lim\_type}: either "individual", "sum" and "proper". Provides 3 different ways of limiting the plotted crystal structure: The default (and recommended) is "proper", which calculates the 8 lattice points given by linear combinations of the lattice-vectors and the coefficients specified in \texttt{min\_} and \texttt{max\_}. This forms a parallelipiped, where a orthorhombic plot-box is calculated to fit these 8 vertices inside.
+		\item \texttt{indices}: a list/tuple of 3 elements, corresponding to the Miller indices h, j and l. If specified this plots the corresponding (family of) lattice planes. For the Lattice function, this argument defaults to None, meaning no planes are plotted.
+		\item \texttt{unit\_type}: Either ``primitive'' and ``conventional''. Specifies the type of unit cell to plot. ``primitive'' plots only the lattice vectors up to \texttt{max\_}, while ``conventional'' fills out the plot box. Default is ``primitive'', but when specifying \texttt{lattice\_name} it defaults to the preferred value for that lattice.
+		\item \texttt{verbose}: True/False boolean value. Makes the functions print a lot of information helpful for debugging. Only partially implemented. Defaults to False
+		\item \texttt{returns}: True/False boolean value. If true the function returns the figure and axes handles. Defaults to False
+	\end{itemize}
+
+	\subsection{\texorpdfstring{\texttt{Reciprocal()}}{Reciprocal}}
+	This function is actually just a copy of the \texttt{Lattice} function, with a default argument for indices of (1,1,1). Otherwise everything is identical.
+	
+	\subsection{\texorpdfstring{\texttt{Scattering()}}{Scattering}}
+	This function simulates neutron scattering on a simple cubic lattice with a basis. It plots two figures in one window. One holds the crystal, a representation of the incoming neutron beam, the detection screen and the points as detected by this screen. The second figure shows just the detection plane and the points detected by it, along with the Miller indices giving rise to this particular scattering event. The alpha value of the points on the screen corresponds to the normalized intensity of the scattering events.
+	
+	The function needs 3 pieces of information to work properly. The basis, incoming wave vector and scattering lengths for the atoms in the basis.
+	
+	The basis can be specified in the following ways:
+	\begin{itemize}
+		\item \texttt{lattice\_name}: a string, specifying the Bravais Lattice Type (currently it only accepts "simple cubic", "bcc" and "fcc")
+		\item \texttt{basis}: an ndarray, with n rows and 3 columns, specifying the absolute position of the atoms within the unit cell (assuming lattice spacing of 1)
+	\end{itemize}
+	The two other requires arguments are
+	\begin{itemize}
+		\item \texttt{k\_in}: an ndarray with 3 numbers.. The script simulate a neutron beam incident on the top of the material. As such, the z-component should be negative. If positive, the script will flip the sign. If the argument \texttt{normalize} is True, then \texttt{k\_in } is defined in units of $ 2\pi/a $ (with $ a = 1$ in the program).
+		\item \texttt{form\_factor}: an ndarray with $ n $ numbers, where $ n $ is the number of atoms in the basis. Due to normalization of the intensity, only the relative values of elements in \texttt{form\_factor} matter. As such it is recommended to input values near unity to minimize any rounding error. By default all scattering lengths are equal
+	\end{itemize}
+	Other optional arguments that can be passed are as follows:
+	\begin{itemize}
+		\item \texttt{highlight}: a list/tuple of 3 elements. Corresponds to the Miller indices h, j and l. This will highlight the given scattering event associated with these Miller indices (if present). Defaults to None
+		\item \texttt{show\_all}: True/False boolean. If set to true this will plot all outgoing wave vectors (with lengths equal to their wavelength), and lines going from the scattering point out to the points on the detection plane. Defaults to False
+		\item \texttt{normalize}: True/False boolean. If true, the incident wave vector is defined in units of $ 2\pi/a $ with $ a=1 $. (in other words, \texttt{k\_in} is multiplied by $ 2\pi $). Defaults to True.
+		\item \texttt{verbose}: True/False boolean. Prints information useful in debugging. Also only partially implemented. Defaults to False
+		\item \texttt{returns}: True/False boolean. If True the program returns the figure handle and the two axes handles. Defaults to False
+	\end{itemize}
+
+
+	\subsection{\texorpdfstring{\texttt{Band\_structure()}}{Band Structure}}
+	The band structure function takes the following main arguments:
+	\begin{itemize}
+		\item \texttt{V0}: A float. The potential strength, in units of $ E_0 = \hbar^2 k_0^2/m $. For the harmonic potential \texttt{V0}=1 is the high potential limit, and any value above it will not provide the desired result. For the Dirac potential there is no bound on \texttt{V0} other than the floating point accuracy and the eigenvalue-finding algorithm (it breaks down around \texttt{V0} = $ 10^{15} $). Defaults to 0
+		\item \texttt{n\_k}: An integer. The number of points (in each direction) to include. It is suggested that this is an odd number to correctly get the points with $ k_x = 0 $ and $ k_y = 0 $. Defaults to 51
+		\item \texttt{G\_range}: A list of integers. The list of allowed coefficients for $ m_1 $ and $ m_2 $, where $ \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2 $. Should be symmetrical about 0, like \texttt{G\_range = [-2, -1, 0, 1, 2]}. Defaults to [-3, -2, -1, 0, 1, 2, 3].
+		\item \texttt{potential}: ``harmonic'', ``dirac'' or a function handle. specifies the potential. If ``harmonic'' or ``dirac'' is \textit{not} specified, but instead a function is given, the program will use this function to calculate the potential matrix. The function provided needs to take two arguments: \texttt{coeff} and \texttt{V0}, where \texttt{coeff} is a list of 2 integers: [$ m_1 $, $ m_2 $] and \texttt{V0} of course is $ V_0/E_0 $.
+	\end{itemize}
+	There are also the following optional arguments:
+	\begin{itemize}
+		\item \texttt{contour}: True/False boolean. If True, the program plots the Fermi surface contour in the main figure as well as the surface plot of the dispersion relation. Defaults to False
+		\item \texttt{edges}: True/False boolean. If True, the program plots the edges of the dispersion relation in another colour (black). Defaults to False.
+		\item \texttt{returns}: True/False boolean. If True the program returns the figure handle and the two axes handles. Defaults to False
+	\end{itemize}
+
+\section{Examples}
+Say we want to plot an fcc with the conventional unit cell. This can be done in two ways:
+\begin{lstlisting}
+Lattice(lattice_name='fcc')
+\end{lstlisting}
+Or
+\begin{lstlisting}
+Lattice(a1=np.array([1, 0, 0]),
+		a2=np.array([0, 1, 0]),
+		a3=np.array([0, 0, 1]),
+		basis=np.array([[0, 0, 0],
+						[0.5, 0.5, 0],
+						[0.5, 0, 0.5],
+						[0, 0.5, 0.5]]))
+\end{lstlisting}
+If we want to plot a simple cubic lattice with the (1,1,1) family of lattice planes we write
+\begin{lstlisting}
+Reciprocal(lattice_name="simple cubic",
+		   indices=(1, 1, 1))
+\end{lstlisting}
+If we want scattering on a bcc lattice, with $ k_in $ at normal incidence (magnitude of $ 2\pi/a $), while higlighting the $ (0,0,2) $ planes and plotting all information (with all form factors being equal, which is the default):
+\begin{lstlisting}
+Scattering(lattice_name='bcc',
+		   k_in=np.array([0, 0, -1]),
+		   highlight=(0,0,2),
+		   show_all=True)
+\end{lstlisting}
+If we want to plot the band structure of a medium strength harmonic potential (say $ V_0/E_0 = 0.3$), with 101 points in each direction we write
+\begin{lstlisting}
+Band_structure(V0=0.3,
+			   n_k=101,
+			   potential='harmonic')
+\end{lstlisting}
+
+
+\section{Glossary}
+\texttt{np} is the numpy package. This is the standard python package for doing numerical calculations.
+
+A \texttt{list} is a comma separated list of elements, enclosed in square brackets:
+\begin{lstlisting}
+a = [1,2,3]
+\end{lstlisting}
+A \texttt{tuple} is like a list, but enclosed in parentheses:
+\begin{lstlisting}
+b = (1,2,3)
+\end{lstlisting}
+An \texttt{ndarray} is the multidimensional array type specified by numpy. This corresponds to the default Matlab arrays. It is invoked by passing a list/tuple of lists/tuples to the \texttt{np.array()} function. Say I want to create a unit vector in the $ x $-direction. Then I write
+\begin{lstlisting}
+x = np.array([1,0,0])
+\end{lstlisting}
+If I want to specify the basis for a bcc lattice (conventional unit cell) I need to pass a list of lists. Each sub-list is then a row in the resulting array. Do note the double square brackets: ([[],[]])
+\begin{lstlisting}
+basis = np.array([[0,0,0],
+				  [0.5, 0.5, 0.5]])
+\end{lstlisting}
+
+\end{document}

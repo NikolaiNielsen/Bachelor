@@ -25,7 +25,7 @@
 # - The lattice vectors (a1, a2, a3) can be specified as 3 ndarrays, containing
 #   3 elements each. The basis can be specified as an ndarray, containing n
 #   rows and 3 columns
-#
+
 # There is also a list of optional arguments that can be passed to the Lattice
 # function:
 # - colors: a list/tuple with n strings specifying the colors of each of the
@@ -69,16 +69,16 @@
 # plane and the points detected by it, along with the Miller indices giving
 # rise to this particular scattering event. The alpha value of the points on
 # the screen corresponds to the normalized intensity of the scattering events.
-#
+
 # The function needs 3 pieces of information to work properly. The basis,
 # incoming wave vector and scattering lengths for the atoms in the basis.
-#
+
 # The basis can be specified in the following ways:
 # - lattice_name: a string, specifying the Bravais Lattice Type (currently it
 #   only accepts "simple cubic", "bcc" and "fcc")
 # - basis: an ndarray, with n rows and 3 columns, specifying the absolute
 #   position of the atoms within the unit cell (assuming lattice spacing of 1)
-#
+
 # The two other requires arguments are
 # - k_in: an ndarray with 3 numbers. The script simulate a neutron beam
 #   incident on the top of the material. As such, the z-component should be
@@ -88,7 +88,7 @@
 #   relative values of elements in scattering_length matter. As such it is
 #   recommended to input values near unity to minimize any rounding error. By
 #   default all scattering lengths are equal
-#
+
 # Other optional arguments that can be passed are as follows:
 # - highlight: a list/tuple of 3 elements. Corresponds to the Miller indices h,
 #   j and l. This will highlight the given scattering event associated with
@@ -144,7 +144,7 @@ Reciprocal(lattice_name="simple cubic",
 Scattering(lattice_name="bcc",
            k_in=np.array([0, 0, -2 * np.pi]),
            highlight=(0, 0, 2),
-           show_all=False)
+           show_all=True)
 
 # --------------------
 # GLOSSARY

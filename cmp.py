@@ -16,7 +16,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        type_=None, indices=None, verbose=False, returns=False):
+        unit_type=None, indices=None, verbose=False, returns=False):
     """
     Creates, limits and plots the lattice
     """
@@ -81,27 +81,28 @@ def Lattice(
     if grid_type is None:
         grid_type = latticelines[lattice_type]
 
-    if type_ is None:
-        type_ = unitcells[lattice_type]
+    if unit_type is None:
+        unit_type = unitcells[lattice_type]
     else:
         try:
-            type_ = type_.lower()
+            unit_type = unit_type.lower()
         except AttributeError:
-            print('Please input a string for type_. Giving primitive')
-            type_ = "primitive"
+            print('Please input a string for unit_type. Giving primitive')
+            unit_type = "primitive"
 
-        if type_ not in ["primitive", "conventional"]:
+        if unit_type not in ["primitive", "conventional"]:
             print(("Input either 'primitive' or 'conventional' for type."
                    " Giving 'primitive'"))
-            type_ = "primitive"
+            unit_type = "primitive"
 
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
-                                                      min_, max_, type_=type_)
+                                                      min_, max_,
+                                                      unit_type=unit_type)
 
     # if we plot the conventional cell we want to give r_min and r_max to
     # limiter. If not we want to give n_min and n_max
-    if type_ == "conventional":
+    if unit_type == "conventional":
         lim_min, lim_max = r_min, r_max
     else:
         lim_min, lim_max = n_min, n_max
@@ -185,7 +186,7 @@ def Lattice(
 def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        type_=None, indices=(1, 1, 1), verbose=False, returns=False):
+        unit_type=None, indices=(1, 1, 1), verbose=False, returns=False):
     if returns:
         fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
                           basis=basis,
@@ -194,7 +195,7 @@ def Reciprocal(
                           lim_type=lim_type,
                           grid_type=grid_type,
                           max_=max_,
-                          type_=type_,
+                          unit_type=unit_type,
                           lattice_name=lattice_name,
                           indices=indices,
                           verbose=verbose,
@@ -208,7 +209,7 @@ def Reciprocal(
                 lim_type=lim_type,
                 grid_type=grid_type,
                 max_=max_,
-                type_=type_,
+                unit_type=unit_type,
                 lattice_name=lattice_name,
                 indices=indices,
                 verbose=verbose)

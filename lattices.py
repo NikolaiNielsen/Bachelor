@@ -588,7 +588,7 @@ def chooser(lattice_name="simple cubic", verbose=False):
 
 
 def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
-                type_="primitive"):
+                unit_type="primitive"):
     """
     Calculates the limits on the coordinates (the plot box), and the limits on
     the basis vector ranges.
@@ -654,16 +654,16 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
     # array. Also, let's make sure n_min / max are arrays of integers. Don't
     # worry, they've already been rounded
 
-    if type_ == "primitive":
+    if unit_type == "primitive":
         returns = (r_min, r_max, n_min.astype('int'), n_max.astype('int'))
-    elif type_ == "conventional":
+    elif unit_type == "conventional":
         returns = (r_min, r_max, n_min.astype('int') - np.max(max_),
                    n_max.astype('int') + np.max(max_))
     return returns
 
 
 def limiter(points, objects, min_=np.array([0, 0, 0]),
-            max_=np.array([2, 2, 2]), type_="primitive",
+            max_=np.array([2, 2, 2]), unit_type="primitive",
             lattice=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
     """
     A function to highlight points that are outside the limits of the plot
@@ -671,7 +671,7 @@ def limiter(points, objects, min_=np.array([0, 0, 0]),
 
     num, _ = np.shape(points)
 
-    if type_ == "primitive":
+    if unit_type == "primitive":
         # We express all points in coefficients of the primitive lattice
         # vectors. If the coefficients are larger than max_ or smaller than
         # min_ they are outside the range
