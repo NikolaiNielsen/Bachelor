@@ -133,29 +133,6 @@
 	\end{itemize}
 	On the last characteristic: Since the potential is real and symmetric (rather, it is even about any lattice point $ \V{R} $, in both the $ x $ and $ y $-direction), it is guaranteed that $ V\coef{m_1, m_2} = V\coef{-m_1, -m_2}$. This is because the Fourier transform of a real and even function is also real and even \cite{riley}. As such, for any periodic potential (that is even in both $ x $ and $ y $ about lattice points) the potential matrix, and therefore also the whole Hamiltonian is hermitian!
 	
-	With all of this in mind, the potential energy matrix for $ m_1, m_2 \in \{-1, 0, 1\} $ is a $ 9 \times 9 $ matrix with the following coefficients:
-	
-	\begin{equation}
-		V = \begin{pmatrix}
-			V\coef{0, 0}	& V\coef{0, -1}	& V\coef{0, -2}	& V\coef{-1, 0}		& V\coef{-1, -1}	& V\coef{-1, -2}	& V\coef{-2, 0}	& V\coef{-2, -1}	& V\coef{-2, -2} \\
-			
-			V\coef{0, 1}	& V\coef{0, 0}	& V\coef{0, -1}	& V\coef{-1, 1}		& V\coef{-1, 0}		& V\coef{-1, -1}	& V\coef{-2, 1}	& V\coef{-2, 0}		& V\coef{-2, -1} \\
-			
-			V\coef{0, 2}	& V\coef{0, 1}	& V\coef{0, 0}	& V\coef{-1, 2}		& V\coef{-1, 1} 	& V\coef{-1, 0}	& V\coef{-2, 2}	& V\coef{-2, 1}		& V\coef{-2, 0} \\
-			
-			V\coef{1, 0}	& V\coef{1, -1}	& V\coef{1, -2}	& V\coef{0, 0}		& V\coef{0, -1}		& V\coef{0, -2}	& V\coef{-1, 0}	& V\coef{-1, -1}	& V\coef{-1, -2} \\
-			
-			V\coef{1, 1} 	& V\coef{1, 0}	& V\coef{1, -1}	& V\coef{0, 1}		& V\coef{0, 0}		& V\coef{0,-1}	& V\coef{-1, 1}	& V\coef{-1, 0}		& V\coef{-1, -1} \\
-			
-			V\coef{1, 2}	& V\coef{1, 1}	& V\coef{1, 0}	& V\coef{0, 2}		& V\coef{0, 1}		& V\coef{0, 0}	& V\coef{-1, 2}	& V\coef{-1, 1}		& V\coef{-1, 0} \\
-			
-			V\coef{2, 0}	& V\coef{2, -1}	& V\coef{2, -2}	& V\coef{1, 0}		& V\coef{1, -1}		& V\coef{1, -2}	& V\coef{0, 0}	& V\coef{0, -1}		& V\coef{0, -2} \\
-			
-			V\coef{2, 1}	& V\coef{2, 0}	& V\coef{2, -1}	& V\coef{1, 1}		& V\coef{1, 0}		& V\coef{1, -1}	& V\coef{0, 1}	& V\coef{0, 0}		& V\coef{0, -1} \\
-			
-			V\coef{2, 2}	& V\coef{2, 1}	& V\coef{2, 0}	& V\coef{1, 2}		& V\coef{1, 1}		& V\coef{1, 0}	& V\coef{0, 2}	& V\coef{0, 1}		& V\coef{0, 0}
-		\end{pmatrix}.
-	\end{equation}
 	Specific potentials implemented in the program include a two dimensional Dirac Comb, and a harmonic potential:
 	\begin{equation}
 		V_{\text{dirac}}(\V{r}) = V_0 a^2 \sum_{\V{R}} \delta(\V{r}-\V{R}), \quad V_{\text{harmonic}}(\V{r}) = V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}},

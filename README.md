@@ -5,10 +5,10 @@
 Abstract
 
 Introduction
-- [ ] write motivation for the thesis
+- [x] write motivation for the thesis
 
 2D Band structure
-- [ ] periodic potentials - prefactors
+- [x] periodic potentials - prefactors
 
 Code
 - [ ] comments in band-structre

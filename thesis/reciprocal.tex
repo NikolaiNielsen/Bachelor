@@ -150,17 +150,17 @@
 	\end{equation}
 	To get any subsequent planes, an integer multiple of the displacement vector $ \V{d} $ is added to the starting plane.
 	
+	\begin{wrapfigure}{r}{2in}
+		\includegraphics[width=2in]{figures/lattice_planes_1.pdf}
+		\caption{A bcc lattice showing the (001) family of lattice planes.}
+		\label{fig:lattice_planes}
+	\end{wrapfigure}
 	For both of these methods the planes need to be limited so they are only plotted within the plot box. This is done by replacing the $ z $-component of any point outside the plot box with \texttt{NaN}, which will cause Matplotlib to not plot the associated point. This is especially pertinent in the second case, where not only the $ z $-component may be outside the plot box, but also the $ x $ and $ y $-components may be. Because of this $ \U{z}/4 $ and $ (\U{z} \times \U{G})/4 $ are used to increase the resolution of each plane, along with a large range of values for $ s $ and $ t $ (in this case taken to be integers, though the same effect could be achieved by using a more densely packed interval for $ s $ and $ t $ and keeping the original vectors).
 	
 	 
 	Further, a second program is added alongside the scattering program. This second program just allows the user to plot any crystal, along with any family of lattice planes, defined by a set of Miller indices supplied by the user.
 	
 	\subsection{Examples}
-	\begin{wrapfigure}{r}{2in}
-		\includegraphics[width=2in]{figures/lattice_planes_1.pdf}
-		\caption{A bcc lattice showing the (001) family of lattice planes.}
-		\label{fig:lattice_planes}
-	\end{wrapfigure}
 	Say we just want to plot the (001) family of lattice planes for a bcc lattice, then we write the following and get figure \ref{fig:lattice_planes}.
 \begin{lstlisting}
 Reciprocal(lattice_name="bcc",
