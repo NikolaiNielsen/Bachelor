@@ -98,7 +98,7 @@ def Lattice(
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_, type_=type_)
-    
+
     # if we plot the conventional cell we want to give r_min and r_max to
     # limiter. If not we want to give n_min and n_max
     if type_ == "conventional":
@@ -162,7 +162,7 @@ def Lattice(
     # no automatic gridlines, and no axes
     ax.set_aspect('equal')
     ax.set_proj_type('ortho')
-    
+
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
     ax.set_xlim([plot_min, plot_max])
@@ -175,17 +175,17 @@ def Lattice(
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    
+
     if returns:
         return fig, ax
-    
+
     plt.show()
 
 
 def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
-        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None, type_=None,
-        indices=(1, 1, 1), verbose=False, returns=False):
+        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
+        type_=None, indices=(1, 1, 1), verbose=False, returns=False):
     if returns:
         fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
                           basis=basis,
@@ -217,7 +217,7 @@ def Reciprocal(
 def Scattering(lattice_name='simple cubic',
                basis=None,
                k_in=np.array([0, 0, -1.5]),
-               scattering_length=np.array([1, 1, 1, 1]),
+               form_factor=np.array([1, 1, 1, 1]),
                highlight=None,
                show_all=False,
                normalize=True,
@@ -259,12 +259,12 @@ def Scattering(lattice_name='simple cubic',
             return
         lattice, basis, _ = lattices.chooser(lattice_name, verbose=verbose)
         a1, a2, a3 = lattice
-    
+
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
     k_title = np.copy(k_in)
     if normalize:
         k_in *= 2 * np.pi
-    
+
     # Calculating stuff for plotting the crystal
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
@@ -286,10 +286,9 @@ def Scattering(lattice_name='simple cubic',
 
     # Scattering stuff
     intensities, k_out, indices = scattering.calc_scattering(a1, a2, a3, basis,
-                                                             scattering_length,
+                                                             form_factor,
                                                              k_in)
     points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
-
 
     # Plotting the basics
     detector_screen_position = [0.7, 0.2, 0.25, 0.625]
@@ -405,26 +404,29 @@ def Scattering(lattice_name='simple cubic',
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    
-    
+
     # Some limit trickery. We make the plot box cubic:
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
     ax.set_xlim(plot_min, plot_max)
     ax.set_ylim(plot_min, plot_max)
     ax.set_zlim(plot_min, plot_max)
-    
+
     ax.grid(False)
     ax.axis('off')
-    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' + '{}'.format(k_title))
-    ax2.set_title('Detection screen.\nScattering lengths: {}'.format(scattering_length))
+    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
+                 '{}'.format(k_title))
+    ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
     if returns:
         return fig, ax, ax2
     plt.show()
 
 
-def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic", contours=False, edges=False, returns=False):
+def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
+                   potential="harmonic", contours=False, edges=False,
+                   returns=False):
 
+    # First some input sanitization
     potentials = {"harmonic": band_structure.VG_cos,
                   "dirac": band_structure.VG_dirac}
     class_name = potential.__class__.__name__
@@ -439,6 +441,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic
             potential = band_structure.VG_cos
         potential = potentials[potential.lower()]
 
+    # We calculate the band structure
     o = band_structure.calc_band_structure(V0=V0, n_k=n_k, G_range=G_range,
                                            potential=potential)
     kxs, kys, band, max_E = o
@@ -446,43 +449,50 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)), potential="harmonic
     max_k = np.amax(kxs)
     min_k = np.amin(kxs)
 
+    # Create the figure
     fig = plt.figure(figsize=(10, 4))
     ax = fig.gca(projection="3d")
     ax.set_position([0.05, 0, 0.5, 1])
-    
+
+    # Optional plotting of Fermi surface in main axes.
     if contours:
-        ax.contour(kxs, kys, band)
-    else:
-        ax.plot_surface(kxs, kys, band)
+        ax.contour(kxs, kys, band, max_E)
+
+    # Plotting of the main event: the band structure
+    ax.plot_surface(kxs, kys, band)
     ax.plot_surface(kxs, kys, max_E_mat, alpha=0.5)
     ax.set_xlim([min_k, max_k])
     ax.set_ylim([min_k, max_k])
     ax.set_xlabel(r'$k_x/k_0$')
     ax.set_ylabel(r'$k_y/k_0$')
     ax.set_zlabel(r'$E/E_0$')
-    ax.set_title('Band structure of square lattice. $V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(max_E,3)))
-    
-    # Now we try plotting edges
+    ax.set_title(('Band structure of square lattice. ' +
+                  '$V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(max_E, 3))))
+
+    # optional plotting of the edges
     if edges:
-        edge1 = band[0,:]
-        edge2 = band[-1,:]
-        edge3 = band[:,0]
-        edge4 = band[:,-1]
-        k = kxs[0,:]
-        start = -1/2 * np.ones(k.shape)
-        end = 1/2 * np.ones(k.shape)
+        # First we get the edges and wave vectors
+        edge1 = band[0, :]
+        edge2 = band[-1, :]
+        edge3 = band[:, 0]
+        edge4 = band[:, -1]
+        k = kxs[0, :]
+        start = -1 / 2 * np.ones(k.shape)
+        end = 1 / 2 * np.ones(k.shape)
+
+        # And plot them.
         ax.plot(k, start, edge1, c='k')
         ax.plot(k, end, edge2, c='k')
         ax.plot(start, k, edge3, c='k')
         ax.plot(end, k, edge4, c='k')
-    
-    
+
+    # Plotting of the second set of axes
     ax2 = plt.axes([0.7, 0.2, 0.25, 0.6])
     ax2.contour(kxs, kys, band, max_E)
     ax2.set_xlabel(r'$k_x/k_0$')
     ax2.set_ylabel(r'$k_y/k_0$')
     ax2.set_title('Fermi surface')
-    
+
     if returns:
         return fig, ax, ax2
     plt.show()

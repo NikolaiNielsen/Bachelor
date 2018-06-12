@@ -6,7 +6,7 @@ import lattices
 eq = np.isclose
 
 
-def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
+def calc_scattering(a1, a2, a3, basis, form_factor, k_in):
     """
     Calculates the scattering off a given lattice, for a given set of
     scattering lengths and incident wavevector
@@ -14,7 +14,7 @@ def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
     # Inputs
     # - a1, a2, a3, k_in:   ndarray, shape (3,)
     # - basis:              ndarray shape (n,3)
-    # - scattering_length:  list, n elements
+    # - form_factor:        list, n elements
     #
     # Outputs:
     # - intensity:          ndarray, shape (n,)
@@ -59,7 +59,7 @@ def calc_scattering(a1, a2, a3, basis, scattering_length, k_in):
     for G in G_array:
         for n in range(n_basis):
             atom = basis[n, ]
-            structure_factors[counter] += (scattering_length[n] *
+            structure_factors[counter] += (form_factor[n] *
                                            np.exp(1j * G.dot(atom)))
         counter += 1
     # Then we get the scattered wavevectors:
