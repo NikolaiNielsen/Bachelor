@@ -1,6 +1,6 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
-	\section{Lattices and crystal structure}
+	\section{Lattices and crystal structure} \label{sec:lattice}
 	\subsection{Theory} \label{sec:lattice_theory}
 	There are three parts to the description of a crystal structure. First is the lattice. This is the mathematical ``framework'' upon which the physical part of the crystal lies. It can be defined in a number of ways, however the one we will use here is standard and can be found in for example \cite{simon} or \cite{kittel}.
 	
@@ -57,6 +57,9 @@
 	\end{table}
 	
 	\subsection{Implementation}	
+	Mathematically speaking, a lattice is infinite. A physical crystal, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, and the fact that each atom would be way too small. So for the purposes of this program, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells: 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure. As such, in the following we assume that $ n_i \in \{0, 1, 2\} $ for all $ n_i $.
+	
+	In creating a program that plots these structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible. This constitutes plotting only full unit cells: no unit cell can have missing atoms. There is a caveat to this however. Say we define the unit cell to have atoms on the boundary, then these atoms will be in multiple unit cells. One could say no matter how many unit cells we plot, we would always get some amount of unfinished unit cells. As such we will plot the 8 unit cells along with any atoms on the border of these.
 	\begin{wrapfigure}{r}{2in}
 		\begin{center}
 			\includegraphics[width=\linewidth]{figures/lattice_unfinished_1.pdf}
@@ -64,9 +67,6 @@
 		\caption{One conventional unit cell for a bcc lattice. If we naively plot all atoms associated with a lattice point, we will end up with atoms outside the unit cells we want to plot.}
 		\label{fig:lattice_unfinished_1}
 	\end{wrapfigure}
-	Mathematically speaking, a lattice is infinite. A physical crystal, of course, is not. However, even though a real crystal is finite, plotting all of the atoms would be infeasible, both due to the number of atoms, and the fact that each atom would be way too small. So for the purposes of this program, only a couple of unit cells will be plotted. A good amount seems to be 8 unit cells: 2 in each of the directions specified by the primitive lattice vectors. This keeps the size of the plot relatively small, whilst still showing the important parts of the crystal structure. As such, in the following we assume that $ n_i \in \{0, 1, 2\} $ for all $ n_i $.
-	
-	In creating a program that plots these structures, the thought should always be on how the end product looks. Mainly we want the plot to be as clear and instructive as possible. This constitutes plotting only full unit cells: no unit cell can have missing atoms. There is a caveat to this however. Say we define the unit cell to have atoms on the boundary, then these atoms will be in multiple unit cells. One could say no matter how many unit cells we plot, we would always get some amount of unfinished unit cells. As such we will plot the 8 unit cells along with any atoms on the border of these.
 	
 	Even with the above considerations we need to remember that the screen is still just a two dimensional projection of the actual three dimensional phenomena. As such without some form of depth perception, the crystal will just look like a weird two dimensional pattern. This is fixed by including grid lines. They, along with the ability to interactively rotate the crystal, give the required depth perception to allow the user to comprehend the crystal as a three dimensional structure, and not as a two dimensional sheet of dots. 
 	

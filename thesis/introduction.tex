@@ -3,8 +3,21 @@
 
 \begin{document}
 	\section{Introduction}
-	In this thesis we look at phenomena arising from the discrete translational symmetry of crystals. As a first example we look at the nearly free electron model in one dimension. This model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength.
+	The goal of this thesis is to investigate phenomena arising from the discrete translational symmetry of crystals and visualize these with interactive programs, such as to increase the ease of learning for students new to the field. In the first section we will focus on providing some shared background knowledge on the phenomena. The following three sections will then provide a look into the phenomena we will visualise.
 	
+	In section \ref{sec:lattice} we will focus on the geometry of crystal systems: lattices, unit cells and the basis. In section \ref{sec:scattering} we look at the reciprocal lattice, how this relates to the direct lattice of the previous section, along with scattering. Lastly in section \ref{sec:band_structure} we discuss the band structure of two dimensional materials and the Fermi surface.
+	
+	For the background knowledge we look at the nearly free electron model in one dimension, along with Bloch's theorem. The nearly free electron model illustrates some key concepts which will be useful later on, like reciprocal lattice vectors and how the dispersion relation change with the potential strength, while Bloch's theorem provide us with the knowledge of why band structures and scattering phenomena work the way they do.
+	
+	First though, a note on the tools used to visualise these concepts.
+
+	\subsection{General implementation}
+	All of the programs in this project will be implemented in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. Numpy adds the necessary tools for handling arrays and linear algebra operations, whilst Matplotlib is used for plotting the results.
+	
+	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function provided by NumPy, which takes 4 arguments: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
+	
+	
+	\section{Background}
 	\subsection{Nearly Free Electron model in One Dimension}\label{sec:nearly_free}
 	The nearly free electron model is, as the name suggests, a model in which electrons are moving in a medium with a small perturbing potential, such that they are nearly free. As such we assume that electrons are essentially free, but experience some small periodic potential which we shall treat as a perturbation to the free particle Hamiltonian.
 	
@@ -84,13 +97,9 @@
 	\end{equation}
 	where $ u_{\V{G},\V{k}} $ is some number. This will be important in the context of scattering and band structure as we will see in sections \ref{sec:scattering} and \ref{sec:band_structure}.
 	
+	Further this form motivates the definition of \textit{crystal momentum}. Say we work in one dimension. Here we see that changing $ k \to k + 2\pi/a $ yields the same wave function and the states are therefore physically equivalent. This means that the wave vector is only defined up to a factor of $ 2 \pi / a $, and can be chosen in the interval $ -\pi /a \leq k \leq \pi/a $. We call momentum for wave vectors in this range \textit{crystal momentum}. This range is also called the \textit{first Brillouin zone}, where the $ n $'th Brillouin zone is defined as the set of points $ k $, for which $ 0 $ is the $ n $'th nearest point on the reciprocal lattice. This also generalises to higher dimensions where we just deal with vectors in stead of numbers. So the first Brillouin zone is the set of points $ \V{k} $ for which $ \V{0} $ is the nearest lattice point in reciprocal space, for example.
 	
-	
-	
-	\subsection{General implementation}
-	All of the programs in this project will be implemented in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. Numpy adds the necessary tools for handling arrays and linear algebra operations, whilst Matplotlib is used for plotting the results.
-	
-	One thing to note is that doing numerical calculations will lead to some numerical error. As such testing for numerical equality will often time yield the "wrong" result. Because of this, we employ the \texttt{isclose} function provided by NumPy, which takes 4 arguments: \texttt{a}, \texttt{b}, \texttt{atol} and \texttt{rtol}. \texttt{a} and \texttt{b} are the numerical values to be tested for equality, \texttt{atol} is the absolute tolerance and \texttt{rtol} is the relative tolerance. The function then tests if $|\texttt{a}-\texttt{b}| \leq (\texttt{atol}+ \texttt{rtol} \D |\texttt{b}|)$, with default values for \texttt{atol} and \texttt{rtol} being $ 1 \D 10^{-8} $ and $ 1 \D 10^{-5} $ respectively.
+	For the above reason, the wave vector $ \V{k} $ in Bloch's theorem must be crystal momentum.
 	
 	
 	
