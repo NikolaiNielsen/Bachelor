@@ -223,7 +223,8 @@ def Scattering(lattice_name='simple cubic',
                show_all=False,
                normalize=True,
                verbose=False,
-               returns=False):
+               returns=False,
+               colors=None):
 
     k_in = np.array(k_in)
     point_sizes = 2
@@ -231,10 +232,14 @@ def Scattering(lattice_name='simple cubic',
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     grid_type = lattices.latticelines[lattice_name]
     lim_type = "proper"
-    atom_colors = ["xkcd:cement",
-                   "xkcd:cornflower blue",
-                   "xkcd:cornflower blue",
-                   "xkcd:cornflower blue"]
+    
+    if colors is None:
+        atom_colors = ["xkcd:cement",
+                       "xkcd:cornflower blue",
+                       "xkcd:cornflower blue",
+                       "xkcd:cornflower blue"]
+    else:
+        atom_colors = colors
     atom_sizes = [1, 1, 1, 1]
     g_col = 'k'
     g_w = 0.5
