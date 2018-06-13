@@ -12,28 +12,28 @@
 	\begin{equation}
 		\hat{V} = \infint V(\V{r}) \ket{\V{r}}\bra{\V{r}}\ud \V{r}.
 	\end{equation}
-	We insert two continuous identities for $ \V{k} $ and $ \V{k}' $ (where we include a factor of $ (2\pi)^{-3} $ as normalization), which is the equivalent of taking the Fourier transform of the potential: 
+	We insert two continuous identities for $ \V{k} $ and $ \V{k}' $, which is the equivalent of taking the Fourier transform of the potential: 
 	\begin{align}
-		\hat{V} &= \infint V(\V{r}) \bb{ \frac{1}{(2\pi)^3}\infint \ket{\V{k}} \bra{\V{k}} \ud \V{k}  } \ket{\V{r}}\bra{\V{r}} \bb{\frac{1}{(2\pi)^3}\infint \ket{\V{k}'} \bra{\V{k}'} \ud \V{k}' } \ud \V{r} , \\
-		&= \frac{1}{(2\pi)^6}\infint \infint \infint V(\V{r}) \ket{\V{k}} \braket{\V{k} | \V{r}} \braket{\V{r} | \V{k}'} \bra{\V{k}}  \ud\V{k}'   \ud\V{k}   \ud\V{r}.
+		\hat{V} &= \infint V(\V{r}) \bb{ \infint \ket{\V{k}} \bra{\V{k}} \ud \V{k}  } \ket{\V{r}}\bra{\V{r}} \bb{\infint \ket{\V{k}'} \bra{\V{k}'} \ud \V{k}' } \ud \V{r} , \\
+		&=\infint \infint \infint V(\V{r}) \ket{\V{k}} \braket{\V{k} | \V{r}} \braket{\V{r} | \V{k}'} \bra{\V{k}}  \ud\V{k}'   \ud\V{k}   \ud\V{r}.
 	\end{align}
-	The two middle brakets are $ \braket{\V{k}| \V{r}}= e^{-i \V{k} \D \V{r}} $ and $ \braket{\V{r} | \V{k}'} = e^{i \V{k}' \D \V{r}} $. This then becomes
+	The two middle brakets are $ \braket{\V{k}| \V{r}}= \sqrt{(2\pi)^3}\inverse e^{-i \V{k} \D \V{r}} $ and $ \braket{\V{r} | \V{k}'} = \sqrt{(2\pi)^3}\inverse e^{i \V{k}' \D \V{r}} $, where $ \sqrt{(2\pi)^3}\inverse $ is a normalization factor. This then becomes
 	\begin{align}
-		\hat{V} &= \frac{1}{(2\pi)^6}\infint \infint  \infint  V(\V{r}) e^{-i(\V{k}-\V{k}') \D \V{r}} \ket{\V{k}} \bra{\V{k}'} \ud\V{k}'   \ud\V{k}   \ud\V{r}.
+		\hat{V} &= \frac{1}{(2\pi)^3}\infint \infint  \infint  V(\V{r}) e^{-i(\V{k}-\V{k}') \D \V{r}} \ket{\V{k}} \bra{\V{k}'} \ud\V{k}'   \ud\V{k}   \ud\V{r}.
 	\end{align}
 	Next we use the now familiar trick of letting $ \V{r} = \V{R} + \V{x} $:
 	\begin{equation}
-		\hat{V} = \frac{1}{(2\pi)^6}\infint \infint  \bb{\sum_{\V{R}} e^{i(\V{k}'-\V{k}) \D \V{R}}}  \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x})\  e^{-i (\V{k}-\V{k}') \D \V{x}} \ket{\V{k}} \bra{\V{k}'} \ud \V{x} \ud\V{k}'   \ud\V{k}.
+		\hat{V} = \frac{1}{(2\pi)^3}\infint \infint  \bb{\sum_{\V{R}} e^{i(\V{k}'-\V{k}) \D \V{R}}}  \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x})\  e^{-i (\V{k}-\V{k}') \D \V{x}} \ket{\V{k}} \bra{\V{k}'} \ud \V{x} \ud\V{k}'   \ud\V{k}.
 	\end{equation}
 	This sum, like before, equals 0 for $ \V{k}'-\V{k} \neq \V{G} $. However, when $ \V{k}'-\V{k} = \V{G} $ this sum becomes infinite (given the infinite amount of lattice points), with a prefactor of $ (2\pi)^3 / a^{-3} $ \cite{simon}. This then gives
 	\begin{align}
-		\hat{V} &= \frac{1}{(2\pi)^3 a^3} \sum_{G} \infint \infint \delta(\V{k}'-\V{k}-\V{G}) \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x})\  e^{-i \V{G} \D \V{x}} \ket{\V{k}} \bra{\V{k}'} \ud \V{x} \ud\V{k}'   \ud\V{k}, \\
-		&= \frac{1}{(2\pi)^3 } \sum_{G} V_{\V{G}}  \infint \ket{\V{k}} \bra{\V{k}-\V{G}} \ud \V{k}, \quad V_{\V{G}} = \frac{1}{a^3} \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x}) e^{-i\V{G} \D \V{x}} \ud \V{x},
+		\hat{V} &= \frac{1}{a^3} \sum_{G} \infint \infint \delta(\V{k}'-\V{k}-\V{G}) \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x})\  e^{-i \V{G} \D \V{x}} \ket{\V{k}} \bra{\V{k}'} \ud \V{x} \ud\V{k}'   \ud\V{k}, \\
+		&= \sum_{G} V_{\V{G}}  \infint \ket{\V{k}} \bra{\V{k}-\V{G}} \ud \V{k}, \quad V_{\V{G}} = \frac{1}{a^3} \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x}) e^{-i\V{G} \D \V{x}} \ud \V{x},
 	\end{align}
 	where $ V_{\V{G}} $ is the Fourier transform of the potential, in $ \V{G} $, over the unit cell, which is the same as the structure factor for scattering, except for a normalisation factor. Now, inserting two additional identities, but this time for $ \V{r} $ and $ \V{r}' $:
 	\begin{align}
-		\hat{V} &= \frac{1}{(2\pi)^3 }\sum_{G}  V_{\V{G}} \infint \bb{\infint \ket{\V{r}} \bra{\V{r}} \ud \V{r}} \ket{\V{k}} \bra{\V{k}+ \V{G}} \bb{\infint \ket{\V{r}'} \bra{\V{r}'} \ud \V{r}'} \ud \V{k}, \\
-		&= \frac{1}{(2\pi)^3} \sum_{G} V_{\V{G}} \infint  \infint \infint e^{i \V{k} \D \V{r}} e^{-i (\V{k}+\V{G}) \D \V{r}'} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}', \\
+		\hat{V} &=\sum_{G}  V_{\V{G}} \infint \bb{\infint \ket{\V{r}} \bra{\V{r}} \ud \V{r}} \ket{\V{k}} \bra{\V{k}+ \V{G}} \bb{\infint \ket{\V{r}'} \bra{\V{r}'} \ud \V{r}'} \ud \V{k}, \\
+		&=\sum_{G} V_{\V{G}} \infint  \infint \infint \sqrt{(2\pi)^3}\inverse e^{i \V{k} \D \V{r}} \sqrt{(2\pi)^3}\inverse e^{-i (\V{k}+\V{G}) \D \V{r}'} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}', \\
 		&=\frac{1}{(2\pi)^3} \sum_{G} V_{\V{G}} \infint \infint \infint  e^{-i \V{G} \D \V{r}'} e^{i \V{k} \D (\V{r}-\V{r}')} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}'.
 	\end{align}
 	We can get rid of two of these integrals, if we use the fact that \cite{riley}
