@@ -176,14 +176,15 @@ Scattering(k_in=np.array([0, 0, -1.5]),
 		   highlight=(1,1,2),
 		   form_factor=np.array([1, 0.5, 0.5, 0.5]))
 \end{lstlisting}
-	But what if we want to plot scattering on regular fcc lattice, with the same wave vector as before? Then we just set the scattering length for all atoms to 1. This gives figure \ref{fig:scattering_systemic}.
+	But what if we want to plot scattering on regular fcc lattice, with the same wave vector as before? Then we just set the scattering length for all atoms to 1. This gives figure \ref{fig:scattering_systemic}, where we have also set identical colours for the four atoms to emphasize that they are now identical.
 \begin{lstlisting}
 Scattering(k_in=np.array([0, 0, -1.5]),
 		   basis=np.array([[0, 0, 0], 
 						   [0.5, 0.5, 0],
 						   [0.5, 0, 0.5],
 						   [0, 0.5, 0.5]]),	
-		   form_factor=np.array([1, 0.5, 0.5, 0.5]))
+		   form_factor=np.array([1, 0.5, 0.5, 0.5]),
+		   colors=['xkcd:cement']*4)
 \end{lstlisting}
 	Note on this figure the absence of any scattering. This is an example of a systemic absence for the fcc lattice, because not all indices in each of the 5 sets are even (or odd). The highlighted scattering event in figure \ref{fig:scattering_no_systemic} has 2 odd indices and 1 even index.
 	

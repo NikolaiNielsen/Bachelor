@@ -17,7 +17,7 @@
 		\hat{V} &= \infint V(\V{r}) \bb{\infint \ket{\V{k}} \bra{\V{k}} \ud \V{k}  } \ket{\V{r}}\bra{\V{r}} \bb{\infint \ket{\V{k}'} \bra{\V{k}'} \ud \V{k}' } \ud \V{r} , \\
 		&= \infint \infint \infint V(\V{r}) \ket{\V{k}} \braket{\V{k} | \V{r}} \braket{\V{r} | \V{k}'} \bra{\V{k}}  \ud\V{k}'   \ud\V{k}   \ud\V{r}.
 	\end{align}
-	The two middle brakets are $ \braket{\V{k}| \V{r}}= e^{-i \V{k} \D \V{r}} $ and $ \braket{\V{r} | \V{k}'} = \inverse e^{i \V{k}' \D \V{r}} $. This then becomes
+	The two middle brakets are $ \braket{\V{k}| \V{r}}= e^{-i \V{k} \D \V{r}} $ and $ \braket{\V{r} | \V{k}'} = e^{i \V{k}' \D \V{r}} $. This then becomes
 	\begin{align}
 		\hat{V} &= \infint \infint  \infint  V(\V{r}) e^{-i(\V{k}-\V{k}') \D \V{r}} \ket{\V{k}} \bra{\V{k}'} \ud\V{k}'   \ud\V{k}   \ud\V{r}.
 	\end{align}
@@ -30,11 +30,11 @@
 		\hat{V} &= \frac{(2\pi)^3}{a^3} \sum_{G} \infint \infint \delta(\V{k}'-\V{k}-\V{G}) \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x})\  e^{-i \V{G} \D \V{x}} \ket{\V{k}} \bra{\V{k}'} \ud \V{x} \ud\V{k}'   \ud\V{k}, \\
 		&= (2\pi)^3 \sum_{G} V_{\V{G}}  \infint \ket{\V{k}} \bra{\V{k}-\V{G}} \ud \V{k}, \quad V_{\V{G}} = \frac{1}{a^3} \int_{\substack{\text{unit-} \\\text{cell}}} V(\V{x}) e^{-i\V{G} \D \V{x}} \ud \V{x},
 	\end{align}
-	where $ V_{\V{G}} $ is the Fourier transform of the potential, in $ \V{G} $, over the unit cell, which is the same as the structure factor for scattering, except for a normalisation factor. Now, inserting two additional identities, but this time for $ \V{r} $ and $ \V{r}' $ gives
+	where $ V_{\V{G}} $ is the Fourier transform of the potential, in $ \V{G} $, over the unit cell, which is the same as the structure factor for scattering, except for a normalisation factor. Now, inserting two additional identities, but this time for $ \V{r} $ and $ \V{r}' $ (where we include a factor of $ (2\pi)^{-3} $ as normalization, as this corresponds to the inverse Fourier Transform):
 	\begin{align}
-		\hat{V} &= (2\pi)^3\sum_{G}  V_{\V{G}} \infint \bb{\infint \ket{\V{r}} \bra{\V{r}} \ud \V{r}} \ket{\V{k}} \bra{\V{k}+ \V{G}} \bb{\infint \ket{\V{r}'} \bra{\V{r}'} \ud \V{r}'} \ud \V{k}, \\
-		&= (2\pi)^3 \sum_{G} V_{\V{G}} \infint  \infint \infint e^{i \V{k} \D \V{r}} e^{-i (\V{k}+\V{G}) \D \V{r}'} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}', \\
-		&= (2\pi)^3 \sum_{G} V_{\V{G}} \infint \infint \infint  e^{-i \V{G} \D \V{r}'} e^{i \V{k} \D (\V{r}-\V{r}')} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}'.
+		\hat{V} &= (2\pi)^3\sum_{G}  V_{\V{G}} \infint \bb{\frac{1}{(2\pi)^3}\infint \ket{\V{r}} \bra{\V{r}} \ud \V{r}} \ket{\V{k}} \bra{\V{k}+ \V{G}} \bb{\frac{1}{(2\pi)^3}\infint \ket{\V{r}'} \bra{\V{r}'} \ud \V{r}'} \ud \V{k}, \\
+		&= \frac{1}{(2\pi)^3} \sum_{G} V_{\V{G}} \infint  \infint \infint e^{i \V{k} \D \V{r}} e^{-i (\V{k}+\V{G}) \D \V{r}'} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}', \\
+		&=\frac{1}{(2\pi)^3} \sum_{G} V_{\V{G}} \infint \infint \infint  e^{-i \V{G} \D \V{r}'} e^{i \V{k} \D (\V{r}-\V{r}')} \ket{\V{r}} \bra{\V{r}'} \ud \V{k} \ud \V{r} \ud \V{r}'.
 	\end{align}
 	We can get rid of two of these integrals, if we use the fact that \cite{riley}
 	\begin{equation} \label{eq:delta_funct}
@@ -42,13 +42,15 @@
 	\end{equation}
 	as we then get
 	\begin{equation}
-		\hat{V} = (2\pi)^6 \sum_{\V{G}} V_{\V{G}} \infint e^{-i \V{G} \D \V{r}} \ket{\V{r}} \bra{\V{r}} \ud \V{r},
+		\hat{V} = \sum_{\V{G}} V_{\V{G}} \infint e^{-i \V{G} \D \V{r}} \ket{\V{r}} \bra{\V{r}} \ud \V{r},
 	\end{equation}
 	which, if the prefactors and the sum is taken inside the integral, is the same form as we started with! Thus we get our desired result of
 	\begin{equation}
-		V(\V{r}) =  (2\pi)^6 \sum_{\V{G}} V_{\V{G}} \,e^{-i \V{G} \D \V{r}}, \quad V_{\V{G}} = \frac{1}{a^3} \int_{\substack{\text{unit-} \\\text{cell}}}  V(\V{x})\  e^{-i \V{G} \D \V{x}} \ud \V{x}.
+		V(\V{r}) =  \sum_{\V{G}} V_{\V{G}} \,e^{i \V{G} \D \V{r}}, \quad V_{\V{G}} = \frac{1}{a^3} \int_{\substack{\text{unit-} \\\text{cell}}}  V(\V{x})\  e^{-i \V{G} \D \V{x}} \ud \V{x},
 	\end{equation}
-	This allows us to write the Schrödinger equation in a form where the dispersion relation is easily calculated numerically. First we Fourier transform the equation:
+	where we have made the substitution $ \V{G} \to -\V{G} $ in the expression for $ V(\V{r}) $. This does not change the sum index as all terms are still included, and as we shall see below, we have $ V_{\V{G}}= V_{-\V{G}} $, so the above equality holds.
+	
+	This form allows us to write the Schrödinger equation in a form where the dispersion relation is easily calculated numerically. First we Fourier transform the equation:
 	\begin{equation}
 		\infint e^{-i \V{k} \D \V{r}} \bb{\frac{\V{p}^2}{2m} + V(\V{r})}\psi(\V{r}) \ud \V{r}= \infint e^{-i\V{k} \D \V{r}}\, E\, \psi(\V{r}) \ud \V{r} = E \,\tilde{\psi}(\V{k}).
 	\end{equation}
