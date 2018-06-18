@@ -1,15 +1,21 @@
 # Bachelor
 
-## Thesis writing to-do list
 
-Abstract
-
-Introduction
-- [x] write motivation for the thesis
-
-2D Band structure
-- [x] periodic potentials - prefactors
-
-Code
-- [ ] comments in band-structre
-- [ ] documentation of whole code
+## Code todo
+- [ ] Fix conventional / Primitive stuff
+- [ ] Fix axis gridlines (when there are no atoms there)
+- [x] Fix normalization of k_in (when inputting integer)
+- [ ] Better scattering examples
+- [ ] Figure out why the notebook doesn't work by default
+- [ ] Scattering - fix highlighting not changing color of scattering in main window
+- [ ] Default angle with highlight
+- [ ] Include outgoing wavevector when highlighting
+- [ ] Fix label when not normalizing
+- [ ] Show Laue condition (k_in - k_scatter = G)
+- [ ] Smaller figure size - tooltip text clips on right edge
+- [ ] Only show n form factors
+- [ ] Limits on detection screen
+- [ ] Just lines going out when highlighting.
+- [ ] Increase plane_z (maybe also rel edge size)
+- [ ] Plotting contour in fermi surface - bright red
+- [ ] ability to change E_F (slider)

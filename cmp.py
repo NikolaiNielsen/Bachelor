@@ -1,27 +1,3 @@
-# Fix conventional / Primitive stuff
-# Fix axis gridlines (when there are no atoms there)
-
-# Scattering
-# Fix normalization of k_in (when inputting integer)
-# Better scattering examples
-# Figure out why the notebook doesn't work by default
-# Scattering - fix highlighting not changing color of scattering in main window
-# Default angle with highlight
-# Include outgoing wavevector when highlighting
-# Fix label when not normalizing
-# Show Laue condition (k_in - k_scatter = G)
-# Smaller figure size - tooltip text clips on right edge
-# Only show n form factors
-# Limits on detection screen
-# Just lines going out when highlighting.
-# Increase plane_z (maybe also rel edge size)
-
-# Band_structure
-# Plotting contour in fermi surface - bright red
-# ability to change E_F (slider)
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -263,7 +239,7 @@ def Scattering(lattice_name='simple cubic',
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     grid_type = lattices.latticelines[lattice_name]
     lim_type = "proper"
-    
+
     if colors is None:
         atom_colors = ["xkcd:cement",
                        "xkcd:cornflower blue",
@@ -300,7 +276,7 @@ def Scattering(lattice_name='simple cubic',
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
     k_title = np.copy(k_in)
     if normalize:
-        k_in *= 2 * np.pi
+        k_in = k_in * 2 * np.pi
 
     # Calculating stuff for plotting the crystal
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
