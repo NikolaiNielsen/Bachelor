@@ -1,3 +1,28 @@
+# Fix BCC limits
+# Fix conventional / Primitive stuff
+# Fix axis gridlines (when there are no atoms there)
+
+# Scattering
+# Fix normalization of k_in (when inputting integer)
+# Better scattering examples
+# Figure out why the notebook doesn't work by default
+# Scattering - fix highlighting not changing color of scattering in main window
+# Default angle with highlight
+# Include outgoing wavevector when highlighting
+# Fix label when not normalizing
+# Show Laue condition (k_in - k_scatter = G)
+# Smaller figure size - tooltip text clips on right edge
+# Only show n form factors
+# Limits on detection screen
+# Just lines going out when highlighting.
+# Increase plane_z (maybe also rel edge size)
+
+# Band_structure
+# Plotting contour in fermi surface - bright red
+# ability to change E_F (slider)
+
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
