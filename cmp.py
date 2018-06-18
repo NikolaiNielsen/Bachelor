@@ -385,7 +385,7 @@ def Scattering(lattice_name='simple cubic',
         ax.plot_surface(x, y, z, color='k', alpha=0.2)
 
         # plotting intersections
-        ax.scatter(points[:, 0], points[:, 1], plane_z)
+        ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
 
         if show_all:
             # Plotting outgoing vectors
@@ -427,8 +427,15 @@ def Scattering(lattice_name='simple cubic',
 
     ax.grid(False)
     ax.axis('off')
-    ax.set_title(r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
-                 '{}'.format(k_title))
+
+    tit = (r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
+           '{}'.format(k_title))
+    tit2 = (r'Scattering on a cubic lattice. $k_{in} = $' +
+            '{}'.format(k_title))
+    if normalize:
+        ax.set_title(tit)
+    else:
+        ax.set_title(tit2)
     ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
     if returns:
         return fig, ax, ax2
