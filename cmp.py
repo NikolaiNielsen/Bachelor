@@ -1,4 +1,3 @@
-# Fix BCC limits
 # Fix conventional / Primitive stuff
 # Fix axis gridlines (when there are no atoms there)
 
@@ -121,6 +120,11 @@ def Lattice(
             print(("Input either 'primitive' or 'conventional' for type."
                    " Giving 'primitive'"))
             unit_type = "primitive"
+
+    # Ugly hack for fixing bcc involving juggling of limits, so we plot 2 unit
+    # cells (conventional) in each direction
+    if lattice_name == "bcc" and max_ == [2, 2, 2] and lim_type == "proper":
+        max_ = [0, 0, 4]
 
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
