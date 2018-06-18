@@ -562,7 +562,7 @@ def chooser(lattice_name="simple cubic", verbose=False):
     try:
         lattice = L[lattice_name]
     except KeyError:
-        print("You did da dumdum, and I now give you simple cubic")
+        print("Couldn't recognise that lattice name. Returning simple cubic")
         lattice = L["simple cubic"]
         lattice_name = "simple cubic"
 
