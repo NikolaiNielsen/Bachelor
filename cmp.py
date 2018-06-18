@@ -56,6 +56,8 @@ def Lattice(
         a1, a2, a3 = lattice
         # Classify the lattice
     else:
+        a1, a2, a3 = np.array([a1, a2, a3])
+        basis = np.array(basis)
         lattice_type = lattices.classifier(a1, a2, a3, basis)
 
         # Rotate the lattice
