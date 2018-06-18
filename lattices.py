@@ -790,6 +790,8 @@ def rotate_face_centred(a1, a2, a3, basis, verbose=False):
     # - a1, a2, a3: ndarray (3,)
     # - basis:      ndarray (n,3)
 
+    if verbose:
+        print("Rotating face centred")
     ma1 = a1.dot(a1)
     ma2 = a2.dot(a2)
     ma3 = a3.dot(a3)
@@ -803,12 +805,24 @@ def rotate_face_centred(a1, a2, a3, basis, verbose=False):
     a1_prop = np.array([a / 2, b / 2, 0])
     a2_prop = np.array([a / 2, 0, c / 2])
     a3_prop = np.array([0, b / 2, c / 2])
+    if verbose:
+        print("Proper vectors are")
+        print(a1_prop)
+        print(a2_prop)
+        print(a3_prop)
 
     # Now we align a1 with a1_prop:
     a1_cross = np.cross(a1, a1_prop)
+    if verbose:
+        print("a1_cross is")
+        print(a1_cross)
     if eq(0, mag(a1_cross)):
+        if verbose:
+            print("a1 and a1_prop are aligned")
         pass
     else:
+        if verbose:
+            print("we rotate a1")
         theta = np.arcsin(mag(a1_cross) / (mag(a1) * mag(a1_prop)))
         r1 = rot_matrix(a1_cross, theta)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
@@ -821,15 +835,21 @@ def rotate_face_centred(a1, a2, a3, basis, verbose=False):
             a1, a2, a3, basis = rotate(a1, a2, a3, basis, r1)
 
     # Next we align a2 with a2_prop:
-    theta, r2 = rot_matrix_along(a1_prop, a2, a2_prop)
-    a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
-    if eq(a2, a2_prop).all():
-        # We rotated properly!
+    cos2 = a2.dot(a2_prop) / (mag(a2) * mag(a3_prop))
+    if eq(cos2, 1) or eq(cos2, -1):
+        if verbose:
+            print("a2 and a2_prop are aligned")
         pass
     else:
-        # Rotate the other way
-        r2 = rot_matrix(a1_prop, -2 * theta)
+        theta, r2 = rot_matrix_along(a1_prop, a2, a2_prop)
         a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
+        if eq(a2, a2_prop).all():
+            # We rotated properly!
+            pass
+        else:
+            # Rotate the other way
+            r2 = rot_matrix(a1_prop, -2 * theta)
+            a1, a2, a3, basis = rotate(a1, a2, a3, basis, r2)
 
     # To be sure, let's see if a3 and a3_prop are (anti)parallel:
     cos3 = a3.dot(a3_prop) / (mag(a3) * mag(a3_prop))
@@ -839,8 +859,7 @@ def rotate_face_centred(a1, a2, a3, basis, verbose=False):
         elif eq(cos3, -1):
             print("a3 and a3_prop are ANTIparallel")
         else:
-            print("a3 and a3_prop are neither parallel or antiparallel. Check!"
-                  )
+            print("a3 and a3_prop are neither parallel or antiparallel.")
 
     return a1, a2, a3, basis
 
