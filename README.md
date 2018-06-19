@@ -1,7 +1,7 @@
 # Bachelor
 
 ## Code todo
-- [ ] Fix conventional / Primitive stuff
+- [x] Fix conventional / Primitive stuff
 - [ ] Fix axis gridlines (when there are no atoms there)
 - [x] Fix normalization of k_in (when inputting integer)
 - [ ] Better scattering examples

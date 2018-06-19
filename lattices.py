@@ -1284,52 +1284,61 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
         z_vals = atomic_positions[x0 * y0, 2]
         # Keep those with z > 0
         absz_vals = np.abs(z_vals[z_vals > 0])
-        # Take the minimum as the lattice spacing
-        a_z = np.min(absz_vals)
 
         y_vals = atomic_positions[x0 * z0, 1]
         absy_vals = np.abs(y_vals[y_vals > 0])
-        a_y = np.min(absy_vals)
 
         x_vals = atomic_positions[y0 * z0, 0]
         absx_vals = np.abs(x_vals[x_vals > 0])
-        a_x = np.min(absx_vals)
 
-        # x = np.array([a_x, 0, 0])
-        # y = np.array([0, a_y, 0])
-        # z = np.array([0, 0, a_z])
+        if absx_vals.size == 0 or absy_vals.size == 0 or absz_vals.size == 0:
+            # We couldn't create soft gridlines, returning along lattice
+            # vectors
+            print(("Couldn't find lattice points along all axes, returning "
+                   "grid lines along lattice vectors instead"))
+            vectors = np.array([a1, a2, a3])
+            lines = create_línes(atomic_positions[lattice_position], vectors)
+        else:
+            # Take the minimum as the lattice spacing
+            a_z = np.min(absz_vals)
+            a_y = np.min(absy_vals)
+            a_x = np.min(absx_vals)
 
-        # Get the maximal and minimal values
-        xmax = np.amax(x_vals)
-        xmin = np.amin(x_vals)
-        ymax = np.amax(y_vals)
-        ymin = np.amin(y_vals)
-        zmax = np.amax(z_vals)
-        zmin = np.amin(z_vals)
+            # x = np.array([a_x, 0, 0])
+            # y = np.array([0, a_y, 0])
+            # z = np.array([0, 0, a_z])
 
-        if verbose:
-            print("Atoms on cardinal axes")
-            print(x_vals)
-            print(y_vals)
-            print(z_vals)
-        range_x = np.arange(xmin, xmax + 0.5 * a_x, a_x)
-        range_y = np.arange(ymin, ymax + 0.5 * a_y, a_y)
-        range_z = np.arange(zmin, zmax + 0.5 * a_z, a_z)
-        for nx in range_x:
+            # Get the maximal and minimal values
+            xmax = np.amax(x_vals)
+            xmin = np.amin(x_vals)
+            ymax = np.amax(y_vals)
+            ymin = np.amin(y_vals)
+            zmax = np.amax(z_vals)
+            zmin = np.amin(z_vals)
+
+            if verbose:
+                print("Atoms on cardinal axes")
+                print(x_vals)
+                print(y_vals)
+                print(z_vals)
+            range_x = np.arange(xmin, xmax + 0.5 * a_x, a_x)
+            range_y = np.arange(ymin, ymax + 0.5 * a_y, a_y)
+            range_z = np.arange(zmin, zmax + 0.5 * a_z, a_z)
+            for nx in range_x:
+                for ny in range_y:
+                    lines.append([np.array([nx, nx]),
+                                  np.array([ny, ny]),
+                                  np.array([zmin, zmax])])
+
+                for nz in range_z:
+                    lines.append([np.array([nx, nx]),
+                                  np.array([ymin, ymax]),
+                                  np.array([nz, nz])])
             for ny in range_y:
-                lines.append([np.array([nx, nx]),
-                              np.array([ny, ny]),
-                              np.array([zmin, zmax])])
-
-            for nz in range_z:
-                lines.append([np.array([nx, nx]),
-                              np.array([ymin, ymax]),
-                              np.array([nz, nz])])
-        for ny in range_y:
-            for nz in range_z:
-                lines.append([np.array([xmin, xmax]),
-                              np.array([ny, ny]),
-                              np.array([nz, nz])])
+                for nz in range_z:
+                    lines.append([np.array([xmin, xmax]),
+                                  np.array([ny, ny]),
+                                  np.array([nz, nz])])
     else:
         print("No Gridlines Chosen")
 
