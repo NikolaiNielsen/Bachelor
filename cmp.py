@@ -460,7 +460,7 @@ def Scattering(lattice_name='simple cubic',
 
 
 def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
-                   potential="harmonic", contours=False, edges=False,
+                   potential="harmonic", edges=False,
                    returns=False):
 
     # First some input sanitization
@@ -492,12 +492,11 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     ax.set_position([0.05, 0, 0.5, 1])
 
     # Optional plotting of Fermi surface in main axes.
-    if contours:
-        ax.contour(kxs, kys, band, max_E)
+    ax.contour(kxs, kys, band, max_E, colors='r', linewidths=3)
 
     # Plotting of the main event: the band structure
-    ax.plot_surface(kxs, kys, band)
-    ax.plot_surface(kxs, kys, max_E_mat, alpha=0.5)
+    ax.plot_surface(kxs, kys, band, alpha=0.9)
+    ax.plot_surface(kxs, kys, max_E_mat, alpha=0.2)
     ax.set_xlim([min_k, max_k])
     ax.set_ylim([min_k, max_k])
     ax.set_xlabel(r'$k_x/k_0$')

@@ -16,5 +16,5 @@
 - [ ] Limits on detection screen
 - [ ] Just lines going out when highlighting.
 - [ ] Increase plane_z (maybe also rel edge size)
-- [ ] Plotting contour in fermi surface - bright red
+- [x] Plotting contour in fermi surface - bright red
 - [ ] ability to change E_F (slider)
