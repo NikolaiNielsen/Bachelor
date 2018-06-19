@@ -11,6 +11,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      [0, 0, 0], [2, 2, 2])
 
 latticelines = {'base centred cubic': 'soft',
+                'base centred monoclinic': 'latticevectors',
                 'base centred monoclinic 1': 'latticevectors',
                 'base centred monoclinic 2': 'latticevectors',
                 'base centred monoclinic 3': 'latticevectors',
@@ -39,6 +40,7 @@ latticelines = {'base centred cubic': 'soft',
                 'undetermined': 'latticevectors'}
 
 unitcells = {'base centred cubic': 'conventional',
+             'base centred monoclinic': 'primitive',
              'base centred monoclinic 1': 'primitive',
              'base centred monoclinic 2': 'primitive',
              'base centred monoclinic 3': 'primitive',
@@ -531,7 +533,8 @@ def chooser(lattice_name="simple cubic", verbose=False):
                      [cx, cy, cz]])
     L["triclinic"] = ltri
     # Rhombohedral
-    lrhombo = np.array([[a, b, b], [b, a, b], [b, b, a]])
+    b2 = 0.2
+    lrhombo = np.array([[a, b2, b2], [b2, a, b2], [b2, b2, a]])
     L["rhombohedral"] = lrhombo
 
     # conventional fcc
@@ -664,7 +667,8 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
 
 def limiter(points, objects, min_=np.array([0, 0, 0]),
             max_=np.array([2, 2, 2]), unit_type="primitive",
-            lattice=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
+            lattice=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
+            verbose=False):
     """
     A function to highlight points that are outside the limits of the plot
     """
@@ -676,7 +680,13 @@ def limiter(points, objects, min_=np.array([0, 0, 0]),
         # vectors. If the coefficients are larger than max_ or smaller than
         # min_ they are outside the range
         points = points @ np.linalg.inv(lattice)
+        # We round the points, just in case there is numerical error
+        points = np.around(points, 2)
 
+
+    if verbose:
+        print("points: (type: {})".format(unit_type))
+        print(points)
     # loop over all row IDs. Add the row ID to the list if all coordinates
     # of the corresponding point are smaller than those of min_, or larger
     # than those of max_
