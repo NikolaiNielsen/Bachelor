@@ -38,7 +38,7 @@ def Lattice(
         # Rotate the lattice
         a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
                                              lattice_type, verbose=verbose)
-
+    lattice = np.array([a1, a2, a3])
     # Input sanitization:
     # We need the number of basis-vectors.
     # If there is only 1 basis vector, then len(np.shape(basis)) == 1
@@ -99,13 +99,18 @@ def Lattice(
 
     # Ugly hack for fixing bcc involving juggling of limits, so we plot 2 unit
     # cells (conventional) in each direction
-    if lattice_name == "bcc" and max_ == [2, 2, 2] and lim_type == "proper":
+    if (lattice_name == "bcc" and max_ == [2, 2, 2] and
+            lim_type == "proper" and unit_type == "conventional"):
         max_ = [0, 0, 4]
 
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_type=unit_type)
+    if verbose:
+        print("Limits found as: (type: {})".format(lim_type))
+        print("r_min, r_max, n_min, n_max:")
+        print(r_min, r_max, n_min, n_max)
 
     # if we plot the conventional cell we want to give r_min and r_max to
     # limiter. If not we want to give n_min and n_max
@@ -116,10 +121,21 @@ def Lattice(
 
     objects = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                  n_min, n_max)
+    if verbose:
+        print("Number of atoms and lattice points before limiting:")
+        print(objects[0].size / 3, np.sum(objects[-1]))
     # Objects to limit to the plot-box
-    objects = lattices.limiter(objects[0], objects, lim_min, lim_max)
+    objects = lattices.limiter(points=objects[0],
+                               objects=objects,
+                               min_=lim_min,
+                               max_=lim_max,
+                               lattice=lattice,
+                               verbose=verbose)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
      lattice_position) = objects
+    if verbose:
+        print("Number of atoms and lattice points AFTER limiting:")
+        print(objects[0].size / 3, np.sum(objects[-1]))
 
     if indices is not None:
         if len(indices) != 3:
@@ -177,7 +193,8 @@ def Lattice(
     ax.set_ylim([plot_min, plot_max])
     ax.set_zlim([plot_min, plot_max])
     ax.grid(False)
-    ax.axis('off')
+    if not verbose:
+        ax.axis('off')
 
     # make the panes transparent (the plot box)
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
