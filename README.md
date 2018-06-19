@@ -2,7 +2,7 @@
 
 ## Code todo
 - [x] Fix conventional / Primitive stuff
-- [ ] Fix axis gridlines (when there are no atoms there)
+- [x] Fix axis gridlines (when there are no atoms there)
 - [x] Fix normalization of k_in (when inputting integer)
 - [ ] Better scattering examples
 - [ ] Figure out why the notebook doesn't work by default
