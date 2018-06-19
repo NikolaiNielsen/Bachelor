@@ -270,7 +270,7 @@ def Scattering(lattice_name='simple cubic',
     g_a = 0.6
     size_default = 36
     point_sizes *= size_default
-    plane_z = 2
+    plane_z = 3.5
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
     # input sanitization
@@ -461,6 +461,7 @@ def Scattering(lattice_name='simple cubic',
 
 def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
                    potential="harmonic", edges=False,
+                   E_F=None,
                    returns=False):
 
     # First some input sanitization
@@ -482,7 +483,9 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     o = band_structure.calc_band_structure(V0=V0, n_k=n_k, G_range=G_range,
                                            potential=potential)
     kxs, kys, band, max_E = o
-    max_E_mat = max_E * np.ones((n_k, n_k))
+    if E_F is None:
+        E_F = max_E
+    E_F_mat = max_E * np.ones((n_k, n_k))
     max_k = np.amax(kxs)
     min_k = np.amin(kxs)
 
@@ -492,18 +495,18 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     ax.set_position([0.05, 0, 0.5, 1])
 
     # Optional plotting of Fermi surface in main axes.
-    ax.contour(kxs, kys, band, max_E, colors='r', linewidths=3)
+    ax.contour(kxs, kys, band, E_F, colors='r', linewidths=3)
 
     # Plotting of the main event: the band structure
     ax.plot_surface(kxs, kys, band, alpha=0.9)
-    ax.plot_surface(kxs, kys, max_E_mat, alpha=0.2)
+    ax.plot_surface(kxs, kys, E_F_mat, alpha=0.2)
     ax.set_xlim([min_k, max_k])
     ax.set_ylim([min_k, max_k])
     ax.set_xlabel(r'$k_x/k_0$')
     ax.set_ylabel(r'$k_y/k_0$')
     ax.set_zlabel(r'$E/E_0$')
     ax.set_title(('Band structure of square lattice. ' +
-                  '$V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(max_E, 3))))
+                  '$V_0/E_0 = {}$. $E_F = {}$'.format(V0, np.round(E_F, 3))))
 
     # optional plotting of the edges
     if edges:
@@ -524,7 +527,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
 
     # Plotting of the second set of axes
     ax2 = plt.axes([0.7, 0.2, 0.25, 0.6])
-    ax2.contour(kxs, kys, band, max_E)
+    ax2.contour(kxs, kys, band, E_F)
     ax2.set_xlabel(r'$k_x/k_0$')
     ax2.set_ylabel(r'$k_y/k_0$')
     ax2.set_title('Fermi surface')

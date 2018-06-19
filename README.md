@@ -17,4 +17,4 @@
 - [ ] Just lines going out when highlighting.
 - [ ] Increase plane_z (maybe also rel edge size)
 - [x] Plotting contour in fermi surface - bright red
-- [ ] ability to change E_F (slider)
+- [x] ability to change E_F (slider)
