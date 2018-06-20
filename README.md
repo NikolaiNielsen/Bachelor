@@ -13,7 +13,7 @@
 - [ ] Show Laue condition (k_in - k_scatter = G)
 - [ ] Smaller figure size - tooltip text clips on right edge
 - [x] Only show n form factors
-- [ ] Limits on detection screen
+- [x] Limits on detection screen
 - [ ] Just lines going out when highlighting.
 - [x] Increase plane_z (maybe also rel edge size)
 - [x] Plotting contour in fermi surface - bright red
