@@ -12,9 +12,9 @@
 - [x] Fix label when not normalizing
 - [ ] Show Laue condition (k_in - k_scatter = G)
 - [ ] Smaller figure size - tooltip text clips on right edge
-- [ ] Only show n form factors
+- [x] Only show n form factors
 - [ ] Limits on detection screen
 - [ ] Just lines going out when highlighting.
-- [ ] Increase plane_z (maybe also rel edge size)
+- [x] Increase plane_z (maybe also rel edge size)
 - [x] Plotting contour in fermi surface - bright red
 - [x] ability to change E_F (slider)
