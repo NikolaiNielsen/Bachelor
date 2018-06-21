@@ -22,6 +22,7 @@ latticelines = {'base centred cubic': 'axes',
                 'hexagonal': 'hexagonal',
                 'hexagonal 1': 'hexagonal',
                 'hexagonal 2': 'hexagonal',
+                'hcp': 'hexagonal',
                 'orthorhombic': 'axes',
                 'orthorhombic base centred': 'axes',
                 'orthorhombic body centred': 'axes',
@@ -51,6 +52,7 @@ unitcells = {'base centred cubic': 'conventional',
              'hexagonal': 'conventional',
              'hexagonal 1': 'conventional',
              'hexagonal 2': 'conventional',
+             'hcp': 'conventional',
              'orthorhombic': 'conventional',
              'orthorhombic base centred': 'conventional',
              'orthorhombic body centred': 'conventional',
@@ -523,6 +525,8 @@ def chooser(lattice_name="simple cubic", verbose=False):
     # Hexagonal 2
     lhexa2 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0], [0, 0, b]])
     L["hexagonal 2"] = lhexa2
+    # HCP (just hexagonal)
+    L["hcp"] = lhexa1
     # Triclinc stuff
     gamma = 70 * np.pi / 180
     beta = 60 * np.pi / 180
