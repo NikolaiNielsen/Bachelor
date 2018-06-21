@@ -242,40 +242,33 @@ def Reciprocal(
 def Scattering(lattice_name='simple cubic',
                basis=None,
                k_in=np.array([0, 0, -1.5]),
-               form_factor=np.array([1, 1, 1, 1]),
+               form_factor=None,
                highlight=None,
                show_all=False,
                normalize=True,
                verbose=False,
                returns=False,
-               colors=None):
+               colors=None,
+               laue_scale=1):
 
-    k_in = np.array(k_in)
-    point_sizes = 2
-    lattice_name = lattice_name.lower()
     min_, max_ = (-2, -2, -1), (2, 2, 1)
-    grid_type = lattices.latticelines[lattice_name]
-    lim_type = "proper"
-
-    if colors is None:
-        atom_colors = ["xkcd:cement",
-                       "xkcd:cornflower blue",
-                       "xkcd:cornflower blue",
-                       "xkcd:cornflower blue"]
-    else:
-        atom_colors = colors
-    atom_sizes = [1, 1, 1, 1]
     g_col = 'k'
     g_w = 0.5
     g_a = 0.6
     size_default = 36
+    point_sizes = 2
     point_sizes *= size_default
     plane_z = 3.5
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
-    # input sanitization
+    lim_type = "proper"
+    outgoing_length = 10
+
+    # input sanitization for the lattice/basis
+    lattice_name = lattice_name.lower()
     if basis is not None:
         a1, a2, a3 = np.eye(3, dtype=int)
+        basis = np.array(basis)
     else:
         lattice_name = lattice_name.lower()
         if lattice_name == "bcc":
@@ -290,7 +283,38 @@ def Scattering(lattice_name='simple cubic',
         lattice, basis, _ = lattices.chooser(lattice_name, verbose=verbose)
         a1, a2, a3 = lattice
 
+    grid_type = lattices.latticelines[lattice_name]
+
+    # Getting the number of atoms in the basis
+    length_basis = np.shape(basis)
+    if len(length_basis) == 1:
+        n_basis = 1
+    elif len(length_basis) > 1:
+        n_basis = length_basis[0]
+
+    if form_factor is None:
+        form_factor = [1] * n_basis
+
+    if colors is None:
+        form_fact_array = np.array(form_factor)
+        if (form_fact_array == form_factor[0]).all():
+            atom_colors = ["xkcd:cement"] * n_basis
+        else:
+            atom_colors = ["xkcd:cement"] + (["xkcd:cornflower blue"] *
+                                             (n_basis - 1))
+    else:
+        atom_colors = colors
+
+    atom_sizes = [1] * n_basis
+
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
+    k_in = np.array(k_in)
+
+    if k_in[2] > 0:
+        k_in[2] = -k_in[2]
+        print(("the z-coordinate of k_in should be negative. "
+               "Flipping it: k_in = {}".format(k_in)))
+
     k_title = np.copy(k_in)
     if normalize:
         k_in = k_in * 2 * np.pi
@@ -340,7 +364,7 @@ def Scattering(lattice_name='simple cubic',
 
     # Plotting the beam: First we create the beam display vector
     ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
-              color='b', lw=2, pivot='tip', length=lambda_)
+              color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
 
     if intensities.size == 0:
         print("There is no scattering for this choice of k_in")
@@ -356,6 +380,7 @@ def Scattering(lattice_name='simple cubic',
         colors[:, 3] = intensities
 
         if highlight is not None:
+            # Checking for proper highlighting
             hi_index = np.array(highlight)
             num_ints = hi_index.shape
             extra = 0
@@ -366,17 +391,49 @@ def Scattering(lattice_name='simple cubic',
                 if indices_index.shape != (1,):
                     print("There is no scattering along {}".format(highlight))
                 else:
+                    # We have highlighting!
                     d, planes = lattices.reciprocal(a1, a2, a3, hi_index,
                                                     r_min - extra,
                                                     r_max + extra,
                                                     points=20)
                     planes = lattices.plane_limiter(planes, r_min - extra,
                                                     r_max + extra)
+                    # We change the color of highlighted point and plot the
+                    # family of planes
                     high_intensity = intensities[indices_index]
                     colors[indices_index] = [1, 0, 0, high_intensity]
                     for p in planes:
                         ax.plot_surface(p[0], p[1], p[2], color="r",
                                         shade=False, alpha=0.2)
+                    # We also plot the outgoing line corresponding to this
+                    # scattering. First we get the point (and squeeze it, to
+                    # make it 1D again)
+                    p = np.squeeze(points[indices_index, :])
+                    start = np.array([0, 0, beam_end_z])
+                    ray = p - start
+                    line = np.array([start, start + outgoing_length * ray])
+                    ax.plot(line[:, 0], line[:, 1], line[:, 2], color='r',
+                            alpha=0.3, ls='--',
+                            lw=g_w * 2)
+                    # Plotting outgoing vector and Laue condition
+                    k_out_high = np.squeeze(k_out[indices_index])
+                    G_high = k_in - k_out_high
+                    vecs = np.array([k_out_high, k_out_high, G_high])
+                    vecs_disp = vecs / lattices.mag(k_in)
+                    starts = np.array([start,
+                                       start - k_disp * lambda_ * laue_scale,
+                                       (start - vecs_disp[2] * lambda_ *
+                                        laue_scale)])
+                    ax.quiver(starts[:, 0],
+                              starts[:, 1],
+                              starts[:, 2],
+                              vecs_disp[:, 0],
+                              vecs_disp[:, 1],
+                              vecs_disp[:, 2],
+                              color=['r', 'r', 'g'],
+                              alpha=0.5,
+                              lw=1,
+                              length=lambda_ * laue_scale)
 
         ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
         ax2.scatter(points[:, 0], points[:, 1], c=colors)
@@ -404,6 +461,16 @@ def Scattering(lattice_name='simple cubic',
         # plotting intersections
         ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
 
+        # Setting limits for the second figure
+        det_max_x = np.amax(x_range)
+        det_min_x = np.amin(x_range)
+        det_max_y = np.amax(y_range)
+        det_min_y = np.amin(y_range)
+        det_max = max(det_max_x, det_max_y)
+        det_min = min(det_min_x, det_min_y)
+        ax2.set_xlim(det_min, det_max)
+        ax2.set_ylim(det_min, det_max)
+
         if show_all:
             # Plotting outgoing vectors
             n = k_out.shape[0]
@@ -423,10 +490,11 @@ def Scattering(lattice_name='simple cubic',
 
             # plotting outgoing lines
             for p in points:
-                line_x = [start_point[0], p[0]]
-                line_y = [start_point[1], p[1]]
-                line_z = [start_point[2], p[2]]
-                ax.plot(line_x, line_y, line_z, color='k', alpha=0.3, ls='--',
+                ray = p - start_point
+                line = np.array([start_point,
+                                 start_point + outgoing_length * ray])
+                ax.plot(line[:, 0], line[:, 1], line[:, 2],
+                        color='k', alpha=0.3, ls='--',
                         lw=g_w)
 
     ax.set_aspect('equal')
