@@ -10,32 +10,32 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
-latticelines = {'base centred cubic': 'soft',
+latticelines = {'base centred cubic': 'axes',
                 'base centred monoclinic': 'latticevectors',
                 'base centred monoclinic 1': 'latticevectors',
                 'base centred monoclinic 2': 'latticevectors',
                 'base centred monoclinic 3': 'latticevectors',
-                'bcc': 'soft',
-                'conventional bcc': 'soft',
-                'conventional fcc': 'soft',
-                'fcc': 'soft',
+                'bcc': 'axes',
+                'conventional bcc': 'axes',
+                'conventional fcc': 'axes',
+                'fcc': 'axes',
                 'hexagonal': 'hexagonal',
                 'hexagonal 1': 'hexagonal',
                 'hexagonal 2': 'hexagonal',
-                'orthorhombic': 'soft',
-                'orthorhombic base centred': 'soft',
-                'orthorhombic body centred': 'soft',
-                'orthorhombic face centred': 'soft',
+                'orthorhombic': 'axes',
+                'orthorhombic base centred': 'axes',
+                'orthorhombic body centred': 'axes',
+                'orthorhombic face centred': 'axes',
                 'rhombohedral': 'latticevectors',
-                'simple cubic': 'soft',
+                'simple cubic': 'axes',
                 'simple monoclinic': 'latticevectors',
-                'tetragonal': 'soft',
-                'tetragonal base centred': 'soft',
-                'tetragonal body centred': 'soft',
-                'tetragonal face centred': 'soft',
+                'tetragonal': 'axes',
+                'tetragonal base centred': 'axes',
+                'tetragonal body centred': 'axes',
+                'tetragonal face centred': 'axes',
                 'triclinic': 'latticevectors',
-                'zincblende': 'soft',
-                'diamond': 'soft',
+                'zincblende': 'axes',
+                'diamond': 'axes',
                 'wurtzite': 'latticevectors',
                 'undetermined': 'latticevectors'}
 
@@ -683,7 +683,6 @@ def limiter(points, objects, min_=np.array([0, 0, 0]),
         # We round the points, just in case there is numerical error
         points = np.around(points, 2)
 
-
     if verbose:
         print("points: (type: {})".format(unit_type))
         print(points)
@@ -1282,7 +1281,7 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
     elif grid_type in "hexagonal":
         vectors = np.array([a1, a2, a3, a1 - a2])
         lines = create_línes(atomic_positions[lattice_position], vectors)
-    elif grid_type in "soft":
+    elif grid_type in 'axes':
         # A Way of finding atoms on cartesian axes
         # bool array of atoms with x = 0 and y = 0
         x0 = atomic_positions[:, 0] == 0
