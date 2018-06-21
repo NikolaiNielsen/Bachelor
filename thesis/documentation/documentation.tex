@@ -77,11 +77,11 @@ from cmp import *
 	There is also a list of optional arguments that can be passed to the Lattice
 	function:
 	\begin{itemize}
-		\item \texttt{colors}: a list/tuple with $ n $ strings specifying the colors of each of the atoms in the basis. A single string can also be given, if only one color is desired. Defaults to plotting 
+		\item \texttt{colors}: a list/tuple with $ n $ strings specifying the colors of each of the atoms in the basis. A single string can also be given, if only one color is desired. Defaults to ``xkcd:cement grey''.
 		\item \texttt{sizes}: a list/tuple of $ n $ numbers specifying the relative size of the atoms. 2 is the default value.
-		\item \texttt{grid\_type}: either "latticevectors" or "axes". "latticevectors" plots gridlines along the lattice vectors. "axes" tries to plot gridlines parallel to the x, y and z-axes (requires a crystal structure that can be specified as a orthorhombic lattice with basis). Defaults to the preffered type of gridlines for a given Bravais lattice type
+		\item \texttt{grid\_type}: either ``latticevectors'' or ``axes''. ``latticevectors'' plots grid lines along the lattice vectors. "axes" tries to plot gridlines parallel to the x, y and z-axes (requires a crystal structure that can be specified as a orthorhombic lattice with basis). Defaults to the preferred type of grid lines for a given Bravais lattice type
 		\item \texttt{max\_}: a list/tuples specifying the maximum amount of lattice points to plot in each direction of the lattice vectors. Defaults to [2,2,2].
-		\item \texttt{lim\_type}: either "individual", "sum" and "proper". Provides 3 different ways of limiting the plotted crystal structure: The default (and recommended) is "proper", which calculates the 8 lattice points given by linear combinations of the lattice-vectors and the coefficients specified in \texttt{min\_} and \texttt{max\_}. This forms a parallelipiped, where a orthorhombic plot-box is calculated to fit these 8 vertices inside.
+		\item \texttt{lim\_type}: either ``individual'', ``sum'' and ``proper''. Provides 3 different ways of limiting the plotted crystal structure: The default (and recommended) is ``proper'', which calculates the 8 lattice points given by linear combinations of the lattice-vectors and the coefficients specified in \texttt{min\_} and \texttt{max\_}. This forms a parallelepiped, where a orthorhombic plot-box is calculated to fit these 8 vertices inside.
 		\item \texttt{indices}: a list/tuple of 3 elements, corresponding to the Miller indices h, j and l. If specified this plots the corresponding (family of) lattice planes. For the Lattice function, this argument defaults to None, meaning no planes are plotted.
 		\item \texttt{unit\_type}: Either ``primitive'' and ``conventional''. Specifies the type of unit cell to plot. ``primitive'' plots only the lattice vectors up to \texttt{max\_}, while ``conventional'' fills out the plot box. Default is ``primitive'', but when specifying \texttt{lattice\_name} it defaults to the preferred value for that lattice.
 		\item \texttt{verbose}: True/False boolean value. Makes the functions print a lot of information helpful for debugging. Only partially implemented. Defaults to False
@@ -98,7 +98,7 @@ from cmp import *
 	
 	The basis can be specified in the following ways:
 	\begin{itemize}
-		\item \texttt{lattice\_name}: a string, specifying the Bravais Lattice Type (currently it only accepts "simple cubic", "bcc" and "fcc")
+		\item \texttt{lattice\_name}: a string, specifying the Bravais Lattice Type (currently it only accepts ``simple cubic'', ``bcc'' and ``fcc'')
 		\item \texttt{basis}: an ndarray, with n rows and 3 columns, specifying the absolute position of the atoms within the unit cell (assuming lattice spacing of 1)
 	\end{itemize}
 	The two other requires arguments are
@@ -108,9 +108,11 @@ from cmp import *
 	\end{itemize}
 	Other optional arguments that can be passed are as follows:
 	\begin{itemize}
-		\item \texttt{highlight}: a list/tuple of 3 elements. Corresponds to the Miller indices h, j and l. This will highlight the given scattering event associated with these Miller indices (if present). Defaults to None
+		\item \texttt{highlight}: a list/tuple of 3 elements. Corresponds to the Miller indices h, j and l. This will highlight the given scattering event associated with these Miller indices (if present). It will also plot the outgoing and reciprocal lattice vectors, to show the Laue condition. Defaults to None
 		\item \texttt{show\_all}: True/False boolean. If set to true this will plot all outgoing wave vectors (with lengths equal to their wavelength), and lines going from the scattering point out to the points on the detection plane. Defaults to False
 		\item \texttt{normalize}: True/False boolean. If true, the incident wave vector is defined in units of $ 2\pi/a $ with $ a=1 $. (in other words, \texttt{k\_in} is multiplied by $ 2\pi $). Defaults to True.
+		\item \texttt{colors}: a list/tuple of $ n $ strings specifying the colors of each of the atoms in the basis. By default it plots all atoms of the same color (xkcd:cement grey) if the form factors are equal. If not, it plots atoms which are not located on the lattice points another color (xkcd:cornflower blue).
+		\item \texttt{scale\_laue}: an integer/float. Specifies how much the displayed vectors should be scaled by. By default their length are equal to their wave length (in units of $ a $, the lattice spacing), which corresponds to a default value of 1. 
 		\item \texttt{verbose}: True/False boolean. Prints information useful in debugging. Also only partially implemented. Defaults to False
 		\item \texttt{returns}: True/False boolean. If True the program returns the figure handle and the two axes handles. Defaults to False
 	\end{itemize}
@@ -126,8 +128,8 @@ from cmp import *
 	\end{itemize}
 	There are also the following optional arguments:
 	\begin{itemize}
-		\item \texttt{contour}: True/False boolean. If True, the program plots the Fermi surface contour in the main figure as well as the surface plot of the dispersion relation. Defaults to False
 		\item \texttt{edges}: True/False boolean. If True, the program plots the edges of the dispersion relation in another colour (black). Defaults to False.
+		\item \texttt{E\_F}: an integer/float. If a value is supplied by the user, the program will plot the contour of the Fermi surface at this value. This is to simulate doping of the material. Defaults to None, which will plot the contour at the calculated Fermi energy.
 		\item \texttt{returns}: True/False boolean. If True the program returns the figure handle and the two axes handles. Defaults to False
 	\end{itemize}
 
@@ -187,4 +189,29 @@ basis = np.array([[0,0,0],
 				  [0.5, 0.5, 0.5]])
 \end{lstlisting}
 
+\section{Available Lattice Presets}
+The following is a list of the string values that the program recognises for the argument \texttt{lattice\_name}:
+\begin{itemize}
+	\item ``simple cubic''
+	\item ``bcc''
+	\item ``fcc''
+	\item ``base centred cubic''
+	\item ``conventional fcc''
+	\item ``conventional bcc''
+	\item ``tetragonal''
+	\item ``tetragonal base centred''
+	\item ``tetragonal face centred''
+	\item ``tetragonal body centred''
+	\item ``orthorhombic''
+	\item ``orthorhombic face centred''
+	\item ``orthorhombic base centred''
+	\item ``orthorhombic body centred''
+	\item ``hexagonal'' / ``hcp''
+	\item ``simple monoclinic''
+	\item ``base centred monoclinic''
+	\item ``rhombohedral''
+	\item ``triclinic''
+	\item ``zincblende'' / ``diamond''
+	\item ``wurtzite''
+\end{itemize}
 \end{document}
