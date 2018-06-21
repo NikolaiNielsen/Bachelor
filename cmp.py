@@ -129,6 +129,7 @@ def Lattice(
                                objects=objects,
                                min_=lim_min,
                                max_=lim_max,
+                               unit_type=unit_type,
                                lattice=lattice,
                                verbose=verbose)
     (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
