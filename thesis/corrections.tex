@@ -1,0 +1,54 @@
+% Nikolai Nielsens "Fysiske Fag" preamble
+\documentclass[a4paper,11pt]{article}
+\usepackage[english]{babel}
+\usepackage{Nikolai}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{wrapfig}
+
+\usepackage{pdfpages}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{Maroon}{RGB}{175,50,53}
+\definecolor{OliveGreen}{RGB}{60,128,49}
+\definecolor{Orange}{RGB}{245,129,55}
+
+\lstset{ %
+	language=python,
+	numbers=left,
+	stepnumber=1,
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false, 
+	tabsize=4,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries\color{Maroon},
+	commentstyle=\itshape\color{OliveGreen},
+	identifierstyle=\color{blue},
+	stringstyle=\color{Orange},
+}
+
+% Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
+\numberwithin{equation}{section}
+
+\newcommand{\coef}[1]{_{[#1]}}
+
+% Header
+%\usepackage{fancyhdr}
+%\head{}
+%\pagestyle{fancy}
+
+%Titel
+\title{Corrections to ``Visualisation of concepts in condensed matter physics''}
+\author{Nikolai Plambech Nielsen, LPK331}
+\date{2018-06-13}
+
+\begin{document}
+	\maketitle
+	\begin{itemize}
+		\item Eq 3.1: should be $ \V{R} $, not $ R $
+		\item Eq 3.3: Missing square in denominator. Should be $ |\V{a}_1|^2 $.
+	\end{itemize}
+	
+\end{document}
