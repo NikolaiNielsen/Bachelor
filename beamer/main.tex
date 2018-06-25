@@ -133,6 +133,7 @@
 
 
 \begin{frame}{Lattices and crystal structure}
+\framesubtitle{Demonstration}
 \end{frame}
 
 
@@ -208,23 +209,39 @@
 	S(\V{G}) = S_{hkl} = \sum_{\text{atoms } j} f_j e^{2\pi i(hx_j + ky_j + lz_j)}
 \end{equation*}
 \pause
-bcc ($ h+k+l $ even)
-\begin{equation*}
-	S_{hkl} = f (1+ (-1)^{h+k+l})
-\end{equation*}
+\begin{columns}
+	\begin{column}{0.7\textwidth}
+		bcc ($ h+k+l $ even)
+		\begin{equation*}
+			S_{hkl} = f (1+ (-1)^{h+k+l})
+		\end{equation*}
+	\end{column}
+	\begin{column}{0.25\textwidth}
+		\includegraphics[width=\linewidth]{figures/lattice_unfinished_1.pdf}
+	\end{column}
+\end{columns}
 \pause
-fcc ($ h,k,l $ all even or odd)
-\begin{equation*}
-	S_{hkl} = f (1+ e^{\pi i(h+k)} + e^{\pi i(k+l)} + e^{\pi i(h+l)})
-\end{equation*}
+\begin{columns}
+	\begin{column}{0.7\textwidth}
+		fcc ($ h,k,l $ all even or odd)
+		\begin{equation*}
+		S_{hkl} = f (1+ e^{\pi i(h+k)} + e^{\pi i(k+l)} + e^{\pi i(h+l)})
+		\end{equation*}
+	\end{column}
+	\begin{column}{0.25\textwidth}
+		\includegraphics[width=\linewidth]{figures/lattice_unfinished_1.pdf}
+	\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
+\framesubtitle{Demonstration}
 \end{frame}
 
 
 \section{Band structure}
 \begin{frame}{Band structure}
+	\pause
 	2 dimensional square lattice.
 	\begin{figure}[H]
 		\centering
@@ -232,73 +249,84 @@ fcc ($ h,k,l $ all even or odd)
 		\captionof{figure}{A square lattice. $ \V{a}_1 = a\D(1,0), \V{a}_2 = a\D(0,1) $.}
 		\label{fig:band_structure_lattice}
 	\end{figure}
+	\pause
 	First Brillouin zone: $ -\pi/a \leq k_i \leq \pi/a $
 \end{frame}
 
 \begin{frame}{Band structure}
 Fourier transform the Schrödinger equation.
-\begin{align*}\label{key}
-	V(\V{r}+\V{R}) &= V(\V{r}) \quad \Leftrightarrow \quad V(\V{r}) = \sum_{\V{G}} V_{\V{G}} e^{i\V{G} \D \V{r}},\\
-	V_{\V{G}} &= \frac{1}{a^2}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},
+\begin{align*}
+	\onslide<2->{V(\V{r}+\V{R}) &= V(\V{r}) \quad \Leftrightarrow \quad V(\V{r}) = \sum_{\V{G}} V_{\V{G}} e^{i\V{G} \D \V{r}},}\\
+	\onslide<3->{V_{\V{G}} &= \frac{1}{a^2}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},}
 \end{align*}
 \begin{equation*}\label{key}
-	\sum_{\V{G}} \bb{\frac{\hbar^2 \V{k}^2}{2m} \delta_{\V{G},0} + V_{\V{G}} } \tilde{\psi}(\V{k}-\V{G}) = E \tilde{\psi} (\V{k})
+	\onslide<4->{\sum_{\V{G}} \bb{\frac{\hbar^2 \V{k}^2}{2m} \delta_{\V{G},0} + V_{\V{G}} } \tilde{\psi}(\V{k}-\V{G}) = E \tilde{\psi} (\V{k}).}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Band structure}
 Matrix equation and notation.
 \begin{align*}
-V_{\V{G}} &= V\coef{m_1, m_2}, \quad \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2, \\
-\ket{\psi} &= \begin{pmatrix}
-\vdots \\ \tilde{\psi}(\V{k}-\V{G}_1) \\ \tilde{\psi}(\V{k}) \\ \tilde{\psi}(\V{k}+\V{G}_1) \\ \vdots
-\end{pmatrix} = \begin{pmatrix}
-\vdots \\ \psi\coef{0, -1}\\ \psi\coef{0, 0} \\ \psi\coef{0, 1} \\ \vdots
-\end{pmatrix}, \\
-T &= \frac{\hbar^2}{2m} \begin{pmatrix}
-\ddots	& 		 			&			& 					& \\
-& (\V{k}-\V{G}_1)^2	& 			& 					& \\
-& 	 				& \V{k}^2	& 					& \\
-&					&			& (\V{k}+\V{G}_1)^2	& \\
-&					&			&					& \ddots
-\end{pmatrix}.
+\onslide<2->{V_{\V{G}} &= V\coef{m_1, m_2}, \quad \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2,} \\
+\onslide<3->{\ket{\psi} &= \begin{pmatrix}
+	\vdots \\ \tilde{\psi}(\V{k}-\V{G}_1) \\ \tilde{\psi}(\V{k}) \\ \tilde{\psi}(\V{k}+\V{G}_1) \\ \vdots
+	\end{pmatrix} = \begin{pmatrix}
+	\vdots \\ \psi\coef{0, -1}\\ \psi\coef{0, 0} \\ \psi\coef{0, 1} \\ \vdots
+	\end{pmatrix},} \\
+\onslide<4->{T &= \frac{\hbar^2}{2m} \begin{pmatrix}
+	\ddots	& 		 			&			& 					& \\
+	& (\V{k}-\V{G}_1)^2	& 			& 					& \\
+	& 	 				& \V{k}^2	& 					& \\
+	&					&			& (\V{k}+\V{G}_1)^2	& \\
+	&					&			&					& \ddots
+	\end{pmatrix}.}
 \end{align*}
 \begin{equation*}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Band structure}
+\framesubtitle{The potential matrix}
+\begin{align*}
+\onslide<2->{[m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.}
+\end{align*}
+\begin{align*}
+\onslide<3->{E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -\infty}^{\infty}\sum_{m'_2 = -\infty}^{\infty} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2},} \\
+\onslide<4->{
+	= {} & \dots +  V\coef{-2, -1}\psi\coef{1,1} + V\coef{-2, 0} \psi\coef{1, 0} + V\coef{-2, 1}\psi\coef{1,-1} +  \dots  \\
+	& + V\coef{-1, -1} \psi\coef{-2, 1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, -1} + \dots\\
+	& + V\coef{0, -1} \psi\coef{-1, 1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, -1} + \dots\\
+	&+ V\coef{1, -1} \psi \coef{0,1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, -1} + \dots.}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Band structure}
+\framesubtitle{The potential matrix}
+\pause
 \begin{align*}
 [m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.
 \end{align*}
+\pause
+Row $ [m_1, m_2] $, column $ [m_1', m_2'] $: $ V\coef{m_1-m'_1, m_2-m'_2} $.
+\end{frame}
+
+\begin{frame}{Band structure}
+\framesubtitle{Specific potentials}
 \begin{align*}
-E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -\infty}^{\infty}\sum_{m'_2 = -\infty}^{\infty} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2}, \\
-= {} & \dots +  V\coef{-2, -1}\psi\coef{1,1} + V\coef{-2, 0} \psi\coef{1, 0} + V\coef{-2, 1}\psi\coef{1,-1} +  \dots  \\
-& + V\coef{-1, -1} \psi\coef{-2, 1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, -1} + \dots\\
-& + V\coef{0, -1} \psi\coef{-1, 1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, -1} + \dots\\
-&+ V\coef{1, -1} \psi \coef{0,1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, -1} + \dots.
+	\onslide<2->{V_{\text{dirac}}(\V{r}) &= V_0 a^2 \sum_{\V{R}} \delta(\V{r}-\V{R}),} \quad \onslide<3->{V_{\text{dirac},\V{G}} = V_0,} \\
+	\onslide<4->{V_{\text{harmonic}}(\V{r}) &= V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}},}\\
+	\onslide<5->{V_{\text{harmonic}, \V{G}} &= \begin{cases}
+		\frac{V_0}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\}, \\
+		0					& \text{else}.
+		\end{cases}}
 \end{align*}
 \end{frame}
 
 \begin{frame}{Band structure}
-\begin{align*}
-[m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.
-\end{align*}
-Row $ [m_1, m_2] $ , column $ [m_1', m_2'] $: $ V\coef{m_1-m'_1, m_2-m'_2} $ .
-\end{frame}
-
-\begin{frame}{Band structure}
-\begin{align*}\label{key}
-	V_{\text{dirac}}(\V{r}) &= V_0 a^2 \sum_{\V{R}} \delta(\V{r}-\V{R}), \quad V_{\text{dirac},\V{G}} = V_0, \\
-	V_{\text{harmonic}}(\V{r}) &= V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}},\\
-	V_{\text{harmonic}, \V{G}} &= \begin{cases}
-	\frac{V_0}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\}, \\
-	0					& \text{else}.
-	\end{cases}
-\end{align*}
-\end{frame}
-
-\begin{frame}{Band structure}
+\framesubtitle{Specific potentials}
+\begin{equation*}
+	m_1, m_2 \in \{-1, 0, 1\}
+\end{equation*}
 \begin{equation*}
 V_{\text{harmonic}} = \frac{V_0}{2} \begin{pmatrix}
 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
@@ -315,18 +343,21 @@ V_{\text{harmonic}} = \frac{V_0}{2} \begin{pmatrix}
 \end{frame}
 
 \begin{frame}{Band structure}
+\framesubtitle{Dimensionless quantities}
 Define $ k_0 \equiv 2\pi/a, E_0 \equiv \hbar^2 k_0^2/m $:
 \begin{equation*}
 	\sum_{\tilde{\V{G}}} \bb{\frac{\tilde{\V{k}}^2}{2} \delta_{\tilde{\V{G}},0} + \tilde{V}_{\tilde{\V{G}}}} \tilde{\psi}(\tilde{\V{k}} - \tilde{\V{G}}) = \tilde{E} \tilde{\psi}(\tilde{\V{k}}),
 \end{equation*}
+\pause
 \begin{align*}
 	\tilde{\V{G}} &\equiv \V{G}/k_0 = m_1 \U{x}+m_2 \U{y}, \\
-	\tilde{\V{k}} &\equiv \V{k}/k_0, \quad -\frac{1}{2} \leq \tilde{\V{k}}_x \leq \frac{1}{2}\\
+	\tilde{\V{k}} &\equiv \V{k}/k_0, \quad -\frac{1}{2} \leq \tilde{\V{k}}_i \leq \frac{1}{2}\\
 	\tilde{V}_{\tilde{\V{G}}} &\equiv V_{\V{G}} / E_0, \quad \tilde{E} \equiv E/E_0
 \end{align*}
 \end{frame}
 
 \begin{frame}{Band structure}
+\framesubtitle{Demonstration}
 \end{frame}
 
 
