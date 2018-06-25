@@ -15,9 +15,9 @@
 \newcommand{\coef}[1]{_{[#1]}}
 
 
-\title{Visualisation of Concepts in Condensed Matter Physics}
+\title[]{Visualisation of Concepts in Condensed Matter Physics}
 \author{Nikolai Plambech Nielsen}
-\institute{Niels Bohr Institute}
+\institute[]{Niels Bohr Institute}
 \date{\nth{27} of June, 2018}
 
 \begin{document}
@@ -51,41 +51,61 @@
 	\onslide<3->{\psi(\V{r}) &= e^{i \V{k}\D \V{r}} u(\V{r}), \quad u(\V{r}+\V{R}) = u(\V{r}),} \\
 	\onslide<4->{&= \sum_{\V{G}} u_{\V{G},\V{k}} e^{i (\V{G}+\V{k}) \D \V{r}}.}
 \end{align*}
-\onslide<5->{Crystal momentum. One dimension, spacing of $ a $:}
+\onslide<5->{Crystal momentum.} \onslide<6->{One dimension, spacing of $ a $:}
 \begin{equation*}
 	\onslide<6->{k \to k+\frac{2\pi}{a}, \quad -\frac{\pi}{a} \leq k \leq \frac{\pi}{a}}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Lattices and crystal structure}
+\framesubtitle{The lattice}
+\pause
 \begin{equation*}
-\onslide<2->{\V{R} = \sum_{i = 1}^{d} n_i \V{a}_i, \quad n_i \in \mathbb{Z}}
+\V{R} = \sum_{i = 1}^{d} n_i \V{a}_i, \quad n_i \in \mathbb{Z}
 \end{equation*}
 \begin{figure}[H]
 	\centering
 	\begin{minipage}{.4\textwidth}
 		\centering
-		\begin{tikzpicture}
-			\node<2> (img1) {\includegraphics[width=\linewidth]{figures/triangular.pdf}};
-			\node<3> (img2) {\includegraphics[width=\linewidth]{figures/triangularUnit.pdf}};
-		\end{tikzpicture}
-		\onslide<2->{\captionof{figure}{A triangular lattice. $ \V{a}_1 = a\D(1,0)$, \\$\V{a}_2 = a\D(1/2, \sqrt{3}/2) $.}}
-		\label{fig:triangular_unitcell}
+		\includegraphics[width=\linewidth]{figures/triangular.pdf}
+		\captionof{figure}{A triangular lattice. $ \V{a}_1 = a\D(1,0)$, \\$\V{a}_2 = a\D(1/2, \sqrt{3}/2) $.}
+		\label{fig:triangular_lattice}
 	\end{minipage}%
 	\hfill
 	\begin{minipage}{.4\textwidth}
 		\centering
-		\begin{tikzpicture}
-			\node<2> (img3) {\includegraphics[width=\linewidth]{figures/square.pdf}};
-			\node<3> (img4) {\includegraphics[width=\linewidth]{figures/squareUnit.pdf}};
-		\end{tikzpicture}
-		\onslide<2->{\captionof{figure}{A square lattice. $ \V{a}_1 = a\D(1,0), \V{a}_2 = a\D(0,1) $.}}
-		\label{fig:square_unitcell}
+		\includegraphics[width=\linewidth]{figures/square.pdf}
+		\captionof{figure}{A square lattice. $ \V{a}_1 = a\D(1,0), \V{a}_2 = a\D(0,1) $.}
+		\label{fig:square_lattice}
 	\end{minipage}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Lattices and crystal structure}
+	\framesubtitle{The unit cell}
+	\begin{equation*}
+	\V{R} = \sum_{i = 1}^{d} n_i \V{a}_i, \quad n_i \in \mathbb{Z}
+	\end{equation*}
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}{.4\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{figures/triangularUnit.pdf}
+			\captionof{figure}{A triangular lattice. $ \V{a}_1 = a\D(1,0)$, \\$\V{a}_2 = a\D(1/2, \sqrt{3}/2) $.}
+			\label{fig:triangular_unitcell}
+		\end{minipage}%
+		\hfill
+		\begin{minipage}{.4\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{figures/squareUnit.pdf}
+			\captionof{figure}{A square lattice. $ \V{a}_1 = a\D(1,0), \V{a}_2 = a\D(0,1) $.}
+			\label{fig:square_unitcell}
+		\end{minipage}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Lattices and crystal structure}
+\framesubtitle{The basis}
 \pause
 \begin{equation*}
 	\V{r}_{atom,i} = \V{R} + \V{r}_{basis, i},
@@ -93,26 +113,21 @@
 \pause
 \begin{figure}[H]
 	\centering
-	\includegraphics{figures/lattice_unfinished_1.pdf}
+	\includegraphics[width=.35\linewidth]{figures/lattice_unfinished_1.pdf}
 	\caption{Conventional unit cell of a bcc lattice. Two atoms, one (grey) at $ a \D (0,0,0) $ and one (blue) at $ a\D(1/2, 1/2, 1/2) $.}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Lattices and crystal structure}
+\framesubtitle{Other difficulties}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.7\linewidth]{figures/cubic_no_grid.pdf}
+	\begin{tikzpicture}
+	\node<1> (img1) {\includegraphics[width=.7\linewidth]{figures/cubic_no_grid.pdf}};
+	\node<2> (img2) {\includegraphics[width=.7\linewidth]{figures/cubic_grid.pdf}};
+	\end{tikzpicture}
 	\caption{A simple cubic lattice. $ \V{a}_1 = a\D (1,0,0), \V{a}_2 = a\D(0,1,0), \V{a}_3 = a\D (0,0,1) $.}
 	\label{fig:cubic_no_grid}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Lattices and crystal structure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=.7\linewidth]{figures/cubic_grid.pdf}
-	\caption{A simple cubic lattice. $ \V{a}_1 = a\D (1,0,0), \V{a}_2 = a\D(0,1,0), \V{a}_3 = a\D (0,0,1) $.}
-	\label{fig:cubic_grid}
 \end{figure}
 \end{frame}
 
@@ -123,70 +138,82 @@
 
 \section{Reciprocal lattice and scattering}
 \begin{frame}{Reciprocal lattice and scattering}
+\framesubtitle{The reciprocal lattice}
+\pause
 \begin{equation*}
 	e^{i \V{G} \D\V{R}} = 1,
 \end{equation*}
+\pause
 \begin{equation*}
 	\V{G} = h \V{b}_1 + k\V{b}_2 + l\V{b}_3, \quad h,k,l \in \mathbb{Z}
 \end{equation*}
+\pause
 \begin{equation*}
 	\V{a}_i \D \V{b}_j = 2\pi \delta_{ij},
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
-Free particles:
+\framesubtitle{Scattering}
+
+\onslide<2->{Free particles:}
 \begin{equation*}
-	E_{\V{k}} = \frac{\hbar^2 \V{k}^2}{2m},
+	\onslide<3->{E_{\V{k}} = \frac{\hbar^2 \V{k}^2}{2m},} \quad \onslide<4->{E_{\V{k}'} = \frac{\hbar^2 \V{k'}^2}{2m}}
 \end{equation*}
-Fermi's Golden Rule
+\onslide<5->{Fermi's Golden Rule:}
 \begin{align*}
-	\Gamma(\V{k}', \V{k}) &= \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}), \\
-	\braket{\V{k}' | V | \V{k}} &= \infint \frac{e^{-i \V{k}'\D\V{r}}}{\sqrt{L^3}} V(\V{r}) \frac{e^{i \V{k}\D\V{r}}}{\sqrt{L^3}} \ud \V{r}, \\
-	&= \frac{1}{L^3} \infint e^{-i(\V{k}'-\V{k}) \D \V{r}} \, V(\V{r}) \ud \V{r}.
+	\onslide<6->{\Gamma(\V{k}', \V{k}) &= \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}),} \\
+	\onslide<7->{E_{\V{k}} &= E_{\V{k}'}, \quad \Rightarrow \quad |\V{k}|=|\V{k}'|}
 \end{align*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
-\begin{equation*}
-	\V{r} = \V{R} + \V{x},
-\end{equation*} 
+\framesubtitle{Scattering}
 \begin{align*}
-	\braket{\V{k}' | V | \V{k}} &= \frac{1}{L^3} \sum_{\V{R}} e^{-i(\V{k}'-\V{k}) \D\V{R}} S(\V{k}'-\V{k}), \\
-	S(\V{k}'-\V{k}) &=  \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x}, \\
-	\sum_{\V{R}} e^{-i (\V{k}'-\V{k}) \D \V{R}} &= \begin{cases}
+\onslide<1->{\braket{\V{k}' | V | \V{k}} &= \infint \frac{e^{-i \V{k}'\D\V{r}}}{\sqrt{L^3}} V(\V{r}) \frac{e^{i \V{k}\D\V{r}}}{\sqrt{L^3}} \ud \V{r},} \\
+\onslide<2->{&= \frac{1}{L^3} \infint e^{-i(\V{k}'-\V{k}) \D \V{r}} \, V(\V{r}) \ud \V{r}.} \\
+\onslide<3->{V(\V{r}+\V{R}) &= V(\V{r}), \quad \V{r} = \V{R} + \V{x},} \\
+\onslide<4->{\braket{\V{k}' | V | \V{k}} &= \frac{1}{L^3} \sum_{\V{R}} e^{-i(\V{k}'-\V{k}) \D\V{R}} S(\V{k}'-\V{k}),} \\
+\onslide<5->{S(\V{k}'-\V{k}) &=  \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},} \\
+\onslide<6->{\sum_{\V{R}} e^{-i (\V{k}'-\V{k}) \D \V{R}} &= \begin{cases}
 	N, & \V{k}'-\V{k} = \V{G}, \\
 	0, & \V{k}'-\V{k} \neq \V{G}.
-	\end{cases}
+	\end{cases}}
 \end{align*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
+\framesubtitle{Scattering conditions}
 \begin{equation*}
-	\V{k}'-\V{k} = \V{G}, \quad |\V{k}| = |\V{k}'|,
+	\onslide<2->{|\V{k}| = |\V{k}'|,} \quad \onslide<3->{\V{k}'-\V{k} = \V{G}.}
 \end{equation*}
+\onslide<4->{Neutron scattering on cubic lattice with a basis}
 \begin{equation*}
-	I \propto |S(\V{G})|^2.
-\end{equation*}
-\end{frame}
-
-\begin{frame}{Reciprocal lattice and scattering}
-Neutron scattering
-\begin{equation*}
-	V(\V{x}) = \sum_{\text{atoms } j} f_j \, \delta(\V{x}-\V{x}_j), \quad S(\V{G}) = \sum_{\text{atoms } j} f_j e^{i\V{G} \D \V{x}_j}
+	\onslide<5->{I \propto |S(\V{G})|^2.}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
-Systemic absences
+\framesubtitle{Neutron scattering}
+\begin{align*}
+	\onslide<2->{V(\V{x}) &= \sum_{\text{atoms } j} f_j \, \delta(\V{x}-\V{x}_j),} \\
+	\onslide<3->{S(\V{G}) &= \sum_{\text{atoms } j} f_j e^{i\V{G} \D \V{x}_j}.}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Reciprocal lattice and scattering}
+\framesubtitle{Systemic absences}
+\pause
 \begin{equation*}
 	S(\V{G}) = S_{hkl} = \sum_{\text{atoms } j} f_j e^{2\pi i(hx_j + ky_j + lz_j)}
 \end{equation*}
+\pause
 bcc ($ h+k+l $ even)
 \begin{equation*}
 	S_{hkl} = f (1+ (-1)^{h+k+l})
 \end{equation*}
-fcc ($ h,k,l $ all either even or odd)
+\pause
+fcc ($ h,k,l $ all even or odd)
 \begin{equation*}
 	S_{hkl} = f (1+ e^{\pi i(h+k)} + e^{\pi i(k+l)} + e^{\pi i(h+l)})
 \end{equation*}
