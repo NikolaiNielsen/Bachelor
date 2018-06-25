@@ -16,7 +16,8 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        unit_type=None, indices=None, verbose=False, returns=False):
+        unit_type=None, indices=None, arrows=True, grid=True,
+        verbose=False, returns=False):
     """
     Creates, limits and plots the lattice
     """
@@ -163,8 +164,9 @@ def Lattice(
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
                                        lattice_position, grid_type,
                                        verbose=verbose)
-    for line in pruned_lines:
-        ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
+    if grid:
+        for line in pruned_lines:
+            ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
 
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
@@ -174,7 +176,7 @@ def Lattice(
         for p in planes:
             ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
                             alpha=0.4)
-    else:
+    elif arrows:
         # otherwise we plot the lattice vectors
         ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
         ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
@@ -211,7 +213,8 @@ def Lattice(
 def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        unit_type=None, indices=(1, 1, 1), verbose=False, returns=False):
+        unit_type=None, indices=(1, 1, 1), arrows=True, grid=True,
+        verbose=False, returns=False):
     if returns:
         fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
                           basis=basis,
@@ -223,6 +226,8 @@ def Reciprocal(
                           unit_type=unit_type,
                           lattice_name=lattice_name,
                           indices=indices,
+                          arrows=arrows,
+                          grid=grid,
                           verbose=verbose,
                           returns=True)
         return fig, ax
@@ -237,6 +242,8 @@ def Reciprocal(
                 unit_type=unit_type,
                 lattice_name=lattice_name,
                 indices=indices,
+                arrows=arrows,
+                grid=grid,
                 verbose=verbose)
 
 
