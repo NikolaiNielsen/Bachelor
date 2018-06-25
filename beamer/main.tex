@@ -125,6 +125,7 @@
 	\begin{tikzpicture}
 	\node<1> (img1) {\includegraphics[width=.7\linewidth]{figures/cubic_no_grid.pdf}};
 	\node<2> (img2) {\includegraphics[width=.7\linewidth]{figures/cubic_grid.pdf}};
+	\node<3> (img3) {\includegraphics[width=.7\linewidth]{figures/cubic_small.pdf}};
 	\end{tikzpicture}
 	\caption{A simple cubic lattice. $ \V{a}_1 = a\D (1,0,0), \V{a}_2 = a\D(0,1,0), \V{a}_3 = a\D (0,0,1) $.}
 	\label{fig:cubic_no_grid}
@@ -241,6 +242,7 @@
 
 \section{Band structure}
 \begin{frame}{Band structure}
+	\framesubtitle{Introduction}
 	\pause
 	2 dimensional square lattice.
 	\begin{figure}[H]
@@ -254,7 +256,7 @@
 \end{frame}
 
 \begin{frame}{Band structure}
-Fourier transform the Schrödinger equation.
+\framesubtitle{Fourier transform the Schrödinger equation}
 \begin{align*}
 	\onslide<2->{V(\V{r}+\V{R}) &= V(\V{r}) \quad \Leftrightarrow \quad V(\V{r}) = \sum_{\V{G}} V_{\V{G}} e^{i\V{G} \D \V{r}},}\\
 	\onslide<3->{V_{\V{G}} &= \frac{1}{a^2}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},}
@@ -265,7 +267,7 @@ Fourier transform the Schrödinger equation.
 \end{frame}
 
 \begin{frame}{Band structure}
-Matrix equation and notation.
+\framesubtitle{Matrix equation and notation}
 \begin{align*}
 \onslide<2->{V_{\V{G}} &= V\coef{m_1, m_2}, \quad \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2,} \\
 \onslide<3->{\ket{\psi} &= \begin{pmatrix}
