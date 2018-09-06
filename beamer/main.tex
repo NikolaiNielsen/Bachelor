@@ -42,24 +42,25 @@
 
 \section{Introduction / Background}
 \begin{frame}{Introduction / Background}
-\onslide<1->{Periodic medium. Discrete translational symmetry}
+Periodic medium. Discrete translational symmetry
 \begin{equation*}
-	\onslide<2->{[\op{T}_{\V{R}}, \op{H}]=0, \quad  V(\V{r}+\V{R}) = V(\V{r}),}
+	[\op{T}_{\V{R}}, \op{H}]=0, \quad  V(\V{r}+\V{R}) = V(\V{r}),
 \end{equation*}
-\onslide<3->{Bloch's theorem:}
+\pause
+Bloch's theorem:
 \begin{align*}
-	\onslide<3->{\psi(\V{r}) &= e^{i \V{k}\D \V{r}} u(\V{r}), \quad u(\V{r}+\V{R}) = u(\V{r}),} \\
-	\onslide<4->{&= \sum_{\V{G}} u_{\V{G},\V{k}} e^{i (\V{G}+\V{k}) \D \V{r}}.}
+	\psi(\V{r}) &= e^{i \V{k}\D \V{r}} u(\V{r}), \quad u(\V{r}+\V{R}) = u(\V{r}), \\
+	&= \sum_{\V{G}} u_{\V{G},\V{k}} e^{i (\V{G}+\V{k}) \D \V{r}}.
 \end{align*}
-\onslide<5->{Crystal momentum.} \onslide<6->{One dimension, spacing of $ a $:}
+\pause
+Crystal momentum. One dimension, spacing of $ a $:
 \begin{equation*}
-	\onslide<6->{k \to k+\frac{2\pi}{a}, \quad -\frac{\pi}{a} \leq k \leq \frac{\pi}{a}}
+	k \to k+\frac{2\pi}{a}, \quad -\frac{\pi}{a} \leq k \leq \frac{\pi}{a}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Lattices and crystal structure}
 \framesubtitle{The lattice [1]}
-\pause
 \begin{equation*}
 \V{R} = \sum_{i = 1}^{d} n_i \V{a}_i, \quad n_i \in \mathbb{Z}
 \end{equation*}
@@ -106,7 +107,6 @@
 
 \begin{frame}{Lattices and crystal structure}
 \framesubtitle{The basis}
-\pause
 \begin{equation*}
 	\V{r}_{atom,i} = \V{R} + \V{r}_{basis, i},
 \end{equation*}
@@ -115,20 +115,6 @@
 	\centering
 	\includegraphics[width=.35\linewidth]{figures/lattice_unfinished_1.pdf}
 	\caption{Simple cubic lattice with a two atom basis. One (grey) at $ a \D (0,0,0) $ and one (blue) at $ a\D(1/2, 1/2, 1/2) $.}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Lattices and crystal structure}
-\framesubtitle{Other difficulties}
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-	\node<1> (img1) {\includegraphics[width=.7\linewidth]{figures/cubic_no_grid.pdf}};
-	\node<2> (img2) {\includegraphics[width=.7\linewidth]{figures/cubic_grid.pdf}};
-	\node<3> (img3) {\includegraphics[width=.7\linewidth]{figures/cubic_small.pdf}};
-	\end{tikzpicture}
-	\caption{A simple cubic lattice. $ \V{a}_1 = a\D (1,0,0), \V{a}_2 = a\D(0,1,0), \V{a}_3 = a\D (0,0,1) $.}
-	\label{fig:cubic_no_grid}
 \end{figure}
 \end{frame}
 
@@ -141,15 +127,12 @@
 \section{Reciprocal lattice and scattering}
 \begin{frame}{Reciprocal lattice and scattering}
 \framesubtitle{The reciprocal lattice}
-\pause
 \begin{equation*}
 	e^{i \V{G} \D\V{R}} = 1,
 \end{equation*}
-\pause
 \begin{equation*}
 	\V{G} = h \V{b}_1 + k\V{b}_2 + l\V{b}_3, \quad h,k,l \in \mathbb{Z}
 \end{equation*}
-\pause
 \begin{equation*}
 	\V{a}_i \D \V{b}_j = 2\pi \delta_{ij}, \ [2]
 \end{equation*}
@@ -158,26 +141,26 @@
 \begin{frame}{Reciprocal lattice and scattering}
 \framesubtitle{Scattering}
 
-\onslide<2->{Free particles:}
+Free particles:
 \begin{equation*}
-	\onslide<3->{E_{\V{k}} = \frac{\hbar^2 \V{k}^2}{2m},} \quad \onslide<4->{E_{\V{k}'} = \frac{\hbar^2 \V{k'}^2}{2m}}
+	E_{\V{k}} = \frac{\hbar^2 \V{k}^2}{2m}, \quad E_{\V{k}'} = \frac{\hbar^2 \V{k'}^2}{2m}
 \end{equation*}
-\onslide<5->{Fermi's Golden Rule: [1]}
+Fermi's Golden Rule: [1]
 \begin{align*}
-	\onslide<6->{\Gamma(\V{k}', \V{k}) &= \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}),} \\
-	\onslide<7->{E_{\V{k}} &= E_{\V{k}'}, \quad \Rightarrow \quad |\V{k}|=|\V{k}'|}
+	\Gamma(\V{k}', \V{k}) &= \frac{2\pi}{\hbar}|\braket{\V{k}' | V | \V{k}}|^2 \delta(E_{\V{k}'}-E_{\V{k}}), \\
+	E_{\V{k}} &= E_{\V{k}'}, \quad \Rightarrow \quad |\V{k}|=|\V{k}'|
 \end{align*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
 \framesubtitle{Scattering}
 \begin{align*}
-\onslide<1->{\braket{\V{k}' | V | \V{k}} &= \infint \frac{e^{-i \V{k}'\D\V{r}}}{\sqrt{L^3}} V(\V{r}) \frac{e^{i \V{k}\D\V{r}}}{\sqrt{L^3}} \ud \V{r},} \\
-\onslide<2->{&= \frac{1}{L^3} \infint e^{-i(\V{k}'-\V{k}) \D \V{r}} \, V(\V{r}) \ud \V{r}.} \\
-\onslide<3->{V(\V{r}+\V{R}) &= V(\V{r}), \quad \V{r} = \V{R} + \V{x},} \\
-\onslide<4->{\braket{\V{k}' | V | \V{k}} &= \frac{1}{L^3} \sum_{\V{R}} e^{-i(\V{k}'-\V{k}) \D\V{R}} S(\V{k}'-\V{k}),} \\
-\onslide<5->{S(\V{k}'-\V{k}) &=  \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},} \\
-\onslide<6->{\sum_{\V{R}} e^{-i (\V{k}'-\V{k}) \D \V{R}} &= \begin{cases}
+\braket{\V{k}' | V | \V{k}} &= \infint \frac{e^{-i \V{k}'\D\V{r}}}{\sqrt{L^3}} V(\V{r}) \frac{e^{i \V{k}\D\V{r}}}{\sqrt{L^3}} \ud \V{r}, \\
+&= \frac{1}{L^3} \infint e^{-i(\V{k}'-\V{k}) \D \V{r}} \, V(\V{r}) \ud \V{r}. \\
+\onslide<2->{V(\V{r}+\V{R}) &= V(\V{r}), \quad \V{r} = \V{R} + \V{x}, \\
+\braket{\V{k}' | V | \V{k}} &= \frac{1}{L^3} \sum_{\V{R}} e^{-i(\V{k}'-\V{k}) \D\V{R}} S(\V{k}'-\V{k}), \\
+S(\V{k}'-\V{k}) &=  \int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},} \\
+\onslide<3->{\sum_{\V{R}} e^{-i (\V{k}'-\V{k}) \D \V{R}} &= \begin{cases}
 	N, & \V{k}'-\V{k} = \V{G}, \\
 	0, & \V{k}'-\V{k} \neq \V{G}.
 	\end{cases}}
@@ -187,25 +170,24 @@
 \begin{frame}{Reciprocal lattice and scattering}
 \framesubtitle{Scattering conditions}
 \begin{equation*}
-	\onslide<2->{|\V{k}| = |\V{k}'|,} \quad \onslide<3->{\V{k}'-\V{k} = \V{G}.}
+	|\V{k}| = |\V{k}'|, \quad \V{k}'-\V{k} = \V{G}.
 \end{equation*}
+\pause
 \begin{equation*}
-	\onslide<4->{I \propto |S(\V{G})|^2. \ [1]}
+	I \propto |S(\V{G})|^2. \ [1]
 \end{equation*}
-\onslide<5->{Neutron scattering on cubic lattice with a basis}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
-\framesubtitle{Neutron scattering}
+\framesubtitle{Neutron scattering on a cubic lattice with a basis}
 \begin{align*}
-	\onslide<2->{V(\V{x}) &= \sum_{\text{atoms } j} f_j \, \delta(\V{x}-\V{x}_j),} \\
-	\onslide<3->{S(\V{G}) &= \sum_{\text{atoms } j} f_j e^{i\V{G} \D \V{x}_j}.}
+	V(\V{x}) &= \sum_{\text{atoms } j} f_j \, \delta(\V{x}-\V{x}_j), \\
+	S(\V{G}) &= \sum_{\text{atoms } j} f_j e^{i\V{G} \D \V{x}_j}.
 \end{align*}
 \end{frame}
 
 \begin{frame}{Reciprocal lattice and scattering}
 \framesubtitle{Systemic absences}
-\pause
 \begin{equation*}
 	S(\V{G}) = S_{hkl} = \sum_{\text{atoms } j} f_j e^{2\pi i(hx_j + ky_j + lz_j)}
 \end{equation*}
@@ -243,7 +225,6 @@
 \section{Band structure}
 \begin{frame}{Band structure}
 	\framesubtitle{Introduction}
-	\pause
 	2 dimensional square lattice.
 	\begin{figure}[H]
 		\centering
@@ -258,24 +239,25 @@
 \begin{frame}{Band structure}
 \framesubtitle{Fourier transform the Schrödinger equation}
 \begin{align*}
-	\onslide<2->{V(\V{r}+\V{R}) &= V(\V{r}) \quad \Leftrightarrow \quad V(\V{r}) = \sum_{\V{G}} V_{\V{G}} e^{i\V{G} \D \V{r}},}\\
-	\onslide<3->{V_{\V{G}} &= \frac{1}{a^2}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},}
+	V(\V{r}+\V{R}) &= V(\V{r}) \quad \Leftrightarrow \quad V(\V{r}) = \sum_{\V{G}} V_{\V{G}} e^{i\V{G} \D \V{r}},\\
+	V_{\V{G}} &= \frac{1}{a^2}\int_{\substack{\text{unit-} \\\text{cell}}} e^{-i (\V{k}'-\V{k}) \D \V{x}} V(\V{x}) \ud \V{x},
 \end{align*}
+\pause
 \begin{equation*}\label{key}
-	\onslide<4->{\sum_{\V{G}} \bb{\frac{\hbar^2 \V{k}^2}{2m} \delta_{\V{G},0} + V_{\V{G}} } \tilde{\psi}(\V{k}-\V{G}) = E \tilde{\psi} (\V{k}).}
+	\sum_{\V{G}} \bb{\frac{\hbar^2 \V{k}^2}{2m} \delta_{\V{G},0} + V_{\V{G}} } \tilde{\psi}(\V{k}-\V{G}) = E \tilde{\psi} (\V{k}).
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Band structure}
 \framesubtitle{Matrix equation and notation}
 \begin{align*}
-\onslide<2->{V_{\V{G}} &= V\coef{m_1, m_2}, \quad \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2,} \\
-\onslide<3->{\ket{\psi} &= \begin{pmatrix}
+V_{\V{G}} &= V\coef{m_1, m_2}, \quad \V{G} = m_1 \V{b}_1 + m_2 \V{b}_2,\\
+\ket{\psi} &= \begin{pmatrix}
 	\vdots \\ \tilde{\psi}(\V{k}-\V{G}_1) \\ \tilde{\psi}(\V{k}) \\ \tilde{\psi}(\V{k}+\V{G}_1) \\ \vdots
 	\end{pmatrix} = \begin{pmatrix}
 	\vdots \\ \psi\coef{0, -1}\\ \psi\coef{0, 0} \\ \psi\coef{0, 1} \\ \vdots
-	\end{pmatrix},} \\
-\onslide<4->{T &= \frac{\hbar^2}{2m} \begin{pmatrix}
+	\end{pmatrix}, \\
+\onslide<2->{T &= \frac{\hbar^2}{2m} \begin{pmatrix}
 	\ddots	& 		 			&			& 					& \\
 	& (\V{k}-\V{G}_1)^2	& 			& 					& \\
 	& 	 				& \V{k}^2	& 					& \\
@@ -290,21 +272,20 @@
 \begin{frame}{Band structure}
 \framesubtitle{The potential matrix}
 \begin{align*}
-\onslide<2->{[m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.}
+[m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.
 \end{align*}
+\pause
 \begin{align*}
-\onslide<3->{E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -\infty}^{\infty}\sum_{m'_2 = -\infty}^{\infty} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2},} \\
-\onslide<4->{
-	= {} & \dots +  V\coef{-2, -1}\psi\coef{1,1} + V\coef{-2, 0} \psi\coef{1, 0} + V\coef{-2, 1}\psi\coef{1,-1} +  \dots  \\
-	& + V\coef{-1, -1} \psi\coef{-2, 1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, -1} + \dots\\
-	& + V\coef{0, -1} \psi\coef{-1, 1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, -1} + \dots\\
-	&+ V\coef{1, -1} \psi \coef{0,1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, -1} + \dots.}
+E \psi\coef{-1,0} = {} & \sum_{m'_1 =  -\infty}^{\infty}\sum_{m'_2 = -\infty}^{\infty} V\coef{m'_1, m'_2} \ \psi\coef{-1-m'_1, -m'_2}, \\
+= {} & \dots +  V\coef{-2, -1}\psi\coef{1,1} + V\coef{-2, 0} \psi\coef{1, 0} + V\coef{-2, 1}\psi\coef{1,-1} +  \dots  \\
+& + V\coef{-1, -1} \psi\coef{-2, 1} + V\coef{-1, 0} \psi\coef{-2, 0} + V\coef{-1, 1} \psi\coef{-2, -1} + \dots\\
+& + V\coef{0, -1} \psi\coef{-1, 1} + V\coef{0, 0} \psi\coef{-1, 0} + V\coef{0, 1}\psi\coef{-1, -1} + \dots\\
+&+ V\coef{1, -1} \psi \coef{0,1} + V\coef{1, 0} \psi \coef{0, 0} + V\coef{1,1} \psi \coef{0, -1} + \dots.
 \end{align*}
 \end{frame}
 
 \begin{frame}{Band structure}
 \framesubtitle{The potential matrix}
-\pause
 \begin{align*}
 [m_1, m_2] \in \{ &[-1, -1], [-1, 0], [-1, 1],\\ &[0, -1], [0, 0], [0, 1],\\ &[1,-1], [1, 0], [1,1]  \}.
 \end{align*}
@@ -315,9 +296,9 @@ Row $ [m_1, m_2] $, column $ [m_1', m_2'] $: $ V\coef{m_1-m'_1, m_2-m'_2} $.
 \begin{frame}{Band structure}
 \framesubtitle{Specific potentials}
 \begin{align*}
-	\onslide<2->{V_{\text{dirac}}(\V{r}) &= V_0 a^2 \sum_{\V{R}} \delta(\V{r}-\V{R}),} \quad \onslide<3->{V_{\text{dirac},\V{G}} = V_0,} \\
-	\onslide<4->{V_{\text{harmonic}}(\V{r}) &= V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}},}\\
-	\onslide<5->{V_{\text{harmonic}, \V{G}} &= \begin{cases}
+	\onslide<1->{V_{\text{dirac}}(\V{r}) &= V_0 a^2 \sum_{\V{R}} \delta(\V{r}-\V{R}),} \quad \onslide<1->{V_{\text{dirac},\V{G}} = V_0,} \\
+	\onslide<2->{V_{\text{harmonic}}(\V{r}) &= V_0 \bb{\cos\pp{\frac{2\pi}{a} x} + \cos\pp{\frac{2\pi}{a} y}},}\\
+	\onslide<2->{V_{\text{harmonic}, \V{G}} &= \begin{cases}
 		\frac{V_0}{2} 	& \text{if } [m_1, m_2] \in \{[0,1], [0,-1], [1,0], [-1,0]\}, \\
 		0					& \text{else}.
 		\end{cases}}
