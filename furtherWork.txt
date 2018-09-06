@@ -1,0 +1,33 @@
+lattice plotting
+    - Automatic classifying should work properly (non-uniqueness of vectors)
+    - Hexagonal close packing
+    - basis with lattice preset
+    - Jagged edges on uncommon lattices.
+    - Input parameters and presets as default. Free inputs as optional
+    - Graphical user interface?
+        - Two windows? one matplotlib, one control
+        - embedded in a larger application? (Look at QT framework)
+        - Dropdown shows only relevant parameters
+scattering
+    - Better explanation of detection screen
+    - Text on vecttors when highlighting.
+    - Checkboxes for showing all
+    - dropdown for highlighting
+fermi surface
+- Intersecting planes (need OpenGL compliant)
+- Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
+
+Check other plotting packages:
+- Plot.ly
+- mayavi
+- Some others
+- Check how they work with GUI applications
+
+
+Other stuff
+- Remember requirements.txt for proper versioning.
+- virtual environments
+
+
+Priority:
+- Try gui for lattice plotting, so I don't have to do too much detection.
