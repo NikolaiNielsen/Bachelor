@@ -31,31 +31,17 @@ def Lattice(
     # Number of points per plane
     num_plane_points = 20
 
-    if lattice_name is not None:
-        lattice, basis, lattice_type = lattices.chooser(lattice_name,
-                                                        verbose=verbose)
-        a1, a2, a3 = lattice
-        # Classify the lattice
-    else:
-        a1, a2, a3 = np.array([a1, a2, a3])
-        basis = np.array(basis)
-        lattice_type = lattices.classifier(a1, a2, a3, basis)
-
-        # Rotate the lattice
-        a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
-                                             lattice_type, verbose=verbose)
-    lattice = np.array([a1, a2, a3])
-
     # Input sanitization
-    (basis, colors, sizes, grid_type, unit_type, lattice_type, lattice_name,
-     max_, min_, lim_type) = control.lattice_input_sanitization(basis, colors,
-                                                                sizes,
-                                                                grid_type,
-                                                                unit_type,
-                                                                lattice_type,
-                                                                lattice_name,
-                                                                max_, min_,
-                                                                lim_type)
+    (a1, a2, a3, lattice, basis, colors, sizes, grid_type, unit_type,
+     lattice_type, lattice_name, max_, min_,
+     lim_type) = control.lattice_input_sanitization(a1, a2, a3,
+                                                    basis, colors,
+                                                    sizes,
+                                                    grid_type,
+                                                    unit_type,
+                                                    lattice_name,
+                                                    max_, min_,
+                                                    lim_type)
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,

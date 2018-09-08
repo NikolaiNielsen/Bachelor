@@ -2,10 +2,26 @@ import numpy as np
 import lattices
 
 
-def lattice_input_sanitization(basis, colors, sizes, grid_type, unit_type,
-                               lattice_type, lattice_name, max_, min_,
-                               lim_type):
+def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
+                               unit_type, lattice_type, lattice_name,
+                               max_, min_, lim_type, verbose):
     # Input sanitization:
+
+    if lattice_name is not None:
+        lattice, basis, lattice_type = lattices.chooser(lattice_name,
+                                                        verbose=verbose)
+        a1, a2, a3 = lattice
+        # Classify the lattice
+    else:
+        a1, a2, a3 = np.array([a1, a2, a3])
+        basis = np.array(basis)
+        lattice_type = lattices.classifier(a1, a2, a3, basis)
+
+        # Rotate the lattice
+        a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
+                                             lattice_type, verbose=verbose)
+    lattice = np.array([a1, a2, a3])
+
     # We need the number of basis-vectors.
     # If there is only 1 basis vector, then len(np.shape(basis)) == 1
     # otherwise the length is 2, and the first element is number of basis
@@ -69,5 +85,9 @@ def lattice_input_sanitization(basis, colors, sizes, grid_type, unit_type,
             lim_type == "proper" and unit_type == "conventional"):
         max_ = [0, 0, 4]
 
-    return (basis, colors, sizes, grid_type, unit_type, lattice_type,
-            lattice_name, max_, min_, lim_type)
+    return (a1, a2, a3, lattice, basis, colors, sizes, grid_type, unit_type,
+            lattice_type, lattice_name, max_, min_, lim_type)
+
+
+def lattice_plotting(fig, ax, ):
+    pass
