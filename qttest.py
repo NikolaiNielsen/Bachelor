@@ -22,18 +22,20 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
 
-        static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        static_fig = Figure(figsize=(5, 3))
+        static_ax = static_fig.gca(projection="3d")
+
+        Lattice(fig=static_fig, ax=static_ax)
+
+        static_canvas = FigureCanvas(static_fig)
         layout.addWidget(static_canvas)
         self.addToolBar(NavigationToolbar(static_canvas, self))
+        static_ax.mouse_init()
 
         dynamic_canvas = FigureCanvas(Figure(figsize=(5, 3)))
         layout.addWidget(dynamic_canvas)
         self.addToolBar(QtCore.Qt.BottomToolBarArea,
                         NavigationToolbar(dynamic_canvas, self))
-
-        self._static_ax = static_canvas.figure.subplots()
-        
-        self._static_ax.plot3d(, '.')
 
         self._dynamic_ax = dynamic_canvas.figure.subplots()
         self._timer = dynamic_canvas.new_timer(
