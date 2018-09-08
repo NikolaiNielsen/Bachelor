@@ -14,11 +14,10 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
 
 
 def Lattice(
-        fig, ax,
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=None, arrows=True, grid=True,
-        verbose=False, returns=False):
+        verbose=False, returns=False, fig=None, ax=None, plots=True):
     """
     Creates, limits and plots the lattice
     """
@@ -152,8 +151,10 @@ def Lattice(
         print("Lattice: {}".format(lattice_type))
 
     # Create the figure
-    # fig = plt.figure()
-    # ax = fig.gca(projection="3d")
+    if fig is None:
+        fig = plt.figure()
+    if ax is None:
+        ax = fig.gca(projection="3d")
 
     # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
@@ -208,7 +209,8 @@ def Lattice(
     if returns:
         return fig, ax
 
-    plt.show()
+    if plots:
+        plt.show()
 
 
 def Reciprocal(
