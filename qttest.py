@@ -15,11 +15,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
-        layout = QtWidgets.QVBoxLayout(self._main)
+        layout = QtWidgets.QHBoxLayout(self._main)
 
         static_fig, static_ax = Lattice(returns=True, plots=False)
-
-        Lattice(fig=static_fig, ax=static_ax, plots=False)
 
         static_canvas = FigureCanvas(static_fig)
         layout.addWidget(static_canvas)
@@ -35,7 +33,7 @@ class OptionsWindow(QtWidgets.QWidget):
         super().__init__()
         button = QtWidgets.QPushButton("PyQt5 Button", self)
         button.setToolTip('this is an example button')
-        button.move(1000, 70)
+        button.move(100, 70)
 
         button.clicked.connect(self.on_click)
 
