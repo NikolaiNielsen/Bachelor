@@ -1,15 +1,13 @@
 import sys
-from matplotlib.figure import Figure
+# from matplotlib.figure import Figure
 from cmp import *
 
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSlot
 
-from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
-if is_pyqt5():
-    from matplotlib.backends.backend_qt5agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
-else:
-    from matplotlib.backends.backend_qt4agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar)
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -19,8 +17,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
 
-        static_fig = Figure(figsize=(5, 3))
-        static_ax = static_fig.gca(projection="3d")
+        static_fig, static_ax = Lattice(returns=True, plots=False)
 
         Lattice(fig=static_fig, ax=static_ax, plots=False)
 
@@ -28,6 +25,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         layout.addWidget(static_canvas)
         self.addToolBar(NavigationToolbar(static_canvas, self))
         static_ax.mouse_init()
+
+        options = OptionsWindow()
+        layout.addWidget(options)
+
+
+class OptionsWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        button = QtWidgets.QPushButton("PyQt5 Button", self)
+        button.setToolTip('this is an example button')
+        button.move(1000, 70)
+
+        button.clicked.connect(self.on_click)
+
+    # @pyqtSlot()
+    def on_click(self):
+        print('PyQt5 button click')
 
 
 if __name__ == "__main__":
