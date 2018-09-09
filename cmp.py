@@ -9,7 +9,7 @@ import control
 
 eq = np.isclose
 
-d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
+d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]), 
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [2, 2, 2])
 
@@ -41,7 +41,8 @@ def Lattice(
                                                     unit_type,
                                                     lattice_name,
                                                     max_, min_,
-                                                    lim_type)
+                                                    lim_type,
+                                                    verbose)
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
