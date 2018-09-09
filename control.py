@@ -3,7 +3,7 @@ import lattices
 
 
 def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
-                               unit_type, lattice_type, lattice_name,
+                               unit_type, lattice_name,
                                max_, min_, lim_type, verbose):
     # Input sanitization:
 
