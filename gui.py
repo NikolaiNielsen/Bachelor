@@ -1,9 +1,7 @@
 import sys
-# from matplotlib.figure import Figure
 from cmp import *
 
 from PyQt5 import QtWidgets
-# from PyQt5.QtCore import pyqtSlot
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
@@ -43,6 +41,16 @@ class OptionsWindow(QtWidgets.QWidget):
         self.lattices = ['simple cubic', 'fcc', 'bcc']
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+        self.default_config = d
+        self.lattice_config = {'a1': d[0],
+                               'a2': d[1],
+                               'a3': d[2],
+                               'basis': d[3],
+                               'colors': d[4],
+                               'sizes': d[5],
+                               'lim_type': d[6],
+                               'grid_type': None,
+                               'max_': d[8]}
         self.initUI()
 
     def initUI(self):
@@ -57,14 +65,14 @@ class OptionsWindow(QtWidgets.QWidget):
         latticeChooser.move(0, 100)
         latticeChooser.activated[str].connect(self.change_lattice)
 
-        self.dialog = PlotWindow()
-        self.dialog.show()
+        self.plot = PlotWindow()
+        self.plot.show()
 
     def on_click(self):
-        self.dialog.show()
+        self.plot.show()
 
     def change_lattice(self, text):
-        self.dialog.update_lattice(text)
+        self.plot.update_lattice(text)
 
 
 def main():
