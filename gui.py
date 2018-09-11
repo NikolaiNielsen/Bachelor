@@ -23,6 +23,11 @@ class PlotWindow(QtWidgets.QMainWindow):
         self.addToolBar(NavigationToolbar(static_canvas, self))
         static_ax.mouse_init()
 
+    def update_lattice(self, lattice_name):
+        static_fig, static_ax = Lattice(lattice_name=lattice_name,
+                                        returns=True, plots=False)
+        static_fig.canvas.draw()
+
 
 class OptionsWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -44,12 +49,8 @@ class OptionsWindow(QtWidgets.QWidget):
         button.move(0, 0)
         button.clicked.connect(self.on_click)
 
-        self.latticeChoice = QtWidgets.QLabel('Simple cubic', self)
-        self.latticeChoice.move(0, 50)
-
         latticeChooser = QtWidgets.QComboBox(self)
-        latticeChooser.addItem('hello')
-        latticeChooser.addItem('There')
+        latticeChooser.addItems(self.lattices)
         latticeChooser.move(0, 100)
         latticeChooser.activated[str].connect(self.change_lattice)
 
@@ -59,7 +60,7 @@ class OptionsWindow(QtWidgets.QWidget):
         self.dialog.show()
 
     def change_lattice(self, text):
-        print(text)
+        self.dialog.update_lattice(text)
 
 
 def main():
