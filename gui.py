@@ -3,14 +3,14 @@ import sys
 from cmp import *
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSlot
+# from PyQt5.QtCore import pyqtSlot
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
 
-class ApplicationWindow(QtWidgets.QMainWindow):
+class PlotWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self._main = QtWidgets.QWidget()
@@ -32,20 +32,34 @@ class OptionsWindow(QtWidgets.QWidget):
         self.top = 10
         self.width = 320
         self.height = 200
+        self.lattices = ['simple cubic', 'fcc', 'bcc']
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        button = QtWidgets.QPushButton("PyQt5 Button", self)
+        button = QtWidgets.QPushButton("Show plot", self)
         button.setToolTip('this is an example button')
-        button.move(100, 70)
+        button.move(0, 0)
         button.clicked.connect(self.on_click)
-        self.dialog = ApplicationWindow()
+
+        self.latticeChoice = QtWidgets.QLabel('Simple cubic', self)
+        self.latticeChoice.move(0, 50)
+
+        latticeChooser = QtWidgets.QComboBox(self)
+        latticeChooser.addItem('hello')
+        latticeChooser.addItem('There')
+        latticeChooser.move(0, 100)
+        latticeChooser.activated[str].connect(self.change_lattice)
+
+        self.dialog = PlotWindow()
 
     def on_click(self):
         self.dialog.show()
+
+    def change_lattice(self, text):
+        print(text)
 
 
 def main():
