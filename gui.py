@@ -24,6 +24,7 @@ class PlotWindow(QtWidgets.QMainWindow):
         self.static_ax.mouse_init()
 
     def update_lattice(self, lattice_name):
+        self.static_ax.clear()
         self.static_fig, self.static_ax = Lattice(lattice_name=lattice_name,
                                                   fig=self.static_fig,
                                                   ax=self.static_ax,
