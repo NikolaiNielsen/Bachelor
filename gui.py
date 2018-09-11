@@ -21,7 +21,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         static_canvas = FigureCanvas(static_fig)
         layout.addWidget(static_canvas)
         self.addToolBar(NavigationToolbar(static_canvas, self))
-        
+        static_ax.mouse_init()
+
 
 class OptionsWindow(QtWidgets.QWidget):
     def __init__(self):
