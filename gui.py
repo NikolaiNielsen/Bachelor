@@ -15,11 +15,13 @@ class ApplicationWindow(QtWidgets.QWidget):
         super().__init__()
         # layout = QtWidgets.QHBoxLayout(self._main)
 
-        # # static_fig, static_ax = Lattice(returns=True, plots=False)
+        static_fig, static_ax = Lattice(returns=True, plots=False)
+        static_canvas = FigureCanvas(static_fig)
         # static_fic = plt.figure(figsize=(5, 3))
         # static_canvas = FigureCanvas(static_fic)
         # layout.addWidget(static_canvas)
-        # self.addToolBar(NavigationToolbar(static_canvas, self))
+        self.addToolBar(NavigationToolbar(static_canvas, self))
+
 
         # self._static_ax = static_canvas.figure.subplots()
         # t = np.linspace(0, 10, 501)
@@ -28,7 +30,7 @@ class ApplicationWindow(QtWidgets.QWidget):
 
         # options = OptionsWindow()
         # layout.addWidget(options)
-        self.show()
+        # self.show()
 
 
 class OptionsWindow(QtWidgets.QWidget):
@@ -50,9 +52,7 @@ class OptionsWindow(QtWidgets.QWidget):
         button.move(100, 70)
         button.clicked.connect(self.on_click)
         self.dialog = ApplicationWindow()
-        self.show()
 
-    # @pyqtSlot()
     def on_click(self):
         self.dialog.show()
 
@@ -60,6 +60,7 @@ class OptionsWindow(QtWidgets.QWidget):
 def main():
     qapp = QtWidgets.QApplication(sys.argv)
     app = OptionsWindow()
+    app.show()
     sys.exit(qapp.exec_())
 
 
