@@ -13,24 +13,15 @@ from matplotlib.backends.backend_qt5agg import (
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        self._main = QtWidgets.QWidget()
+        self.setCentralWidget(self._main)
         layout = QtWidgets.QHBoxLayout(self._main)
 
         static_fig, static_ax = Lattice(returns=True, plots=False)
         static_canvas = FigureCanvas(static_fig)
-        # static_fic = plt.figure(figsize=(5, 3))
-        # static_canvas = FigureCanvas(static_fic)
         layout.addWidget(static_canvas)
         self.addToolBar(NavigationToolbar(static_canvas, self))
-
-        # self._static_ax = static_canvas.figure.subplots()
-        # t = np.linspace(0, 10, 501)
-        # self._static_ax.plot(t, np.tan(t), ".")
-        # static_ax.mouse_init()
-
-        # options = OptionsWindow()
-        # layout.addWidget(options)
-        # self.show()
-
+        
 
 class OptionsWindow(QtWidgets.QWidget):
     def __init__(self):
