@@ -17,16 +17,18 @@ class PlotWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QHBoxLayout(self._main)
 
-        static_fig, static_ax = Lattice(returns=True, plots=False)
-        static_canvas = FigureCanvas(static_fig)
+        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
+        self.static_canvas = FigureCanvas(static_fig)
         layout.addWidget(static_canvas)
         self.addToolBar(NavigationToolbar(static_canvas, self))
         static_ax.mouse_init()
 
     def update_lattice(self, lattice_name):
-        static_fig, static_ax = Lattice(lattice_name=lattice_name,
-                                        returns=True, plots=False)
-        static_fig.canvas.draw()
+        self.static_fig, self.static_ax = Lattice(lattice_name=lattice_name,
+                                                  fig=self.static_fig,
+                                                  ax=self.static_ax,
+                                                  returns=True,
+                                                  plots=False)
 
 
 class OptionsWindow(QtWidgets.QWidget):
@@ -55,6 +57,7 @@ class OptionsWindow(QtWidgets.QWidget):
         latticeChooser.activated[str].connect(self.change_lattice)
 
         self.dialog = PlotWindow()
+        self.dialog.show()
 
     def on_click(self):
         self.dialog.show()
