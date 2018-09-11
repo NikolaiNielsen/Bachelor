@@ -10,11 +10,9 @@ from matplotlib.backends.backend_qt5agg import (
     NavigationToolbar2QT as NavigationToolbar)
 
 
-class ApplicationWindow(QtWidgets.QMainWindow):
+class ApplicationWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        self._main = QtWidgets.QWidget()
-        self.setCentralWidget(self._main)
         # layout = QtWidgets.QHBoxLayout(self._main)
 
         # # static_fig, static_ax = Lattice(returns=True, plots=False)
@@ -51,14 +49,19 @@ class OptionsWindow(QtWidgets.QWidget):
         button.setToolTip('this is an example button')
         button.move(100, 70)
         button.clicked.connect(self.on_click)
+        self.dialog = ApplicationWindow()
+        self.show()
 
     # @pyqtSlot()
     def on_click(self):
-        print('PyQt5 button click')
+        self.dialog.show()
+
+
+def main():
+    qapp = QtWidgets.QApplication(sys.argv)
+    app = OptionsWindow()
+    sys.exit(qapp.exec_())
 
 
 if __name__ == "__main__":
-    qapp = QtWidgets.QApplication(sys.argv)
-    app = ApplicationWindow()
-    app2 = ApplicationWindow()
-    qapp.exec_()
+    main()
