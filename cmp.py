@@ -9,7 +9,7 @@ import control
 
 eq = np.isclose
 
-d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]), 
+d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [2, 2, 2])
 
