@@ -18,10 +18,10 @@ class PlotWindow(QtWidgets.QMainWindow):
         layout = QtWidgets.QHBoxLayout(self._main)
 
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
-        self.static_canvas = FigureCanvas(static_fig)
-        layout.addWidget(static_canvas)
-        self.addToolBar(NavigationToolbar(static_canvas, self))
-        static_ax.mouse_init()
+        self.static_canvas = FigureCanvas(self.static_fig)
+        layout.addWidget(self.static_canvas)
+        self.addToolBar(NavigationToolbar(self.static_canvas, self))
+        self.static_ax.mouse_init()
 
     def update_lattice(self, lattice_name):
         self.static_fig, self.static_ax = Lattice(lattice_name=lattice_name,
