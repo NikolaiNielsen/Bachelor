@@ -449,7 +449,11 @@ def classifier(a1, a2, a3, basis):
     return lattice_name
 
 
-def chooser(lattice_name="simple cubic", verbose=False):
+def chooser(lattice_name="simple cubic",
+            a=1, b=1.25, c=1.5,
+            theta=80 * np.pi / 180,
+            gamma=70 * np.pi / 180,
+            beta=60 * np.pi / 180, verbose=False):
     """
     Outputs the chosen lattice and basis
     """
@@ -465,7 +469,6 @@ def chooser(lattice_name="simple cubic", verbose=False):
     lattice_name = lattice_name.lower()
     L = {}
     B = {}
-    a, b, c, theta = 1, 1.5, 2, 80 * np.pi / 180
     # Create the relevant lattices (transposed - using row vectors)
     # Simple cubic
     lcubic = np.array([[a, 0, 0], [0, a, 0], [0, 0, a]])
@@ -528,8 +531,6 @@ def chooser(lattice_name="simple cubic", verbose=False):
     # HCP (just hexagonal)
     L["hcp"] = lhexa1
     # Triclinc stuff
-    gamma = 70 * np.pi / 180
-    beta = 60 * np.pi / 180
     cx = c * np.cos(beta)
     cy = c * (np.cos(theta) - np.cos(beta) * np.cos(gamma)) / np.sin(gamma)
     cz = np.sqrt(c**2 - cx**2 - cy**2)
