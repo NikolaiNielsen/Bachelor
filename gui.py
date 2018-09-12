@@ -77,32 +77,43 @@ class options_window(QtWidgets.QWidget):
         self.field_a = QtWidgets.QLineEdit()
         self.field_a.setValidator(QtGui.QIntValidator())
         self.field_a.setMaxLength(2)
-        self.field_a.editingFinished.connect(self.update_config)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('a', self.field_a.text()))
 
         self.text_b = QtWidgets.QLabel('b', self)
         self.field_b = QtWidgets.QLineEdit()
         self.field_b.setValidator(QtGui.QIntValidator())
         self.field_b.setMaxLength(2)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('b', self.field_b.text()))
 
         self.text_c = QtWidgets.QLabel('c', self)
         self.field_c = QtWidgets.QLineEdit()
         self.field_c.setValidator(QtGui.QIntValidator())
         self.field_c.setMaxLength(2)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('c', self.field_c.text()))
 
         self.text_theta = QtWidgets.QLabel('theta, degrees', self)
         self.field_theta = QtWidgets.QLineEdit()
         self.field_theta.setValidator(QtGui.QIntValidator())
         self.field_theta.setMaxLength(3)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('theta', self.field_theta.text()))
 
         self.text_beta = QtWidgets.QLabel('beta, degrees', self)
         self.field_beta = QtWidgets.QLineEdit()
         self.field_beta.setValidator(QtGui.QIntValidator())
         self.field_beta.setMaxLength(3)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('beta', self.field_beta.text()))
 
         self.text_gamma = QtWidgets.QLabel('gamma, degrees', self)
         self.field_gamma = QtWidgets.QLineEdit()
         self.field_gamma.setValidator(QtGui.QIntValidator())
         self.field_gamma.setMaxLength(3)
+        self.field_a.editingFinished.connect(
+            lambda: self.update_config('gamma', self.field_gamma.text()))
 
         # Setup stuff in a layout
         self.layout_box = QtWidgets.QFormLayout()
@@ -125,8 +136,8 @@ class options_window(QtWidgets.QWidget):
     def change_lattice(self, text):
         self.plot.update_lattice(text)
 
-    def update_config(text):
-        print(text)
+    def update_config(self, param, text):
+        print(param, text)
 
 
 def main():
