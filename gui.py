@@ -78,42 +78,42 @@ class options_window(QW.QWidget):
         self.le_a.setValidator(QG.QIntValidator())
         self.le_a.setMaxLength(2)
         self.le_a.textChanged.connect(
-            lambda: self.update_a(self.le_a.text()))
+            lambda: self.update_config('a', self.le_a.text()))
 
         self.text_b = QW.QLabel('b', self)
         self.le_b = QW.QLineEdit()
         self.le_b.setValidator(QG.QIntValidator())
         self.le_b.setMaxLength(2)
         self.le_b.textChanged.connect(
-            lambda: self.update_b(self.le_b.text()))
+            lambda: self.update_config('b', self.le_b.text()))
 
         self.text_c = QW.QLabel('c', self)
         self.le_c = QW.QLineEdit()
         self.le_c.setValidator(QG.QIntValidator())
         self.le_c.setMaxLength(2)
         self.le_c.textChanged.connect(
-            lambda: self.update_c(self.le_c.text()))
+            lambda: self.update_config('c', self.le_c.text()))
 
         self.text_theta = QW.QLabel('theta, degrees', self)
         self.le_theta = QW.QLineEdit()
         self.le_theta.setValidator(QG.QIntValidator())
         self.le_theta.setMaxLength(3)
         self.le_theta.textChanged.connect(
-            lambda: self.update_theta(self.le_theta.text()))
+            lambda: self.update_config('theta', self.le_theta.text()))
 
         self.text_beta = QW.QLabel('beta, degrees', self)
         self.le_beta = QW.QLineEdit()
         self.le_beta.setValidator(QG.QIntValidator())
         self.le_beta.setMaxLength(3)
         self.le_beta.textChanged.connect(
-            lambda: self.update_beta(self.le_beta.text()))
+            lambda: self.update_config('beta', self.le_beta.text()))
 
         self.text_gamma = QW.QLabel('gamma, degrees', self)
         self.le_gamma = QW.QLineEdit()
         self.le_gamma.setValidator(QG.QIntValidator())
         self.le_gamma.setMaxLength(3)
         self.le_gamma.textChanged.connect(
-            lambda: self.update_gamma(self.le_gamma.text()))
+            lambda: self.update_config('gamma', self.le_gamma.text()))
 
         # Setup stuff in a layout
         self.layout_box = QW.QFormLayout()
@@ -136,41 +136,9 @@ class options_window(QW.QWidget):
     def change_lattice(self, text):
         self.plot.update_lattice(text)
 
-    # This is gonna be really ugly, but I'm gonna add a method for updating
-    # each parameter
-    def update_a(self, text):
+    def update_config(self, param, text):
         try:
-            self.lattice_config['a'] = float(text)
-        except ValueError:
-            pass
-
-    def update_b(self, text):
-        try:
-            self.lattice_config['b'] = float(text)
-        except ValueError:
-            pass
-
-    def update_c(self, text):
-        try:
-            self.lattice_config['c'] = float(text)
-        except ValueError:
-            pass
-
-    def update_theta(self, text):
-        try:
-            self.lattice_config['theta'] = float(text)
-        except ValueError:
-            pass
-
-    def update_beta(self, text):
-        try:
-            self.lattice_config['beta'] = float(text)
-        except ValueError:
-            pass
-
-    def update_gamma(self, text):
-        try:
-            self.lattice_config['gamma'] = float(text)
+            self.lattice_config[param] = float(text)
         except ValueError:
             pass
 
