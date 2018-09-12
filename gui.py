@@ -1,7 +1,7 @@
 import sys
 from cmp import *
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
@@ -51,6 +51,7 @@ class options_window(QtWidgets.QWidget):
                                'lim_type': d[6],
                                'grid_type': None,
                                'max_': d[8]}
+        self.padding = 0
         self.init_ui()
 
     def init_ui(self):
@@ -60,10 +61,26 @@ class options_window(QtWidgets.QWidget):
         self.button_show.move(0, 0)
         self.button_show.clicked.connect(self.show_plot)
 
+        chooser_x = (self.button_show.x() + self.button_show.width() +
+                     self.padding)
         self.lattice_chooser = QtWidgets.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
-        self.lattice_chooser.move(0, 100)
+        self.lattice_chooser.move(chooser_x, 0)
         self.lattice_chooser.activated[str].connect(self.change_lattice)
+
+        row_1_y = self.button_show.y() + self.button_show.height()
+        self.text_a = QtWidgets.QLabel('a', self)
+        self.text_a.move(0, row_1_y)
+
+        # col_1_x = self.text_a.width() + self.text_a.x()
+        col_1_x = 10
+        text_height = self.text_a.height()
+        self.field_a = QtWidgets.QLineEdit()
+        self.field_a.setValidator(QtGui.QIntValidator())
+        self.field_a.move(col_1_x, row_1_y)
+        self.field_a.setMaxLength(2)
+        self.field_a.setGeometry(col_1_x, row_1_y, 100, text_height)
+        self.field_a.setText("2")
 
         self.plot = plot_window()
         self.plot.show()
@@ -80,6 +97,13 @@ def main():
     app = options_window()
     app.show()
     sys.exit(qapp.exec_())
+
+
+def not_main():
+    qapp = QtWidgets.QApplication(sys.argv)
+    app = options_window()
+    app.show()
+    return qapp, app
 
 
 if __name__ == "__main__":
