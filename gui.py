@@ -84,35 +84,35 @@ class options_window(QW.QWidget):
         self.le_b = QW.QLineEdit()
         self.le_b.setValidator(QG.QIntValidator())
         self.le_b.setMaxLength(2)
-        self.le_a.textChanged.connect(
+        self.le_b.textChanged.connect(
             lambda: self.update_b(self.le_b.text()))
 
         self.text_c = QW.QLabel('c', self)
         self.le_c = QW.QLineEdit()
         self.le_c.setValidator(QG.QIntValidator())
         self.le_c.setMaxLength(2)
-        self.le_a.textChanged.connect(
+        self.le_c.textChanged.connect(
             lambda: self.update_c(self.le_c.text()))
 
         self.text_theta = QW.QLabel('theta, degrees', self)
         self.le_theta = QW.QLineEdit()
         self.le_theta.setValidator(QG.QIntValidator())
         self.le_theta.setMaxLength(3)
-        self.le_a.textChanged.connect(
+        self.le_theta.textChanged.connect(
             lambda: self.update_theta(self.le_theta.text()))
 
         self.text_beta = QW.QLabel('beta, degrees', self)
         self.le_beta = QW.QLineEdit()
         self.le_beta.setValidator(QG.QIntValidator())
         self.le_beta.setMaxLength(3)
-        self.le_a.textChanged.connect(
+        self.le_beta.textChanged.connect(
             lambda: self.update_beta(self.le_beta.text()))
 
         self.text_gamma = QW.QLabel('gamma, degrees', self)
         self.le_gamma = QW.QLineEdit()
         self.le_gamma.setValidator(QG.QIntValidator())
         self.le_gamma.setMaxLength(3)
-        self.le_a.textChanged.connect(
+        self.le_gamma.textChanged.connect(
             lambda: self.update_gamma(self.le_gamma.text()))
 
         # Setup stuff in a layout
