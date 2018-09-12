@@ -50,7 +50,13 @@ class options_window(QtWidgets.QWidget):
                                'sizes': d[5],
                                'lim_type': d[6],
                                'grid_type': None,
-                               'max_': d[8]}
+                               'max_': d[8],
+                               'a': 1,
+                               'b': 1,
+                               'c': 1,
+                               'theta': 90,
+                               'beta': 90,
+                               'gamma': 90}
         self.padding = 0
         self.init_ui()
 
@@ -71,6 +77,7 @@ class options_window(QtWidgets.QWidget):
         self.field_a = QtWidgets.QLineEdit()
         self.field_a.setValidator(QtGui.QIntValidator())
         self.field_a.setMaxLength(2)
+        self.field_a.editingFinished.connect(self.update_config)
 
         self.text_b = QtWidgets.QLabel('b', self)
         self.field_b = QtWidgets.QLineEdit()
@@ -117,6 +124,9 @@ class options_window(QtWidgets.QWidget):
 
     def change_lattice(self, text):
         self.plot.update_lattice(text)
+
+    def update_config(text):
+        print(text)
 
 
 def main():
