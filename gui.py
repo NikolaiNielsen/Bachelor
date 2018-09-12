@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qt5agg import (
     NavigationToolbar2QT as NavigationToolbar)
 
 
-class PlotWindow(QtWidgets.QMainWindow):
+class plot_window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self._main = QtWidgets.QWidget()
@@ -30,7 +30,7 @@ class PlotWindow(QtWidgets.QMainWindow):
                                                   plots=False)
 
 
-class OptionsWindow(QtWidgets.QWidget):
+class options_window(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.title = "Options window"
@@ -51,24 +51,24 @@ class OptionsWindow(QtWidgets.QWidget):
                                'lim_type': d[6],
                                'grid_type': None,
                                'max_': d[8]}
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
 
-        button = QtWidgets.QPushButton("Show plot", self)
-        button.setToolTip('this is an example button')
-        button.move(0, 0)
-        button.clicked.connect(self.on_click)
+        self.button_show = QtWidgets.QPushButton("Show plot", self)
+        self.button_show.setToolTip('this is an example button')
+        self.button_show.move(0, 0)
+        self.button_show.clicked.connect(self.show_plot)
 
-        latticeChooser = QtWidgets.QComboBox(self)
-        latticeChooser.addItems(self.lattices)
-        latticeChooser.move(0, 100)
-        latticeChooser.activated[str].connect(self.change_lattice)
+        self.lattice_chooser = QtWidgets.QComboBox(self)
+        self.lattice_chooser.addItems(self.lattices)
+        self.lattice_chooser.move(0, 100)
+        self.lattice_chooser.activated[str].connect(self.change_lattice)
 
-        self.plot = PlotWindow()
+        self.plot = plot_window()
         self.plot.show()
 
-    def on_click(self):
+    def show_plot(self):
         self.plot.show()
 
     def change_lattice(self, text):
@@ -77,7 +77,7 @@ class OptionsWindow(QtWidgets.QWidget):
 
 def main():
     qapp = QtWidgets.QApplication(sys.argv)
-    app = OptionsWindow()
+    app = options_window()
     app.show()
     sys.exit(qapp.exec_())
 
