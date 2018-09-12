@@ -40,7 +40,7 @@ class options_window(QtWidgets.QWidget):
         self.height = 200
         self.lattices = ['simple cubic', 'fcc', 'bcc']
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        # self.setGeometry(self.left, self.top, self.width, self.height)
         self.default_config = d
         self.lattice_config = {'a1': d[0],
                                'a2': d[1],
@@ -56,32 +56,59 @@ class options_window(QtWidgets.QWidget):
 
     def init_ui(self):
 
+        # Create the "show plot" button
         self.button_show = QtWidgets.QPushButton("Show plot", self)
         self.button_show.setToolTip('this is an example button')
-        self.button_show.move(0, 0)
         self.button_show.clicked.connect(self.show_plot)
 
-        chooser_x = (self.button_show.x() + self.button_show.width() +
-                     self.padding)
+        # Create the lattice chooser dropdown
         self.lattice_chooser = QtWidgets.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
-        self.lattice_chooser.move(chooser_x, 0)
         self.lattice_chooser.activated[str].connect(self.change_lattice)
 
-        row_1_y = self.button_show.y() + self.button_show.height()
+        # Create parameter fields
         self.text_a = QtWidgets.QLabel('a', self)
-        self.text_a.move(0, row_1_y)
-
-        # col_1_x = self.text_a.width() + self.text_a.x()
-        col_1_x = 10
-        text_height = self.text_a.height()
         self.field_a = QtWidgets.QLineEdit()
         self.field_a.setValidator(QtGui.QIntValidator())
-        self.field_a.move(col_1_x, row_1_y)
         self.field_a.setMaxLength(2)
-        self.field_a.setGeometry(col_1_x, row_1_y, 100, text_height)
-        self.field_a.setText("2")
 
+        self.text_b = QtWidgets.QLabel('b', self)
+        self.field_b = QtWidgets.QLineEdit()
+        self.field_b.setValidator(QtGui.QIntValidator())
+        self.field_b.setMaxLength(2)
+
+        self.text_c = QtWidgets.QLabel('c', self)
+        self.field_c = QtWidgets.QLineEdit()
+        self.field_c.setValidator(QtGui.QIntValidator())
+        self.field_c.setMaxLength(2)
+
+        self.text_theta = QtWidgets.QLabel('theta, degrees', self)
+        self.field_theta = QtWidgets.QLineEdit()
+        self.field_theta.setValidator(QtGui.QIntValidator())
+        self.field_theta.setMaxLength(3)
+
+        self.text_beta = QtWidgets.QLabel('beta, degrees', self)
+        self.field_beta = QtWidgets.QLineEdit()
+        self.field_beta.setValidator(QtGui.QIntValidator())
+        self.field_beta.setMaxLength(3)
+
+        self.text_gamma = QtWidgets.QLabel('gamma, degrees', self)
+        self.field_gamma = QtWidgets.QLineEdit()
+        self.field_gamma.setValidator(QtGui.QIntValidator())
+        self.field_gamma.setMaxLength(3)
+
+        # Setup stuff in a layout
+        self.layout_box = QtWidgets.QFormLayout()
+        self.layout_box.addRow(self.button_show, self.lattice_chooser)
+        self.layout_box.addRow(self.text_a, self.field_a)
+        self.layout_box.addRow(self.text_b, self.field_b)
+        self.layout_box.addRow(self.text_c, self.field_c)
+        self.layout_box.addRow(self.text_theta, self.field_theta)
+        self.layout_box.addRow(self.text_beta, self.field_beta)
+        self.layout_box.addRow(self.text_gamma, self.field_gamma)
+        self.setLayout(self.layout_box)
+
+        # Show the plot window
         self.plot = plot_window()
         self.plot.show()
 
