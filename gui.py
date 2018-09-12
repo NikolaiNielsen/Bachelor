@@ -1,19 +1,19 @@
 import sys
 from cmp import *
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets as QW, QtGui as QG
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
 
-class plot_window(QtWidgets.QMainWindow):
+class plot_window(QW.QMainWindow):
     def __init__(self):
         super().__init__()
-        self._main = QtWidgets.QWidget()
+        self._main = QW.QWidget()
         self.setCentralWidget(self._main)
-        layout = QtWidgets.QHBoxLayout(self._main)
+        layout = QW.QHBoxLayout(self._main)
 
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
@@ -30,7 +30,7 @@ class plot_window(QtWidgets.QMainWindow):
                                                   plots=False)
 
 
-class options_window(QtWidgets.QWidget):
+class options_window(QW.QWidget):
     def __init__(self):
         super().__init__()
         self.title = "Options window"
@@ -63,67 +63,67 @@ class options_window(QtWidgets.QWidget):
     def init_ui(self):
 
         # Create the "show plot" button
-        self.button_show = QtWidgets.QPushButton("Show plot", self)
+        self.button_show = QW.QPushButton("Show plot", self)
         self.button_show.setToolTip('this is an example button')
         self.button_show.clicked.connect(self.show_plot)
 
         # Create the lattice chooser dropdown
-        self.lattice_chooser = QtWidgets.QComboBox(self)
+        self.lattice_chooser = QW.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
         self.lattice_chooser.activated[str].connect(self.change_lattice)
 
         # Create parameter fields
-        self.text_a = QtWidgets.QLabel('a', self)
-        self.field_a = QtWidgets.QLineEdit()
-        self.field_a.setValidator(QtGui.QIntValidator())
-        self.field_a.setMaxLength(2)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('a', self.field_a.text()))
+        self.text_a = QW.QLabel('a', self)
+        self.le_a = QW.QLineEdit()
+        self.le_a.setValidator(QG.QIntValidator())
+        self.le_a.setMaxLength(2)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('a', self.le_a.text()))
 
-        self.text_b = QtWidgets.QLabel('b', self)
-        self.field_b = QtWidgets.QLineEdit()
-        self.field_b.setValidator(QtGui.QIntValidator())
-        self.field_b.setMaxLength(2)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('b', self.field_b.text()))
+        self.text_b = QW.QLabel('b', self)
+        self.le_b = QW.QLineEdit()
+        self.le_b.setValidator(QG.QIntValidator())
+        self.le_b.setMaxLength(2)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('b', self.le_b.text()))
 
-        self.text_c = QtWidgets.QLabel('c', self)
-        self.field_c = QtWidgets.QLineEdit()
-        self.field_c.setValidator(QtGui.QIntValidator())
-        self.field_c.setMaxLength(2)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('c', self.field_c.text()))
+        self.text_c = QW.QLabel('c', self)
+        self.le_c = QW.QLineEdit()
+        self.le_c.setValidator(QG.QIntValidator())
+        self.le_c.setMaxLength(2)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('c', self.le_c.text()))
 
-        self.text_theta = QtWidgets.QLabel('theta, degrees', self)
-        self.field_theta = QtWidgets.QLineEdit()
-        self.field_theta.setValidator(QtGui.QIntValidator())
-        self.field_theta.setMaxLength(3)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('theta', self.field_theta.text()))
+        self.text_theta = QW.QLabel('theta, degrees', self)
+        self.le_theta = QW.QLineEdit()
+        self.le_theta.setValidator(QG.QIntValidator())
+        self.le_theta.setMaxLength(3)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('theta', self.le_theta.text()))
 
-        self.text_beta = QtWidgets.QLabel('beta, degrees', self)
-        self.field_beta = QtWidgets.QLineEdit()
-        self.field_beta.setValidator(QtGui.QIntValidator())
-        self.field_beta.setMaxLength(3)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('beta', self.field_beta.text()))
+        self.text_beta = QW.QLabel('beta, degrees', self)
+        self.le_beta = QW.QLineEdit()
+        self.le_beta.setValidator(QG.QIntValidator())
+        self.le_beta.setMaxLength(3)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('beta', self.le_beta.text()))
 
-        self.text_gamma = QtWidgets.QLabel('gamma, degrees', self)
-        self.field_gamma = QtWidgets.QLineEdit()
-        self.field_gamma.setValidator(QtGui.QIntValidator())
-        self.field_gamma.setMaxLength(3)
-        self.field_a.editingFinished.connect(
-            lambda: self.update_config('gamma', self.field_gamma.text()))
+        self.text_gamma = QW.QLabel('gamma, degrees', self)
+        self.le_gamma = QW.QLineEdit()
+        self.le_gamma.setValidator(QG.QIntValidator())
+        self.le_gamma.setMaxLength(3)
+        self.le_a.editingFinished.connect(
+            lambda: self.update_config('gamma', self.le_gamma.text()))
 
         # Setup stuff in a layout
-        self.layout_box = QtWidgets.QFormLayout()
+        self.layout_box = QW.QFormLayout()
         self.layout_box.addRow(self.button_show, self.lattice_chooser)
-        self.layout_box.addRow(self.text_a, self.field_a)
-        self.layout_box.addRow(self.text_b, self.field_b)
-        self.layout_box.addRow(self.text_c, self.field_c)
-        self.layout_box.addRow(self.text_theta, self.field_theta)
-        self.layout_box.addRow(self.text_beta, self.field_beta)
-        self.layout_box.addRow(self.text_gamma, self.field_gamma)
+        self.layout_box.addRow(self.text_a, self.le_a)
+        self.layout_box.addRow(self.text_b, self.le_b)
+        self.layout_box.addRow(self.text_c, self.le_c)
+        self.layout_box.addRow(self.text_theta, self.le_theta)
+        self.layout_box.addRow(self.text_beta, self.le_beta)
+        self.layout_box.addRow(self.text_gamma, self.le_gamma)
         self.setLayout(self.layout_box)
 
         # Show the plot window
@@ -141,14 +141,14 @@ class options_window(QtWidgets.QWidget):
 
 
 def main():
-    qapp = QtWidgets.QApplication(sys.argv)
+    qapp = QW.QApplication(sys.argv)
     app = options_window()
     app.show()
     sys.exit(qapp.exec_())
 
 
 def not_main():
-    qapp = QtWidgets.QApplication(sys.argv)
+    qapp = QW.QApplication(sys.argv)
     app = options_window()
     app.show()
     return qapp, app
