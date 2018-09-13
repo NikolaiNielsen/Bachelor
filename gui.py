@@ -149,9 +149,9 @@ class options_window(QW.QWidget):
         a = self.lattice_config['a']
         b = self.lattice_config['b']
         c = self.lattice_config['c']
-        theta = self.lattice_config['theta']
-        beta = self.lattice_config['beta']
-        gamma = self.lattice_config['gamma']
+        theta = self.lattice_config['theta'] * np.pi / 180
+        beta = self.lattice_config['beta'] * np.pi / 180
+        gamma = self.lattice_config['gamma'] * np.pi / 180
         name = self.lattice_config['lattice']
         (a1, a2, a3), basis, _ = lattices.chooser(lattice_name=name,
                                                   a=a, b=b, c=c,
