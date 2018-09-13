@@ -21,9 +21,10 @@ class plot_window(QW.QMainWindow):
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
 
-    def update_lattice(self, lattice_name):
+    def update_lattice(self, a1, a2, a3, basis):
         self.static_ax.clear()
-        self.static_fig, self.static_ax = Lattice(lattice_name=lattice_name,
+        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
+                                                  basis=basis,
                                                   fig=self.static_fig,
                                                   ax=self.static_ax,
                                                   returns=True,
@@ -38,7 +39,20 @@ class options_window(QW.QWidget):
         self.top = 10
         self.width = 320
         self.height = 200
-        self.lattices = ['simple cubic', 'fcc', 'bcc']
+        self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
+                         'tetragonal', 'tetragonal body centred',
+                         'tetragonal face centred', 'orthorhombic',
+                         'orthorhombic body centred',
+                         'orthorhombic face centred',
+                         'orthorhombic base centred',
+                         'simple monoclinic',
+                         'base centred monoclinic',
+                         'hexagonal',
+                         'triclinic',
+                         'rhombohedral',
+                         'diamond',
+                         'wurtzite',
+                         'zincblende']
         self.setWindowTitle(self.title)
         # self.setGeometry(self.left, self.top, self.width, self.height)
         self.default_config = d
@@ -56,7 +70,8 @@ class options_window(QW.QWidget):
                                'c': 1,
                                'theta': 80,
                                'beta': 90,
-                               'gamma': 90}
+                               'gamma': 90,
+                               'lattice': 'simple cubic'}
         self.padding = 0
         self.init_ui()
 
@@ -65,12 +80,12 @@ class options_window(QW.QWidget):
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Show plot", self)
         self.button_show.setToolTip('this is an example button')
-        self.button_show.clicked.connect(self.show_plot)
+        self.button_show.clicked.connect(self.update_plot)
 
         # Create the lattice chooser dropdown
         self.lattice_chooser = QW.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
-        self.lattice_chooser.activated[str].connect(self.change_lattice)
+        self.lattice_chooser.activated[str].connect(self.update_lattice_name)
 
         # Create parameter fields
         self.text_a = QW.QLabel('a', self)
@@ -130,11 +145,26 @@ class options_window(QW.QWidget):
         self.plot = plot_window()
         self.plot.show()
 
-    def show_plot(self):
+    def update_plot(self):
+        a = self.lattice_config['a']
+        b = self.lattice_config['b']
+        c = self.lattice_config['c']
+        theta = self.lattice_config['theta']
+        beta = self.lattice_config['beta']
+        gamma = self.lattice_config['gamma']
+        name = self.lattice_config['lattice']
+        (a1, a2, a3), basis, _ = lattices.chooser(lattice_name=name,
+                                                  a=a, b=b, c=c,
+                                                  theta=theta,
+                                                  beta=beta,
+                                                  gamma=gamma)
+        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
+                                            (a1, a2, a3, basis))))
+        self.plot.update_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
         self.plot.show()
 
-    def change_lattice(self, text):
-        self.plot.update_lattice(text)
+    def update_lattice_name(self, text):
+        self.lattice_config['lattice'] = text
 
     def update_config(self, param, text):
         try:
