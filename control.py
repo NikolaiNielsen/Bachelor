@@ -81,7 +81,7 @@ def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
 
     # Ugly hack for fixing bcc involving juggling of limits, so we plot 2 unit
     # cells (conventional) in each direction
-    if (lattice_name == "bcc" and max_ == [2, 2, 2] and
+    if (lattice_type == "bcc" and max_ == [2, 2, 2] and
             lim_type == "proper" and unit_type == "conventional"):
         max_ = [0, 0, 4]
 
