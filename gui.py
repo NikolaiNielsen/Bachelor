@@ -31,9 +31,13 @@ class plot_window(QW.QMainWindow):
                                                   plots=False)
 
 
-class options_window(QW.QWidget):
+class full_window(QW.QWidget):
     def __init__(self):
         super().__init__()
+        self._main = QT.QWidget()
+        self.setCentralWidget(self._main)
+        main_layout = QW.QHBoxLayout(self._main)
+
         self.title = "Options window"
         self.left = 10
         self.top = 10
@@ -73,9 +77,16 @@ class options_window(QW.QWidget):
                                'gamma': 90,
                                'lattice': 'simple cubic'}
         self.padding = 0
-        self.init_ui()
+        self.create_options()
+        main_layout.addWidget(self.layout_box)
 
-    def init_ui(self):
+        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
+        self.static_canvas = FigureCanvas(self.static_fig)
+        main_layout.addWidget(self.static_canvas)
+        self.addToolBar(NavigationToolbar(self.static_canvas, self))
+        self.static_ax.mouse_init()
+
+    def create_options(self):
 
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Show plot", self)
@@ -139,11 +150,7 @@ class options_window(QW.QWidget):
         self.layout_box.addRow(self.text_theta, self.le_theta)
         self.layout_box.addRow(self.text_beta, self.le_beta)
         self.layout_box.addRow(self.text_gamma, self.le_gamma)
-        self.setLayout(self.layout_box)
-
-        # Show the plot window
-        self.plot = plot_window()
-        self.plot.show()
+        # self.setLayout(self.layout_box)
 
     def update_plot(self):
         a = self.lattice_config['a']
@@ -160,8 +167,7 @@ class options_window(QW.QWidget):
                                                   gamma=gamma)
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
                                             (a1, a2, a3, basis))))
-        self.plot.update_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
-        self.plot.show()
+        self.update_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
 
     def update_lattice_name(self, text):
         self.lattice_config['lattice'] = text
@@ -172,10 +178,19 @@ class options_window(QW.QWidget):
         except ValueError:
             pass
 
+    def update_lattice(self, a1, a2, a3, basis):
+        self.static_ax.clear()
+        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
+                                                  basis=basis,
+                                                  fig=self.static_fig,
+                                                  ax=self.static_ax,
+                                                  returns=True,
+                                                  plots=False)
+
 
 def main():
     qapp = QW.QApplication(sys.argv)
-    app = options_window()
+    app = full_window()
     app.show()
     sys.exit(qapp.exec_())
 
