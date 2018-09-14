@@ -101,7 +101,7 @@ class full_window(QW.QMainWindow):
         # Create parameter fields
         self.text_a = QW.QLabel('a', self)
         self.le_a = QW.QLineEdit()
-        self.le_a.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_a.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_a.setMaxLength(2)
         self.le_a.setText(str(self.lattice_config['a']))
         self.le_a.textChanged.connect(
@@ -109,7 +109,7 @@ class full_window(QW.QMainWindow):
 
         self.text_b = QW.QLabel('b', self)
         self.le_b = QW.QLineEdit()
-        self.le_b.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_b.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_b.setMaxLength(2)
         self.le_b.setText(str(self.lattice_config['b']))
         self.le_b.textChanged.connect(
@@ -117,7 +117,7 @@ class full_window(QW.QMainWindow):
 
         self.text_c = QW.QLabel('c', self)
         self.le_c = QW.QLineEdit()
-        self.le_c.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_c.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_c.setMaxLength(2)
         self.le_c.setText(str(self.lattice_config['c']))
         self.le_c.textChanged.connect(
@@ -125,7 +125,7 @@ class full_window(QW.QMainWindow):
 
         self.text_theta = QW.QLabel('theta, degrees', self)
         self.le_theta = QW.QLineEdit()
-        self.le_theta.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_theta.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_theta.setMaxLength(3)
         self.le_theta.setText(str(self.lattice_config['theta']))
         self.le_theta.textChanged.connect(
@@ -133,7 +133,7 @@ class full_window(QW.QMainWindow):
 
         self.text_beta = QW.QLabel('beta, degrees', self)
         self.le_beta = QW.QLineEdit()
-        self.le_beta.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_beta.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_beta.setMaxLength(3)
         self.le_beta.setText(str(self.lattice_config['beta']))
         self.le_beta.textChanged.connect(
@@ -141,7 +141,7 @@ class full_window(QW.QMainWindow):
 
         self.text_gamma = QW.QLabel('gamma, degrees', self)
         self.le_gamma = QW.QLineEdit()
-        self.le_gamma.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        self.le_gamma.setValidator(QG.QDoubleValidator(decimals=2))
         # self.le_gamma.setMaxLength(3)
         self.le_gamma.setText(str(self.lattice_config['gamma']))
         self.le_gamma.textChanged.connect(
