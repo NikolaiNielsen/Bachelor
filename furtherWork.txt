@@ -17,11 +17,6 @@ fermi surface
 - Intersecting planes (need OpenGL compliant)
 - Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
 
-Check other plotting packages:
-- Plot.ly
-- mayavi
-- Some others
-- Check how they work with GUI applications
 
 
 Other stuff
@@ -29,17 +24,9 @@ Other stuff
 - virtual environments
 
 
-Priority:
-- Try gui for lattice plotting, so I don't have to do too much detection.
-
-
-
 Separate the lattice calculation into separate file for exercise
-Show only parameters that are relevant
 Implement basis
 Default parameters for lattices (change back when lattice is changed)
-Update lattice on return keypress
-Update plot on change of lattice
 
 Key to Kathrin
 Write to STine about contract
