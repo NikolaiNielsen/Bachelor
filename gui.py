@@ -31,14 +31,14 @@ class plot_window(QW.QMainWindow):
                                                   plots=False)
 
 
-class full_window(QW.QWidget):
+class full_window(QW.QMainWindow):
     def __init__(self):
         super().__init__()
-        self._main = QT.QWidget()
+        self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         main_layout = QW.QHBoxLayout(self._main)
 
-        self.title = "Options window"
+        self.title = "Crystal Structure"
         self.left = 10
         self.top = 10
         self.width = 320
@@ -78,7 +78,7 @@ class full_window(QW.QWidget):
                                'lattice': 'simple cubic'}
         self.padding = 0
         self.create_options()
-        main_layout.addWidget(self.layout_box)
+        main_layout.addLayout(self.layout_box)
 
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
@@ -89,7 +89,7 @@ class full_window(QW.QWidget):
     def create_options(self):
 
         # Create the "show plot" button
-        self.button_show = QW.QPushButton("Show plot", self)
+        self.button_show = QW.QPushButton("Update plot", self)
         self.button_show.setToolTip('this is an example button')
         self.button_show.clicked.connect(self.update_plot)
 
@@ -101,43 +101,49 @@ class full_window(QW.QWidget):
         # Create parameter fields
         self.text_a = QW.QLabel('a', self)
         self.le_a = QW.QLineEdit()
-        self.le_a.setValidator(QG.QIntValidator())
-        self.le_a.setMaxLength(2)
+        self.le_a.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_a.setMaxLength(2)
+        self.le_a.setText(str(self.lattice_config['a']))
         self.le_a.textChanged.connect(
             lambda: self.update_config('a', self.le_a.text()))
 
         self.text_b = QW.QLabel('b', self)
         self.le_b = QW.QLineEdit()
-        self.le_b.setValidator(QG.QIntValidator())
-        self.le_b.setMaxLength(2)
+        self.le_b.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_b.setMaxLength(2)
+        self.le_b.setText(str(self.lattice_config['b']))
         self.le_b.textChanged.connect(
             lambda: self.update_config('b', self.le_b.text()))
 
         self.text_c = QW.QLabel('c', self)
         self.le_c = QW.QLineEdit()
-        self.le_c.setValidator(QG.QIntValidator())
-        self.le_c.setMaxLength(2)
+        self.le_c.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_c.setMaxLength(2)
+        self.le_c.setText(str(self.lattice_config['c']))
         self.le_c.textChanged.connect(
             lambda: self.update_config('c', self.le_c.text()))
 
         self.text_theta = QW.QLabel('theta, degrees', self)
         self.le_theta = QW.QLineEdit()
-        self.le_theta.setValidator(QG.QIntValidator())
-        self.le_theta.setMaxLength(3)
+        self.le_theta.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_theta.setMaxLength(3)
+        self.le_theta.setText(str(self.lattice_config['theta']))
         self.le_theta.textChanged.connect(
             lambda: self.update_config('theta', self.le_theta.text()))
 
         self.text_beta = QW.QLabel('beta, degrees', self)
         self.le_beta = QW.QLineEdit()
-        self.le_beta.setValidator(QG.QIntValidator())
-        self.le_beta.setMaxLength(3)
+        self.le_beta.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_beta.setMaxLength(3)
+        self.le_beta.setText(str(self.lattice_config['beta']))
         self.le_beta.textChanged.connect(
             lambda: self.update_config('beta', self.le_beta.text()))
 
         self.text_gamma = QW.QLabel('gamma, degrees', self)
         self.le_gamma = QW.QLineEdit()
-        self.le_gamma.setValidator(QG.QIntValidator())
-        self.le_gamma.setMaxLength(3)
+        self.le_gamma.setValidator(QG.QDoubleValidator(0.99, 99.99, 2))
+        # self.le_gamma.setMaxLength(3)
+        self.le_gamma.setText(str(self.lattice_config['gamma']))
         self.le_gamma.textChanged.connect(
             lambda: self.update_config('gamma', self.le_gamma.text()))
 
@@ -186,6 +192,7 @@ class full_window(QW.QWidget):
                                                   ax=self.static_ax,
                                                   returns=True,
                                                   plots=False)
+        self.static_canvas.activateWindow()
 
 
 def main():
@@ -197,7 +204,7 @@ def main():
 
 def not_main():
     qapp = QW.QApplication(sys.argv)
-    app = options_window()
+    app = full_window()
     app.show()
     return qapp, app
 
