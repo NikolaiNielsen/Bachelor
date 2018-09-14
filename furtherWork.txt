@@ -31,3 +31,15 @@ Other stuff
 
 Priority:
 - Try gui for lattice plotting, so I don't have to do too much detection.
+
+
+
+Separate the lattice calculation into separate file for exercise
+Show only parameters that are relevant
+Implement basis
+Default parameters for lattices (change back when lattice is changed)
+Update lattice on return keypress
+Update plot on change of lattice
+
+Key to Kathrin
+Write to STine about contract
