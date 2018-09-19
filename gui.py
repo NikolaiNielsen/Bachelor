@@ -298,7 +298,7 @@ class full_window(QW.QMainWindow):
         self.basis5_enable.stateChanged.connect(
             lambda: self.hide_basis(4))
 
-        self.basis = [[
+        self.basis_widgets = [[
             self.basis1_x,
             self.basis1_y,
             self.basis1_z,
@@ -324,9 +324,12 @@ class full_window(QW.QMainWindow):
             self.basis5_z,
             self.basis5_enable]]
         self.layout_basis = QW.QGridLayout()
+
         for i in range(5):
             for j in range(4):
-                self.layout_basis.addWidget(self.basis[i][j], i, j)
+                if j != 3:
+                    self.basis_widgets[i][j].setText('0')
+                self.layout_basis.addWidget(self.basis_widgets[i][j], i, j)
 
     def update_plot(self):
         a = self.lattice_config['a']
@@ -374,8 +377,8 @@ class full_window(QW.QMainWindow):
         print(basis_no, coord_no, val)
 
     def hide_basis(self, basis_no):
-        checkbox = self.basis[basis_no][3]
-        for le in self.basis[basis_no][:3]:
+        checkbox = self.basis_widgets[basis_no][3]
+        for le in self.basis_widgets[basis_no][:3]:
             le.setEnabled(checkbox.isChecked())
 
     def quit(self):
