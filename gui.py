@@ -77,6 +77,7 @@ class full_window(QW.QMainWindow):
                                'beta': 90,
                                'gamma': 90,
                                'lattice': 'simple cubic'}
+        self.basis = np.zeros((5, 3))
         self.padding = 0
         self.create_options()
         main_layout.addLayout(self.layout_options)
@@ -196,17 +197,17 @@ class full_window(QW.QMainWindow):
         # Basis-stuff
         self.basis1_x = QW.QLineEdit()
         self.basis1_x.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis1_x.returnPressed.connect(
+        self.basis1_x.editingFinished.connect(
             lambda: self.update_basis(0, 0, self.basis1_x.text()))
 
         self.basis1_y = QW.QLineEdit()
         self.basis1_y.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis1_y.returnPressed.connect(
+        self.basis1_y.editingFinished.connect(
             lambda: self.update_basis(0, 1, self.basis1_y.text()))
 
         self.basis1_z = QW.QLineEdit()
         self.basis1_z.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis1_z.returnPressed.connect(
+        self.basis1_z.editingFinished.connect(
             lambda: self.update_basis(0, 2, self.basis1_z.text()))
 
         self.basis1_enable = QW.QCheckBox()
@@ -217,18 +218,18 @@ class full_window(QW.QMainWindow):
         # Basis 2
         self.basis2_x = QW.QLineEdit()
         self.basis2_x.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis2_x.returnPressed.connect(
-            lambda: self.update_basis(1, 0, self.basis1_x.text()))
+        self.basis2_x.editingFinished.connect(
+            lambda: self.update_basis(1, 0, self.basis2_x.text()))
 
         self.basis2_y = QW.QLineEdit()
         self.basis2_y.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis2_y.returnPressed.connect(
-            lambda: self.update_basis(1, 1, self.basis1_y.text()))
+        self.basis2_y.editingFinished.connect(
+            lambda: self.update_basis(1, 1, self.basis2_y.text()))
 
         self.basis2_z = QW.QLineEdit()
         self.basis2_z.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis2_z.returnPressed.connect(
-            lambda: self.update_basis(1, 2, self.basis1_z.text()))
+        self.basis2_z.editingFinished.connect(
+            lambda: self.update_basis(1, 2, self.basis2_z.text()))
 
         self.basis2_enable = QW.QCheckBox()
         self.basis2_enable.setChecked(True)
@@ -238,18 +239,18 @@ class full_window(QW.QMainWindow):
         # Basis 3
         self.basis3_x = QW.QLineEdit()
         self.basis3_x.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis3_x.returnPressed.connect(
-            lambda: self.update_basis(2, 0, self.basis1_x.text()))
+        self.basis3_x.editingFinished.connect(
+            lambda: self.update_basis(2, 0, self.basis3_x.text()))
 
         self.basis3_y = QW.QLineEdit()
         self.basis3_y.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis3_y.returnPressed.connect(
-            lambda: self.update_basis(2, 1, self.basis1_y.text()))
+        self.basis3_y.editingFinished.connect(
+            lambda: self.update_basis(2, 1, self.basis3_y.text()))
 
         self.basis3_z = QW.QLineEdit()
         self.basis3_z.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis3_z.returnPressed.connect(
-            lambda: self.update_basis(2, 2, self.basis1_z.text()))
+        self.basis3_z.editingFinished.connect(
+            lambda: self.update_basis(2, 2, self.basis3_z.text()))
 
         self.basis3_enable = QW.QCheckBox()
         self.basis3_enable.setChecked(True)
@@ -259,18 +260,18 @@ class full_window(QW.QMainWindow):
         # Basis 4
         self.basis4_x = QW.QLineEdit()
         self.basis4_x.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis4_x.returnPressed.connect(
-            lambda: self.update_basis(3, 0, self.basis1_x.text()))
+        self.basis4_x.editingFinished.connect(
+            lambda: self.update_basis(3, 0, self.basis4_x.text()))
 
         self.basis4_y = QW.QLineEdit()
         self.basis4_y.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis4_y.returnPressed.connect(
-            lambda: self.update_basis(3, 1, self.basis1_y.text()))
+        self.basis4_y.editingFinished.connect(
+            lambda: self.update_basis(3, 1, self.basis4_y.text()))
 
         self.basis4_z = QW.QLineEdit()
         self.basis4_z.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis4_z.returnPressed.connect(
-            lambda: self.update_basis(3, 2, self.basis1_z.text()))
+        self.basis4_z.editingFinished.connect(
+            lambda: self.update_basis(3, 2, self.basis4_z.text()))
 
         self.basis4_enable = QW.QCheckBox()
         self.basis4_enable.setChecked(True)
@@ -280,18 +281,18 @@ class full_window(QW.QMainWindow):
         # Basis 5
         self.basis5_x = QW.QLineEdit()
         self.basis5_x.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis5_x.returnPressed.connect(
-            lambda: self.update_basis(4, 0, self.basis1_x.text()))
+        self.basis5_x.editingFinished.connect(
+            lambda: self.update_basis(4, 0, self.basis5_x.text()))
 
         self.basis5_y = QW.QLineEdit()
         self.basis5_y.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis5_y.returnPressed.connect(
-            lambda: self.update_basis(4, 1, self.basis1_y.text()))
+        self.basis5_y.editingFinished.connect(
+            lambda: self.update_basis(4, 1, self.basis5_y.text()))
 
         self.basis5_z = QW.QLineEdit()
         self.basis5_z.setValidator(QG.QDoubleValidator(decimals=2))
-        self.basis5_z.returnPressed.connect(
-            lambda: self.update_basis(4, 2, self.basis1_z.text()))
+        self.basis5_z.editingFinished.connect(
+            lambda: self.update_basis(4, 2, self.basis5_z.text()))
 
         self.basis5_enable = QW.QCheckBox()
         self.basis5_enable.setChecked(True)
@@ -375,6 +376,8 @@ class full_window(QW.QMainWindow):
 
     def update_basis(self, basis_no, coord_no, val):
         print(basis_no, coord_no, val)
+        self.basis[basis_no, coord_no] = float(val)
+        print(self.basis)
 
     def hide_basis(self, basis_no):
         checkbox = self.basis_widgets[basis_no][3]
