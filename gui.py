@@ -309,6 +309,13 @@ class full_window(QW.QMainWindow):
                                                   theta=theta,
                                                   beta=beta,
                                                   gamma=gamma)
+        basis = np.atleast_2d(basis)
+        if len(basis) > 1:
+            reduced_basis = basis[1:]
+            for n, atom in enumerate(reduced_basis):
+                # Enable the relevant basis inputs
+                self.basis_widgets[n][3].setChecked(True)
+
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
                                             (a1, a2, a3, basis))))
 
@@ -345,7 +352,6 @@ class full_window(QW.QMainWindow):
                                                   ax=self.static_ax,
                                                   returns=True,
                                                   plots=False)
-        self.static_canvas.activateWindow()
 
     def update_basis_val(self, basis_no, coord_no, val):
         self.basis[basis_no, coord_no] = float(val)
