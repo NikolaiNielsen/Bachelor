@@ -79,7 +79,7 @@ class full_window(QW.QMainWindow):
                                'lattice': 'simple cubic'}
         self.padding = 0
         self.create_options()
-        main_layout.addLayout(self.layout_box)
+        main_layout.addLayout(self.layout_options)
 
         self.params = [self.le_a, self.le_b, self.le_c,
                        self.le_theta, self.le_beta, self.le_gamma]
@@ -116,11 +116,9 @@ class full_window(QW.QMainWindow):
         main_layout.addWidget(self.static_canvas)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
-        self.create_basis()
-        main_layout.addLayout(self.layout_basis)
 
     def create_options(self):
-
+        self.layout_options = QW.QVBoxLayout(self._main)
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Update plot", self)
         self.button_show.setToolTip('this is an example button')
@@ -181,15 +179,18 @@ class full_window(QW.QMainWindow):
             lambda: self.update_config('gamma', self.le_gamma.text()))
 
         # Setup stuff in a layout
-        self.layout_box = QW.QFormLayout()
-        self.layout_box.addRow(self.button_show, self.lattice_chooser)
-        self.layout_box.addRow(self.text_a, self.le_a)
-        self.layout_box.addRow(self.text_b, self.le_b)
-        self.layout_box.addRow(self.text_c, self.le_c)
-        self.layout_box.addRow(self.text_theta, self.le_theta)
-        self.layout_box.addRow(self.text_beta, self.le_beta)
-        self.layout_box.addRow(self.text_gamma, self.le_gamma)
-        # self.setLayout(self.layout_box)
+        self.layout_parameters = QW.QFormLayout(self._main)
+        self.layout_parameters.addRow(self.button_show, self.lattice_chooser)
+        self.layout_parameters.addRow(self.text_a, self.le_a)
+        self.layout_parameters.addRow(self.text_b, self.le_b)
+        self.layout_parameters.addRow(self.text_c, self.le_c)
+        self.layout_parameters.addRow(self.text_theta, self.le_theta)
+        self.layout_parameters.addRow(self.text_beta, self.le_beta)
+        self.layout_parameters.addRow(self.text_gamma, self.le_gamma)
+
+        self.layout_options.addLayout(self.layout_parameters)
+        self.create_basis()
+        self.layout_options.addLayout(self.layout_basis)
 
     def create_basis(self):
         # Basis-stuff
