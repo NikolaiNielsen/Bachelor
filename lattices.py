@@ -333,8 +333,9 @@ def classifier(a1, a2, a3, basis):
             if len(basis.shape) == 1:
                 lattice_name = "simple cubic"
             else:
-                # we exclude the first basis vector ([0,0,0])
-                reduced_basis = basis[1:]
+                # We find all null_vectors and exclude them
+                null_vectors = (basis == 0).sum(axis=1) == 3
+                reduced_basis = basis[~null_vectors]
                 mag_basis = mag(reduced_basis)
                 # bcc has one basis vector in the reduced basis
                 if reduced_basis.shape[0] == 1:
