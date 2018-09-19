@@ -198,17 +198,17 @@ class full_window(QW.QMainWindow):
         self.basis1_x = QW.QLineEdit()
         self.basis1_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_x.editingFinished.connect(
-            lambda: self.update_basis(0, 0, self.basis1_x.text()))
+            lambda: self.update_basis_val(0, 0, self.basis1_x.text()))
 
         self.basis1_y = QW.QLineEdit()
         self.basis1_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_y.editingFinished.connect(
-            lambda: self.update_basis(0, 1, self.basis1_y.text()))
+            lambda: self.update_basis_val(0, 1, self.basis1_y.text()))
 
         self.basis1_z = QW.QLineEdit()
         self.basis1_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_z.editingFinished.connect(
-            lambda: self.update_basis(0, 2, self.basis1_z.text()))
+            lambda: self.update_basis_val(0, 2, self.basis1_z.text()))
 
         self.basis1_enable = QW.QCheckBox()
         self.basis1_enable.setChecked(True)
@@ -219,17 +219,17 @@ class full_window(QW.QMainWindow):
         self.basis2_x = QW.QLineEdit()
         self.basis2_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_x.editingFinished.connect(
-            lambda: self.update_basis(1, 0, self.basis2_x.text()))
+            lambda: self.update_basis_val(1, 0, self.basis2_x.text()))
 
         self.basis2_y = QW.QLineEdit()
         self.basis2_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_y.editingFinished.connect(
-            lambda: self.update_basis(1, 1, self.basis2_y.text()))
+            lambda: self.update_basis_val(1, 1, self.basis2_y.text()))
 
         self.basis2_z = QW.QLineEdit()
         self.basis2_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_z.editingFinished.connect(
-            lambda: self.update_basis(1, 2, self.basis2_z.text()))
+            lambda: self.update_basis_val(1, 2, self.basis2_z.text()))
 
         self.basis2_enable = QW.QCheckBox()
         self.basis2_enable.setChecked(True)
@@ -240,17 +240,17 @@ class full_window(QW.QMainWindow):
         self.basis3_x = QW.QLineEdit()
         self.basis3_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_x.editingFinished.connect(
-            lambda: self.update_basis(2, 0, self.basis3_x.text()))
+            lambda: self.update_basis_val(2, 0, self.basis3_x.text()))
 
         self.basis3_y = QW.QLineEdit()
         self.basis3_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_y.editingFinished.connect(
-            lambda: self.update_basis(2, 1, self.basis3_y.text()))
+            lambda: self.update_basis_val(2, 1, self.basis3_y.text()))
 
         self.basis3_z = QW.QLineEdit()
         self.basis3_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_z.editingFinished.connect(
-            lambda: self.update_basis(2, 2, self.basis3_z.text()))
+            lambda: self.update_basis_val(2, 2, self.basis3_z.text()))
 
         self.basis3_enable = QW.QCheckBox()
         self.basis3_enable.setChecked(True)
@@ -261,17 +261,17 @@ class full_window(QW.QMainWindow):
         self.basis4_x = QW.QLineEdit()
         self.basis4_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_x.editingFinished.connect(
-            lambda: self.update_basis(3, 0, self.basis4_x.text()))
+            lambda: self.update_basis_val(3, 0, self.basis4_x.text()))
 
         self.basis4_y = QW.QLineEdit()
         self.basis4_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_y.editingFinished.connect(
-            lambda: self.update_basis(3, 1, self.basis4_y.text()))
+            lambda: self.update_basis_val(3, 1, self.basis4_y.text()))
 
         self.basis4_z = QW.QLineEdit()
         self.basis4_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_z.editingFinished.connect(
-            lambda: self.update_basis(3, 2, self.basis4_z.text()))
+            lambda: self.update_basis_val(3, 2, self.basis4_z.text()))
 
         self.basis4_enable = QW.QCheckBox()
         self.basis4_enable.setChecked(True)
@@ -282,17 +282,17 @@ class full_window(QW.QMainWindow):
         self.basis5_x = QW.QLineEdit()
         self.basis5_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_x.editingFinished.connect(
-            lambda: self.update_basis(4, 0, self.basis5_x.text()))
+            lambda: self.update_basis_val(4, 0, self.basis5_x.text()))
 
         self.basis5_y = QW.QLineEdit()
         self.basis5_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_y.editingFinished.connect(
-            lambda: self.update_basis(4, 1, self.basis5_y.text()))
+            lambda: self.update_basis_val(4, 1, self.basis5_y.text()))
 
         self.basis5_z = QW.QLineEdit()
         self.basis5_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_z.editingFinished.connect(
-            lambda: self.update_basis(4, 2, self.basis5_z.text()))
+            lambda: self.update_basis_val(4, 2, self.basis5_z.text()))
 
         self.basis5_enable = QW.QCheckBox()
         self.basis5_enable.setChecked(True)
@@ -374,15 +374,23 @@ class full_window(QW.QMainWindow):
                                                   plots=False)
         self.static_canvas.activateWindow()
 
-    def update_basis(self, basis_no, coord_no, val):
-        print(basis_no, coord_no, val)
+    def update_basis_val(self, basis_no, coord_no, val):
         self.basis[basis_no, coord_no] = float(val)
-        print(self.basis)
+        self.update_basis()
 
     def hide_basis(self, basis_no):
         checkbox = self.basis_widgets[basis_no][3]
         for le in self.basis_widgets[basis_no][:3]:
             le.setEnabled(checkbox.isChecked())
+        self.update_basis()
+
+    def update_basis(self):
+        enabled_basis_atoms = []
+        for i in self.basis_widgets:
+            enabled_basis_atoms.append(i[3].isChecked())
+        new_basis = np.vstack(([0, 0, 0], self.basis[enabled_basis_atoms]))
+        self.lattice_config['basis'] = new_basis
+        self.update_plot()
 
     def quit(self):
         sys.exit()
