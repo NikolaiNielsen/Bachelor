@@ -311,7 +311,8 @@ class full_window(QW.QMainWindow):
                                                   gamma=gamma)
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
                                             (a1, a2, a3, basis))))
-        self.plot_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
+
+        self.plot_lattice()
 
     def update_lattice_name(self, text):
         self.lattice_config['lattice'] = text
@@ -330,10 +331,14 @@ class full_window(QW.QMainWindow):
             pass
         self.update_lattice()
 
-    def plot_lattice(self, a1, a2, a3, basis):
+    def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
         # update the plot
         self.static_ax.clear()
+        a1 = self.lattice_config['a1']
+        a2 = self.lattice_config['a2']
+        a3 = self.lattice_config['a3']
+        basis = self.lattice_config['basis']
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
                                                   basis=basis,
                                                   fig=self.static_fig,
@@ -358,7 +363,7 @@ class full_window(QW.QMainWindow):
             enabled_basis_atoms.append(i[3].isChecked())
         new_basis = np.vstack(([0, 0, 0], self.basis[enabled_basis_atoms]))
         self.lattice_config['basis'] = new_basis
-        self.update_lattice()
+        self.plot_lattice()
 
     def quit(self):
         sys.exit()
