@@ -117,7 +117,7 @@ class full_window(QW.QMainWindow):
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
         self.create_basis()
-        main_layout.addWidget(self.layout_basis)
+        main_layout.addLayout(self.layout_basis)
 
     def create_options(self):
 
@@ -325,7 +325,7 @@ class full_window(QW.QMainWindow):
             self.basis5_enable]]
         self.layout_basis = QW.QGridLayout()
         for i in range(5):
-            for j in range(5):
+            for j in range(4):
                 self.layout_basis.addWidget(self.basis[i][j], i, j)
 
     def update_plot(self):
