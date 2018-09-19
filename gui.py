@@ -212,7 +212,7 @@ class full_window(QW.QMainWindow):
         self.basis1_enable = QW.QCheckBox()
         self.basis1_enable.setChecked(True)
         self.basis1_enable.stateChanged.connect(
-            lambda: self.hidebasis(0))
+            lambda: self.hide_basis(0))
 
         # Basis 2
         self.basis2_x = QW.QLineEdit()
@@ -233,7 +233,7 @@ class full_window(QW.QMainWindow):
         self.basis2_enable = QW.QCheckBox()
         self.basis2_enable.setChecked(True)
         self.basis2_enable.stateChanged.connect(
-            lambda: self.hidebasis(1))
+            lambda: self.hide_basis(1))
 
         # Basis 3
         self.basis3_x = QW.QLineEdit()
@@ -254,7 +254,7 @@ class full_window(QW.QMainWindow):
         self.basis3_enable = QW.QCheckBox()
         self.basis3_enable.setChecked(True)
         self.basis3_enable.stateChanged.connect(
-            lambda: self.hidebasis(2))
+            lambda: self.hide_basis(2))
 
         # Basis 4
         self.basis4_x = QW.QLineEdit()
@@ -275,7 +275,7 @@ class full_window(QW.QMainWindow):
         self.basis4_enable = QW.QCheckBox()
         self.basis4_enable.setChecked(True)
         self.basis4_enable.stateChanged.connect(
-            lambda: self.hidebasis(3))
+            lambda: self.hide_basis(3))
 
         # Basis 5
         self.basis5_x = QW.QLineEdit()
@@ -296,7 +296,7 @@ class full_window(QW.QMainWindow):
         self.basis5_enable = QW.QCheckBox()
         self.basis5_enable.setChecked(True)
         self.basis5_enable.stateChanged.connect(
-            lambda: self.hidebasis(4))
+            lambda: self.hide_basis(4))
 
         self.basis = [[
             self.basis1_x,
