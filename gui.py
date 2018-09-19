@@ -8,28 +8,6 @@ from matplotlib.backends.backend_qt5agg import (
     NavigationToolbar2QT as NavigationToolbar)
 
 
-class plot_window(QW.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self._main = QW.QWidget()
-        self.setCentralWidget(self._main)
-        layout = QW.QHBoxLayout(self._main)
-        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
-        self.static_canvas = FigureCanvas(self.static_fig)
-        layout.addWidget(self.static_canvas)
-        self.addToolBar(NavigationToolbar(self.static_canvas, self))
-        self.static_ax.mouse_init()
-
-    def update_lattice(self, a1, a2, a3, basis):
-        self.static_ax.clear()
-        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
-                                                  basis=basis,
-                                                  fig=self.static_fig,
-                                                  ax=self.static_ax,
-                                                  returns=True,
-                                                  plots=False)
-
-
 class full_window(QW.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -118,7 +96,7 @@ class full_window(QW.QMainWindow):
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Update plot", self)
         self.button_show.setToolTip('this is an example button')
-        self.button_show.clicked.connect(self.update_plot)
+        self.button_show.clicked.connect(self.update_lattice)
 
         # Create the lattice chooser dropdown
         self.lattice_chooser = QW.QComboBox(self)
@@ -132,7 +110,7 @@ class full_window(QW.QMainWindow):
         # self.le_a.setMaxLength(2)
         self.le_a.setText(str(self.lattice_config['a']))
         self.le_a.returnPressed.connect(
-            lambda: self.update_config('a', self.le_a.text()))
+            lambda: self.update_config_parameter('a', self.le_a.text()))
 
         self.text_b = QW.QLabel('b', self)
         self.le_b = QW.QLineEdit()
@@ -140,7 +118,7 @@ class full_window(QW.QMainWindow):
         # self.le_b.setMaxLength(2)
         self.le_b.setText(str(self.lattice_config['b']))
         self.le_b.returnPressed.connect(
-            lambda: self.update_config('b', self.le_b.text()))
+            lambda: self.update_config_parameter('b', self.le_b.text()))
 
         self.text_c = QW.QLabel('c', self)
         self.le_c = QW.QLineEdit()
@@ -148,7 +126,7 @@ class full_window(QW.QMainWindow):
         # self.le_c.setMaxLength(2)
         self.le_c.setText(str(self.lattice_config['c']))
         self.le_c.returnPressed.connect(
-            lambda: self.update_config('c', self.le_c.text()))
+            lambda: self.update_config_parameter('c', self.le_c.text()))
 
         self.text_theta = QW.QLabel('theta, degrees', self)
         self.le_theta = QW.QLineEdit()
@@ -156,7 +134,8 @@ class full_window(QW.QMainWindow):
         # self.le_theta.setMaxLength(3)
         self.le_theta.setText(str(self.lattice_config['theta']))
         self.le_theta.returnPressed.connect(
-            lambda: self.update_config('theta', self.le_theta.text()))
+            lambda: self.update_config_parameter(
+                'theta', self.le_theta.text()))
 
         self.text_beta = QW.QLabel('beta, degrees', self)
         self.le_beta = QW.QLineEdit()
@@ -164,7 +143,8 @@ class full_window(QW.QMainWindow):
         # self.le_beta.setMaxLength(3)
         self.le_beta.setText(str(self.lattice_config['beta']))
         self.le_beta.returnPressed.connect(
-            lambda: self.update_config('beta', self.le_beta.text()))
+            lambda: self.update_config_parameter(
+                'beta', self.le_beta.text()))
 
         self.text_gamma = QW.QLabel('gamma, degrees', self)
         self.le_gamma = QW.QLineEdit()
@@ -172,7 +152,8 @@ class full_window(QW.QMainWindow):
         # self.le_gamma.setMaxLength(3)
         self.le_gamma.setText(str(self.lattice_config['gamma']))
         self.le_gamma.returnPressed.connect(
-            lambda: self.update_config('gamma', self.le_gamma.text()))
+            lambda: self.update_config_parameter(
+                'gamma', self.le_gamma.text()))
 
         # Setup stuff in a layout
         self.layout_parameters = QW.QFormLayout()
@@ -205,7 +186,7 @@ class full_window(QW.QMainWindow):
         self.basis1_enable = QW.QCheckBox()
         self.basis1_enable.setChecked(False)
         self.basis1_enable.stateChanged.connect(
-            lambda: self.hide_basis(0))
+            lambda: self.hide_basis_widgets(0))
 
         # Basis 2
         self.basis2_x = QW.QLineEdit()
@@ -223,7 +204,7 @@ class full_window(QW.QMainWindow):
         self.basis2_enable = QW.QCheckBox()
         self.basis2_enable.setChecked(False)
         self.basis2_enable.stateChanged.connect(
-            lambda: self.hide_basis(1))
+            lambda: self.hide_basis_widgets(1))
 
         # Basis 3
         self.basis3_x = QW.QLineEdit()
@@ -241,7 +222,7 @@ class full_window(QW.QMainWindow):
         self.basis3_enable = QW.QCheckBox()
         self.basis3_enable.setChecked(False)
         self.basis3_enable.stateChanged.connect(
-            lambda: self.hide_basis(2))
+            lambda: self.hide_basis_widgets(2))
 
         # Basis 4
         self.basis4_x = QW.QLineEdit()
@@ -259,7 +240,7 @@ class full_window(QW.QMainWindow):
         self.basis4_enable = QW.QCheckBox()
         self.basis4_enable.setChecked(False)
         self.basis4_enable.stateChanged.connect(
-            lambda: self.hide_basis(3))
+            lambda: self.hide_basis_widgets(3))
 
         # Basis 5
         self.basis5_x = QW.QLineEdit()
@@ -277,7 +258,7 @@ class full_window(QW.QMainWindow):
         self.basis5_enable = QW.QCheckBox()
         self.basis5_enable.setChecked(False)
         self.basis5_enable.stateChanged.connect(
-            lambda: self.hide_basis(4))
+            lambda: self.hide_basis_widgets(4))
 
         self.basis_widgets = [[
             self.basis1_x,
@@ -315,7 +296,7 @@ class full_window(QW.QMainWindow):
                         QG.QDoubleValidator(decimals=2))
                 self.layout_basis.addWidget(self.basis_widgets[i][j], i, j)
 
-    def update_plot(self):
+    def update_lattice(self):
         a = self.lattice_config['a']
         b = self.lattice_config['b']
         c = self.lattice_config['c']
@@ -330,7 +311,7 @@ class full_window(QW.QMainWindow):
                                                   gamma=gamma)
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
                                             (a1, a2, a3, basis))))
-        self.update_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
+        self.plot_lattice(a1=a1, a2=a2, a3=a3, basis=basis)
 
     def update_lattice_name(self, text):
         self.lattice_config['lattice'] = text
@@ -338,16 +319,20 @@ class full_window(QW.QMainWindow):
             le.setEnabled(False)
         for le in self.needed_params[text]:
             le.setEnabled(True)
-        self.update_plot()
+        self.update_lattice()
 
-    def update_config(self, param, text):
+    def update_config_parameter(self, param, text):
+        # This function updates the relevant parameter in the lattice_config
+        # dict. But only if the text is a float!
         try:
             self.lattice_config[param] = float(text)
         except ValueError:
             pass
-        self.update_plot()
+        self.update_lattice()
 
-    def update_lattice(self, a1, a2, a3, basis):
+    def plot_lattice(self, a1, a2, a3, basis):
+        # This function takes the values from lattice_config and uses them to
+        # update the plot
         self.static_ax.clear()
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
                                                   basis=basis,
@@ -361,7 +346,7 @@ class full_window(QW.QMainWindow):
         self.basis[basis_no, coord_no] = float(val)
         self.update_basis()
 
-    def hide_basis(self, basis_no):
+    def hide_basis_widgets(self, basis_no):
         checkbox = self.basis_widgets[basis_no][3]
         for le in self.basis_widgets[basis_no][:3]:
             le.setEnabled(checkbox.isChecked())
@@ -373,7 +358,7 @@ class full_window(QW.QMainWindow):
             enabled_basis_atoms.append(i[3].isChecked())
         new_basis = np.vstack(([0, 0, 0], self.basis[enabled_basis_atoms]))
         self.lattice_config['basis'] = new_basis
-        self.update_plot()
+        self.update_lattice()
 
     def quit(self):
         sys.exit()
