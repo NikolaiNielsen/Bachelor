@@ -39,10 +39,6 @@ class full_window(QW.QMainWindow):
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
-        self.left = 10
-        self.top = 10
-        self.width = 320
-        self.height = 200
         self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
                          'tetragonal', 'tetragonal body centred',
                          'tetragonal face centred', 'orthorhombic',
@@ -78,7 +74,6 @@ class full_window(QW.QMainWindow):
                                'gamma': 90,
                                'lattice': 'simple cubic'}
         self.basis = np.zeros((5, 3))
-        self.padding = 0
         self.create_options()
         main_layout.addLayout(self.layout_options)
 
@@ -211,7 +206,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_basis_val(0, 2, self.basis1_z.text()))
 
         self.basis1_enable = QW.QCheckBox()
-        self.basis1_enable.setChecked(True)
+        self.basis1_enable.setChecked(False)
         self.basis1_enable.stateChanged.connect(
             lambda: self.hide_basis(0))
 
@@ -232,7 +227,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_basis_val(1, 2, self.basis2_z.text()))
 
         self.basis2_enable = QW.QCheckBox()
-        self.basis2_enable.setChecked(True)
+        self.basis2_enable.setChecked(False)
         self.basis2_enable.stateChanged.connect(
             lambda: self.hide_basis(1))
 
@@ -253,7 +248,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_basis_val(2, 2, self.basis3_z.text()))
 
         self.basis3_enable = QW.QCheckBox()
-        self.basis3_enable.setChecked(True)
+        self.basis3_enable.setChecked(False)
         self.basis3_enable.stateChanged.connect(
             lambda: self.hide_basis(2))
 
@@ -274,7 +269,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_basis_val(3, 2, self.basis4_z.text()))
 
         self.basis4_enable = QW.QCheckBox()
-        self.basis4_enable.setChecked(True)
+        self.basis4_enable.setChecked(False)
         self.basis4_enable.stateChanged.connect(
             lambda: self.hide_basis(3))
 
@@ -295,7 +290,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_basis_val(4, 2, self.basis5_z.text()))
 
         self.basis5_enable = QW.QCheckBox()
-        self.basis5_enable.setChecked(True)
+        self.basis5_enable.setChecked(False)
         self.basis5_enable.stateChanged.connect(
             lambda: self.hide_basis(4))
 
@@ -330,6 +325,9 @@ class full_window(QW.QMainWindow):
             for j in range(4):
                 if j != 3:
                     self.basis_widgets[i][j].setText('0')
+                    self.basis_widgets[i][j].setEnabled(False)
+                    # self.basis_widgets[i][j].setValidator(
+                    #     QG.QDoubleValidator(decimals=2))
                 self.layout_basis.addWidget(self.basis_widgets[i][j], i, j)
 
     def update_plot(self):
