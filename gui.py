@@ -14,7 +14,6 @@ class plot_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         layout = QW.QHBoxLayout(self._main)
-
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
         layout.addWidget(self.static_canvas)
@@ -37,7 +36,8 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         main_layout = QW.QHBoxLayout(self._main)
-
+        # A shortcut to close the app.
+        self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
         self.left = 10
         self.top = 10
@@ -118,7 +118,7 @@ class full_window(QW.QMainWindow):
         self.static_ax.mouse_init()
 
     def create_options(self):
-        self.layout_options = QW.QVBoxLayout(self._main)
+        self.layout_options = QW.QVBoxLayout()
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Update plot", self)
         self.button_show.setToolTip('this is an example button')
@@ -179,7 +179,7 @@ class full_window(QW.QMainWindow):
             lambda: self.update_config('gamma', self.le_gamma.text()))
 
         # Setup stuff in a layout
-        self.layout_parameters = QW.QFormLayout(self._main)
+        self.layout_parameters = QW.QFormLayout()
         self.layout_parameters.addRow(self.button_show, self.lattice_chooser)
         self.layout_parameters.addRow(self.text_a, self.le_a)
         self.layout_parameters.addRow(self.text_b, self.le_b)
@@ -194,7 +194,6 @@ class full_window(QW.QMainWindow):
 
     def create_basis(self):
         # Basis-stuff
-        # self.basis1_text = QW.QLabel('1', self)
         self.basis1_x = QW.QLineEdit()
         self.basis1_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_x.returnPressed.connect(
@@ -375,7 +374,11 @@ class full_window(QW.QMainWindow):
         print(basis_no, coord_no, val)
 
     def hide_basis(self, basis_no):
-        print(basis_no)
+        checkbox = self.basis[basis_no][3]
+        print(basis_no, checkbox.isChecked())
+
+    def quit(self):
+        sys.exit()
 
 
 def main():
