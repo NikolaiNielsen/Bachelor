@@ -375,7 +375,8 @@ class full_window(QW.QMainWindow):
 
     def hide_basis(self, basis_no):
         checkbox = self.basis[basis_no][3]
-        print(basis_no, checkbox.isChecked())
+        for le in self.basis[basis_no][:3]:
+            le.setEnabled(checkbox.isChecked())
 
     def quit(self):
         sys.exit()
