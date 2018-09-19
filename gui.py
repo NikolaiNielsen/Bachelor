@@ -191,17 +191,14 @@ class full_window(QW.QMainWindow):
     def create_basis(self):
         # Basis-stuff
         self.basis1_x = QW.QLineEdit()
-        self.basis1_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_x.editingFinished.connect(
             lambda: self.update_basis_val(0, 0, self.basis1_x.text()))
 
         self.basis1_y = QW.QLineEdit()
-        self.basis1_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_y.editingFinished.connect(
             lambda: self.update_basis_val(0, 1, self.basis1_y.text()))
 
         self.basis1_z = QW.QLineEdit()
-        self.basis1_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis1_z.editingFinished.connect(
             lambda: self.update_basis_val(0, 2, self.basis1_z.text()))
 
@@ -212,17 +209,14 @@ class full_window(QW.QMainWindow):
 
         # Basis 2
         self.basis2_x = QW.QLineEdit()
-        self.basis2_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_x.editingFinished.connect(
             lambda: self.update_basis_val(1, 0, self.basis2_x.text()))
 
         self.basis2_y = QW.QLineEdit()
-        self.basis2_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_y.editingFinished.connect(
             lambda: self.update_basis_val(1, 1, self.basis2_y.text()))
 
         self.basis2_z = QW.QLineEdit()
-        self.basis2_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis2_z.editingFinished.connect(
             lambda: self.update_basis_val(1, 2, self.basis2_z.text()))
 
@@ -233,17 +227,14 @@ class full_window(QW.QMainWindow):
 
         # Basis 3
         self.basis3_x = QW.QLineEdit()
-        self.basis3_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_x.editingFinished.connect(
             lambda: self.update_basis_val(2, 0, self.basis3_x.text()))
 
         self.basis3_y = QW.QLineEdit()
-        self.basis3_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_y.editingFinished.connect(
             lambda: self.update_basis_val(2, 1, self.basis3_y.text()))
 
         self.basis3_z = QW.QLineEdit()
-        self.basis3_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis3_z.editingFinished.connect(
             lambda: self.update_basis_val(2, 2, self.basis3_z.text()))
 
@@ -254,17 +245,14 @@ class full_window(QW.QMainWindow):
 
         # Basis 4
         self.basis4_x = QW.QLineEdit()
-        self.basis4_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_x.editingFinished.connect(
             lambda: self.update_basis_val(3, 0, self.basis4_x.text()))
 
         self.basis4_y = QW.QLineEdit()
-        self.basis4_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_y.editingFinished.connect(
             lambda: self.update_basis_val(3, 1, self.basis4_y.text()))
 
         self.basis4_z = QW.QLineEdit()
-        self.basis4_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis4_z.editingFinished.connect(
             lambda: self.update_basis_val(3, 2, self.basis4_z.text()))
 
@@ -275,17 +263,14 @@ class full_window(QW.QMainWindow):
 
         # Basis 5
         self.basis5_x = QW.QLineEdit()
-        self.basis5_x.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_x.editingFinished.connect(
             lambda: self.update_basis_val(4, 0, self.basis5_x.text()))
 
         self.basis5_y = QW.QLineEdit()
-        self.basis5_y.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_y.editingFinished.connect(
             lambda: self.update_basis_val(4, 1, self.basis5_y.text()))
 
         self.basis5_z = QW.QLineEdit()
-        self.basis5_z.setValidator(QG.QDoubleValidator(decimals=2))
         self.basis5_z.editingFinished.connect(
             lambda: self.update_basis_val(4, 2, self.basis5_z.text()))
 
@@ -326,8 +311,8 @@ class full_window(QW.QMainWindow):
                 if j != 3:
                     self.basis_widgets[i][j].setText('0')
                     self.basis_widgets[i][j].setEnabled(False)
-                    # self.basis_widgets[i][j].setValidator(
-                    #     QG.QDoubleValidator(decimals=2))
+                    self.basis_widgets[i][j].setValidator(
+                        QG.QDoubleValidator(decimals=2))
                 self.layout_basis.addWidget(self.basis_widgets[i][j], i, j)
 
     def update_plot(self):
