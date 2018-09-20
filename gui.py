@@ -55,36 +55,33 @@ class full_window(QW.QMainWindow):
         self.create_options()
         main_layout.addLayout(self.layout_options)
 
-        self.params = [self.le_a, self.le_b, self.le_c,
-                       self.le_theta, self.le_beta, self.le_gamma]
+        # self.params = [self.le_a, self.le_b, self.le_c,
+        #                self.le_theta, self.le_beta, self.le_gamma]
         self.needed_params = {
-            'simple cubic': [self.le_a],
-            'bcc': [self.le_a],
-            'fcc': [self.le_a],
-            'base centred cubic': [self.le_a],
-            'tetragonal': [self.le_a, self.le_b],
-            'tetragonal body centred': [self.le_a, self.le_b],
-            'tetragonal face centred': [self.le_a, self.le_b],
-            'orthorhombic': [self.le_a, self.le_b, self.le_c],
-            'orthorhombic body centred': [self.le_a, self.le_b, self.le_c],
-            'orthorhombic face centred': [self.le_a, self.le_b, self.le_c],
-            'orthorhombic base centred': [self.le_a, self.le_b, self.le_c],
-            'simple monoclinic': [self.le_a, self.le_b, self.le_c,
-                                  self.le_theta],
-            'base centred monoclinic': [self.le_a, self.le_b, self.le_c,
-                                        self.le_theta],
-            'hexagonal': [self.le_a],
-            'triclinic': [self.le_a, self.le_b, self.le_c,
-                          self.le_theta, self.le_beta, self.le_gamma],
-            'rhombohedral': [self.le_a],
-            'diamond': [self.le_a],
-            'wurtzite': [self.le_a],
-            'zincblende': [self.le_a, self.le_b]
+            'simple cubic': [0],
+            'bcc': [0],
+            'fcc': [0],
+            'base centred cubic': [0],
+            'tetragonal': [0, 1],
+            'tetragonal body centred': [0, 1],
+            'tetragonal face centred': [0, 1],
+            'orthorhombic': [0, 1, 2],
+            'orthorhombic body centred': [0, 1, 2],
+            'orthorhombic face centred': [0, 1, 2],
+            'orthorhombic base centred': [0, 1, 2],
+            'simple monoclinic': [0, 1, 2, 3],
+            'base centred monoclinic': [0, 1, 2, 3],
+            'hexagonal': [0],
+            'triclinic': [0, 1, 2, 3, 4, 5],
+            'rhombohedral': [0],
+            'diamond': [0],
+            'wurtzite': [0],
+            'zincblende': [0, 1]
         }
-        for le in self.params:
+        for le in self.param_fields:
             le.setEnabled(False)
-        for le in self.needed_params[self.lattice_config['lattice']]:
-            le.setEnabled(True)
+        for n in self.needed_params[self.lattice_config['lattice']]:
+            self.param_fields[n].setEnabled(True)
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
         main_layout.addWidget(self.static_canvas)
@@ -105,67 +102,23 @@ class full_window(QW.QMainWindow):
         self.lattice_chooser.addItems(self.lattices)
         self.lattice_chooser.activated[str].connect(self.update_lattice_name)
 
-        # Create parameter fields
-        self.text_a = QW.QLabel('a', self)
-        self.le_a = QW.QLineEdit()
-        self.le_a.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_a.setMaxLength(2)
-        self.le_a.setText(str(self.lattice_config['a']))
-        self.le_a.returnPressed.connect(
-            lambda: self.update_config_parameter('a', self.le_a.text()))
-
-        self.text_b = QW.QLabel('b', self)
-        self.le_b = QW.QLineEdit()
-        self.le_b.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_b.setMaxLength(2)
-        self.le_b.setText(str(self.lattice_config['b']))
-        self.le_b.returnPressed.connect(
-            lambda: self.update_config_parameter('b', self.le_b.text()))
-
-        self.text_c = QW.QLabel('c', self)
-        self.le_c = QW.QLineEdit()
-        self.le_c.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_c.setMaxLength(2)
-        self.le_c.setText(str(self.lattice_config['c']))
-        self.le_c.returnPressed.connect(
-            lambda: self.update_config_parameter('c', self.le_c.text()))
-
-        self.text_theta = QW.QLabel('theta, degrees', self)
-        self.le_theta = QW.QLineEdit()
-        self.le_theta.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_theta.setMaxLength(3)
-        self.le_theta.setText(str(self.lattice_config['theta']))
-        self.le_theta.returnPressed.connect(
-            lambda: self.update_config_parameter(
-                'theta', self.le_theta.text()))
-
-        self.text_beta = QW.QLabel('beta, degrees', self)
-        self.le_beta = QW.QLineEdit()
-        self.le_beta.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_beta.setMaxLength(3)
-        self.le_beta.setText(str(self.lattice_config['beta']))
-        self.le_beta.returnPressed.connect(
-            lambda: self.update_config_parameter(
-                'beta', self.le_beta.text()))
-
-        self.text_gamma = QW.QLabel('gamma, degrees', self)
-        self.le_gamma = QW.QLineEdit()
-        self.le_gamma.setValidator(QG.QDoubleValidator(decimals=2))
-        # self.le_gamma.setMaxLength(3)
-        self.le_gamma.setText(str(self.lattice_config['gamma']))
-        self.le_gamma.returnPressed.connect(
-            lambda: self.update_config_parameter(
-                'gamma', self.le_gamma.text()))
-
         # Setup stuff in a layout
         self.layout_parameters = QW.QFormLayout()
         self.layout_parameters.addRow(self.button_show, self.lattice_chooser)
-        self.layout_parameters.addRow(self.text_a, self.le_a)
-        self.layout_parameters.addRow(self.text_b, self.le_b)
-        self.layout_parameters.addRow(self.text_c, self.le_c)
-        self.layout_parameters.addRow(self.text_theta, self.le_theta)
-        self.layout_parameters.addRow(self.text_beta, self.le_beta)
-        self.layout_parameters.addRow(self.text_gamma, self.le_gamma)
+
+        for name in self.parameter_names:
+            self.param_labels.append(QW.QLabel(name, self))
+            field = QW.QLineEdit()
+            field.setValidator(QG.QDoubleValidator(decimals=2))
+            field.setText(str(self.lattice_config[name]))
+            field.returnPressed.connect(
+                lambda name=name, el=field:
+                    self.update_config_parameter(name, el.text()))
+            self.param_fields.append(field)
+
+        for n in range(len(self.param_labels)):
+            self.layout_parameters.addRow(self.param_labels[n],
+                                          self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
         self.create_basis()
@@ -238,10 +191,10 @@ class full_window(QW.QMainWindow):
 
     def update_lattice_name(self, text):
         self.lattice_config['lattice'] = text
-        for le in self.params:
+        for le in self.param_fields:
             le.setEnabled(False)
-        for le in self.needed_params[text]:
-            le.setEnabled(True)
+        for n in self.needed_params[text]:
+            self.param_fields[n].setEnabled(True)
         self.update_lattice()
 
     def update_config_parameter(self, param, text):
