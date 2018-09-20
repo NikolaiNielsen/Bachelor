@@ -176,24 +176,25 @@ class full_window(QW.QMainWindow):
         self.layout_basis = QW.QGridLayout()
         no_basis = 5
         no_coords = 3
-        self.basis_coord_widgets = [[None] * no_coords] * no_basis
+        self.basis_coord_widgets = np.empty((no_basis, no_coords),
+                                            dtype=object)
         self.basis_check_widgets = []
         for i in range(no_basis):
             for j in range(no_coords):
                 el = QW.QLineEdit()
-                el.setText('0')
+                el.setText(str(0))
                 el.setEnabled(False)
                 el.setValidator(
                     QG.QDoubleValidator(decimals=2))
                 el.editingFinished.connect(
                     lambda i=i, j=j, el=el:
                         self.update_basis_val(i, j, el.text()))
-                self.basis_coord_widgets[i][j] = el
+                self.basis_coord_widgets[i, j] = el
                 self.layout_basis.addWidget(el, i, j)
             check = QW.QCheckBox()
             check.setChecked(False)
             # check.stateChanged.connect(
-            #    lambda i=i: self.hide_basis_widgets(i))
+            #     lambda i=i: self.hide_basis_widgets(i))
             self.basis_check_widgets.append(check)
             self.layout_basis.addWidget(check, i, no_coords + 1)
         self.basis_check_widgets[0].stateChanged.connect(
@@ -272,9 +273,7 @@ class full_window(QW.QMainWindow):
         self.update_basis()
 
     def hide_basis_widgets(self, basis_no):
-        print(basis_no)
         checkbox = self.basis_check_widgets[basis_no]
-        print(checkbox.isChecked())
         for le in self.basis_coord_widgets[basis_no]:
             le.setEnabled(checkbox.isChecked())
         self.update_basis()
