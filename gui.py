@@ -92,10 +92,12 @@ class full_window(QW.QMainWindow):
         self.static_ax.mouse_init()
 
     def create_options(self):
+        self.parameter_names = ['a', 'b', 'c', 'theta', 'beta', 'gamma']
+        self.param_labels = []
+        self.param_fields = []
         self.layout_options = QW.QVBoxLayout()
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Update plot", self)
-        self.button_show.setToolTip('this is an example button')
         self.button_show.clicked.connect(self.update_lattice)
 
         # Create the lattice chooser dropdown
@@ -173,26 +175,37 @@ class full_window(QW.QMainWindow):
         # Basis-stuff
         self.layout_basis = QW.QGridLayout()
         no_basis = 5
-        no_widgets = 4
-        self.basis_widgets = [[None] * no_widgets] * no_basis
+        no_coords = 3
+        self.basis_coord_widgets = [[None] * no_coords] * no_basis
+        self.basis_check_widgets = []
         for i in range(no_basis):
-            for j in range(no_widgets):
-                if j != 3:
-                    el = QW.QLineEdit()
-                    el.setText('0')
-                    el.setEnabled(False)
-                    el.setValidator(
-                        QG.QDoubleValidator(decimals=2))
-                    el.editingFinished.connect(
-                        lambda i=i, j=j, el=el:
-                            self.update_basis_val(i, j, el.text()))
-                else:
-                    el = QW.QCheckBox()
-                    el.setChecked(False)
-                    el.stateChanged.connect(
-                        lambda i=i: self.hide_basis_widgets(i))
-                self.basis_widgets[i][j] = el
+            for j in range(no_coords):
+                el = QW.QLineEdit()
+                el.setText('0')
+                el.setEnabled(False)
+                el.setValidator(
+                    QG.QDoubleValidator(decimals=2))
+                el.editingFinished.connect(
+                    lambda i=i, j=j, el=el:
+                        self.update_basis_val(i, j, el.text()))
+                self.basis_coord_widgets[i][j] = el
                 self.layout_basis.addWidget(el, i, j)
+            check = QW.QCheckBox()
+            check.setChecked(False)
+            # check.stateChanged.connect(
+            #    lambda i=i: self.hide_basis_widgets(i))
+            self.basis_check_widgets.append(check)
+            self.layout_basis.addWidget(check, i, no_coords + 1)
+        self.basis_check_widgets[0].stateChanged.connect(
+            lambda: self.hide_basis_widgets(0))
+        self.basis_check_widgets[1].stateChanged.connect(
+            lambda: self.hide_basis_widgets(1))
+        self.basis_check_widgets[2].stateChanged.connect(
+            lambda: self.hide_basis_widgets(2))
+        self.basis_check_widgets[3].stateChanged.connect(
+            lambda: self.hide_basis_widgets(3))
+        self.basis_check_widgets[4].stateChanged.connect(
+            lambda: self.hide_basis_widgets(4))
 
     def update_lattice(self):
         a = self.lattice_config['a']
@@ -212,12 +225,13 @@ class full_window(QW.QMainWindow):
             reduced_basis = basis[1:]
             for n, atom in enumerate(reduced_basis):
                 # Enable the relevant basis inputs
-                self.basis_widgets[n][3].setChecked(True)
+                self.basis_check_widgets[n].setChecked(True)
                 for m, val in enumerate(atom):
-                    self.basis_widgets[n][m].setText('{0:.2f}'.format(val))
+                    self.basis_coord_widgets[n][m].setText(
+                        '{0:.2f}'.format(val))
 
-        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'basis'),
-                                            (a1, a2, a3, basis))))
+        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3'),
+                                            (a1, a2, a3))))
 
         self.plot_lattice()
 
@@ -259,19 +273,22 @@ class full_window(QW.QMainWindow):
 
     def hide_basis_widgets(self, basis_no):
         print(basis_no)
-        checkbox = self.basis_widgets[basis_no][3]
+        checkbox = self.basis_check_widgets[basis_no]
         print(checkbox.isChecked())
-        for le in self.basis_widgets[basis_no][:3]:
+        for le in self.basis_coord_widgets[basis_no]:
             le.setEnabled(checkbox.isChecked())
         self.update_basis()
 
     def update_basis(self):
         enabled_basis_atoms = []
-        for i in self.basis_widgets:
-            enabled_basis_atoms.append(i[3].isChecked())
+        for i in self.basis_check_widgets:
+            enabled_basis_atoms.append(i.isChecked())
         new_basis = np.vstack(([0, 0, 0], self.basis[enabled_basis_atoms]))
         self.lattice_config['basis'] = new_basis
         self.plot_lattice()
+
+    def tester(self, i):
+        print(i)
 
     def quit(self):
         sys.exit()
