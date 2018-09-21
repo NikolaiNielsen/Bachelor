@@ -27,6 +27,3 @@ Other stuff
 Separate the lattice calculation into separate file for exercise
 Implement basis
 Default parameters for lattices (change back when lattice is changed)
-
-Key to Kathrin
-Write to STine about contract

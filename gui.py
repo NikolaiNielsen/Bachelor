@@ -34,8 +34,7 @@ class full_window(QW.QMainWindow):
 
         self.setWindowTitle(self.title)
         # self.setGeometry(self.left, self.top, self.width, self.height)
-        self.default_config = d
-        self.lattice_config = {'a1': d[0],
+        self.default_config = {'a1': d[0],
                                'a2': d[1],
                                'a3': d[2],
                                'basis': d[3],
@@ -51,6 +50,7 @@ class full_window(QW.QMainWindow):
                                'beta': 90,
                                'gamma': 90,
                                'lattice': 'simple cubic'}
+        self.lattice_config = self.default_config.copy()
         self.basis = np.zeros((5, 3))
         self.create_options()
         main_layout.addLayout(self.layout_options)
@@ -75,8 +75,8 @@ class full_window(QW.QMainWindow):
             'triclinic': [0, 1, 2, 3, 4, 5],
             'rhombohedral': [0],
             'diamond': [0],
-            'wurtzite': [0],
-            'zincblende': [0, 1]
+            'wurtzite': [0, 1],
+            'zincblende': [0]
         }
         for le in self.param_fields:
             le.setEnabled(False)
