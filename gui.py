@@ -220,6 +220,7 @@ class full_window(QW.QMainWindow):
                                                   ax=self.static_ax,
                                                   returns=True,
                                                   plots=False)
+        self.static_canvas.draw()
 
     def update_basis_val(self, basis_no, coord_no, val):
         self.basis[basis_no, coord_no] = float(val)
