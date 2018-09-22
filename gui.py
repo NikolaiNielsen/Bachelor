@@ -37,9 +37,11 @@ class full_window(QW.QMainWindow):
         self.default_config = {'a1': d[0],
                                'a2': d[1],
                                'a3': d[2],
-                               'basis': d[3],
+                               'preset_basis': d[3],
                                'colors': d[4],
                                'sizes': d[5],
+                               'enabled_user_basis': np.empty((1, 3)),
+                               'user_basis': np.zeros((5, 3)),
                                'lim_type': d[6],
                                'grid_type': None,
                                'max_': d[8],
@@ -51,7 +53,6 @@ class full_window(QW.QMainWindow):
                                'gamma': 90,
                                'lattice': 'simple cubic'}
         self.lattice_config = self.default_config.copy()
-        self.basis = np.zeros((5, 3))
         self.create_options()
         main_layout.addLayout(self.layout_options)
 
@@ -174,19 +175,8 @@ class full_window(QW.QMainWindow):
                                                   theta=theta,
                                                   beta=beta,
                                                   gamma=gamma)
-        basis = np.atleast_2d(basis)
-        if len(basis) > 1:
-            reduced_basis = basis[1:]
-            for n, atom in enumerate(reduced_basis):
-                # Enable the relevant basis inputs
-                self.basis_check_widgets[n].setChecked(True)
-                for m, val in enumerate(atom):
-                    self.basis_coord_widgets[n][m].setText(
-                        '{0:.2f}'.format(val))
-
-        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3'),
-                                            (a1, a2, a3))))
-
+        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
+                                            (a1, a2, a3, basis))))
         self.plot_lattice()
 
     def update_lattice_name(self, text):
@@ -213,7 +203,10 @@ class full_window(QW.QMainWindow):
         a1 = self.lattice_config['a1']
         a2 = self.lattice_config['a2']
         a3 = self.lattice_config['a3']
-        basis = self.lattice_config['basis']
+        preset_basis = self.lattice_config['preset_basis']
+        user_basis = self.lattice_config['enabled_user_basis']
+        basis = np.vstack((preset_basis, user_basis))
+
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
                                                   basis=basis,
                                                   fig=self.static_fig,
@@ -223,7 +216,7 @@ class full_window(QW.QMainWindow):
         self.static_canvas.draw()
 
     def update_basis_val(self, basis_no, coord_no, val):
-        self.basis[basis_no, coord_no] = float(val)
+        self.lattice_config['user_basis'][basis_no, coord_no] = float(val)
         self.update_basis()
 
     def hide_basis_widgets(self, basis_no):
@@ -236,8 +229,8 @@ class full_window(QW.QMainWindow):
         enabled_basis_atoms = []
         for i in self.basis_check_widgets:
             enabled_basis_atoms.append(i.isChecked())
-        new_basis = np.vstack(([0, 0, 0], self.basis[enabled_basis_atoms]))
-        self.lattice_config['basis'] = new_basis
+        new_basis = self.lattice_config['user_basis'][enabled_basis_atoms]
+        self.lattice_config['enabled_user_basis'] = new_basis
         self.plot_lattice()
 
     def tester(self, i):
