@@ -10,6 +10,4 @@ fermi surface
 - Intersecting planes (need OpenGL compliant)
 - Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
 
-
-Separate the lattice calculation into separate file for exercise
 Default parameters for lattices (change back when lattice is changed)
