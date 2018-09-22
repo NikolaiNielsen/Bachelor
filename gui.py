@@ -145,10 +145,25 @@ class full_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
-        self.create_basis()
+        self.create_preset_basis(n_basis=4)
+        self.layout_options.addLayout(self.layout_preset_basis)
+        self.create_user_basis()
         self.layout_options.addLayout(self.layout_basis)
 
-    def create_basis(self):
+    def create_preset_basis(self, n_basis):
+        # So far the largest number of atoms in a preset basis is 4.
+        self.layout_preset_basis = QW.GridLayout()
+        n_coords = 3
+        self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
+                                                   dtype=object)
+        for i in range(n_basis):
+            for j in range(n_coords):
+                el = QW.QLineEdit()
+                el.setEnaled(False)
+                self.preset_basis_coord_widgets[i, j] = el
+                self.layout_preset_basis.addWidget(el, i, j)
+
+    def create_user_basis(self):
         # Basis-stuff
         self.layout_basis = QW.QGridLayout()
         no_basis = 5
@@ -217,6 +232,7 @@ class full_window(QW.QMainWindow):
         # Update primitive lattice vectors and (preset) basis.
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
                                             (a1, a2, a3, basis))))
+        self.update_preset_basis_widgets()
         self.plot_lattice()
 
     def update_lattice_name(self, text):
@@ -231,6 +247,13 @@ class full_window(QW.QMainWindow):
             self.param_fields[n].setEnabled(True)
 
         self.update_lattice()
+
+    def update_preset_basis_widgets(self):
+        basis = self.lattice_config['preset_basis']
+        for n_atom, atom in enumerate(basis):
+            for n_coord, coord in enumerate(atom):
+                el = self.preset_basis_coord_widgets[n_atom, n_coord]
+                el.setText(coord)
 
     def update_config_parameter(self, param, text):
         # This function updates the relevant parameter in the lattice_config
