@@ -7,6 +7,16 @@
 # The function must return a numpy array, containing the position of the atoms
 # for this lattice point. The size of the numpy array should be the same size
 # as the "basis"-array
+#
+# Sample input:
+# a1 = [1, 0, 0], a2 = [0, 1, 0], a3 = [0, 0, 1]
+# nx = 2, ny = 1, nz = 3
+# basis = [[  0,   0,   0],
+#          [0.5, 0.5, 0.5]]
+#
+# Sample output:
+# atomic_positions = [[  2,   1,   3],
+#                     [2.5, 1.5, 3.5]]
 
 import numpy as np
 
