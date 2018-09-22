@@ -11,11 +11,5 @@ fermi surface
 - Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
 
 
-
-Other stuff
-- Remember requirements.txt for proper versioning.
-- virtual environments
-
-
 Separate the lattice calculation into separate file for exercise
 Default parameters for lattices (change back when lattice is changed)
