@@ -109,12 +109,11 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
     # - atomic_colors:          list (n, strings)
     # - atomic_sizes:           list (n, ints)
     # - lattice_position:       list (n, bools)
-    length_basis = np.shape(basis)
-    if len(length_basis) == 1:
-        n_basis = 1
-    elif len(length_basis) > 1:
-        n_basis = length_basis[0]
 
+    # make the basis a 2d array and get the first value of shape
+    n_basis = np.atleast_2d(basis).shape[0]
+
+    # The default size for points in a scatter plot
     size_default = 36
     # Calculate the amount of atomic positions to be calculated
     num_atoms = ((n_max[0] + 1 - n_min[0]) * (n_max[1] + 1 - n_min[1]) *
