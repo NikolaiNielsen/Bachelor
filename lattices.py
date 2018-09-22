@@ -1288,22 +1288,23 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
         vectors = np.array([a1, a2, a3, a1 - a2])
         lines = create_línes(atomic_positions[lattice_position], vectors)
     elif grid_type in 'axes':
+        lattice_positions = atomic_positions[lattice_position]
         # A Way of finding atoms on cartesian axes
         # bool array of atoms with x = 0 and y = 0
-        x0 = atomic_positions[:, 0] == 0
-        y0 = atomic_positions[:, 1] == 0
-        z0 = atomic_positions[:, 2] == 0
+        x0 = lattice_positions[:, 0] == 0
+        y0 = lattice_positions[:, 1] == 0
+        z0 = lattice_positions[:, 2] == 0
 
         # Get Lattice spacings
         # z-values of atoms on the z-axis
-        z_vals = atomic_positions[x0 * y0, 2]
+        z_vals = lattice_positions[x0 * y0, 2]
         # Keep those with z > 0
         absz_vals = np.abs(z_vals[z_vals > 0])
 
-        y_vals = atomic_positions[x0 * z0, 1]
+        y_vals = lattice_positions[x0 * z0, 1]
         absy_vals = np.abs(y_vals[y_vals > 0])
 
-        x_vals = atomic_positions[y0 * z0, 0]
+        x_vals = lattice_positions[y0 * z0, 0]
         absx_vals = np.abs(x_vals[x_vals > 0])
 
         if absx_vals.size == 0 or absy_vals.size == 0 or absz_vals.size == 0:
@@ -1312,7 +1313,7 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
             print(("Couldn't find lattice points along all axes, returning "
                    "grid lines along lattice vectors instead"))
             vectors = np.array([a1, a2, a3])
-            lines = create_línes(atomic_positions[lattice_position], vectors)
+            lines = create_línes(lattice_positions, vectors)
         else:
             # Take the minimum as the lattice spacing
             a_z = np.min(absz_vals)
