@@ -146,7 +146,7 @@ class full_window(QW.QMainWindow):
 
         self.layout_options.addLayout(self.layout_parameters)
         self.create_preset_basis(n_basis=4)
-        self.layout_options.addWidget(QW.QLabel('Basis from the preset'))
+        self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
         self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
         self.layout_options.addWidget(QW.QLabel('User specified basis'))
