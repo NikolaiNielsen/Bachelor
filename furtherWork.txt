@@ -1,13 +1,6 @@
 lattice plotting
-    - Automatic classifying should work properly (non-uniqueness of vectors)
     - Hexagonal close packing
-    - basis with lattice preset
     - Jagged edges on uncommon lattices.
-    - Input parameters and presets as default. Free inputs as optional
-    - Graphical user interface?
-        - Two windows? one matplotlib, one control
-        - embedded in a larger application? (Look at QT framework)
-        - Dropdown shows only relevant parameters
 scattering
     - Better explanation of detection screen
     - Text on vecttors when highlighting.
@@ -25,5 +18,4 @@ Other stuff
 
 
 Separate the lattice calculation into separate file for exercise
-Implement basis
 Default parameters for lattices (change back when lattice is changed)
