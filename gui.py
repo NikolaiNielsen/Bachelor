@@ -146,20 +146,22 @@ class full_window(QW.QMainWindow):
 
         self.layout_options.addLayout(self.layout_parameters)
         self.create_preset_basis(n_basis=4)
+        self.layout_options.addWidget(QW.QLabel('Basis from the preset'))
         self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
+        self.layout_options.addWidget(QW.QLabel('User specified basis'))
         self.layout_options.addLayout(self.layout_basis)
 
     def create_preset_basis(self, n_basis):
         # So far the largest number of atoms in a preset basis is 4.
-        self.layout_preset_basis = QW.GridLayout()
+        self.layout_preset_basis = QW.QGridLayout()
         n_coords = 3
         self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
                                                    dtype=object)
         for i in range(n_basis):
             for j in range(n_coords):
                 el = QW.QLineEdit()
-                el.setEnaled(False)
+                el.setEnabled(False)
                 self.preset_basis_coord_widgets[i, j] = el
                 self.layout_preset_basis.addWidget(el, i, j)
 
