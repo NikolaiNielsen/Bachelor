@@ -54,7 +54,8 @@ class full_window(QW.QMainWindow):
             'theta': 80,
             'beta': 90,
             'gamma': 90,
-            'lattice': 'simple cubic'
+            'lattice': 'simple cubic',
+            'max_preset_basis': 4
         }
         # Needed parameters for each lattice (a, b, c, theta, beta, gamma)
         self.needed_params = {
@@ -145,7 +146,8 @@ class full_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
-        self.create_preset_basis(n_basis=4)
+        self.create_preset_basis(
+            n_basis=self.lattice_config['max_preset_basis'])
         self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
         self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
@@ -251,11 +253,16 @@ class full_window(QW.QMainWindow):
         self.update_lattice()
 
     def update_preset_basis_widgets(self):
-        basis = self.lattice_config['preset_basis']
+        basis = np.atleast_2d(self.lattice_config['preset_basis'])
         for n_atom, atom in enumerate(basis):
             for n_coord, coord in enumerate(atom):
                 el = self.preset_basis_coord_widgets[n_atom, n_coord]
-                el.setText(coord)
+                el.setText("{0:.3f}".format(coord))
+        n_basis = basis.shape[0]
+        for i in range(n_basis, self.lattice_config['max_preset_basis']):
+            for j in range(3):
+                el = self.preset_basis_coord_widgets[i, j]
+                el.setText('')
 
     def update_config_parameter(self, param, text):
         # This function updates the relevant parameter in the lattice_config
