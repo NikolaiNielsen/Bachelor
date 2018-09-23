@@ -41,7 +41,8 @@ class full_window(QW.QMainWindow):
             'a2': d[1],
             'a3': d[2],
             'preset_basis': d[3],
-            'colors': d[4],
+            'user_colors': ['e'] * 5,
+            'preset_colors': ['e'] * 4,
             'sizes': d[5],
             'enabled_user_basis': np.empty((1, 3)),
             'user_basis': np.zeros((5, 3)),
@@ -83,7 +84,7 @@ class full_window(QW.QMainWindow):
         self.lattice_config = self.default_config.copy()
 
         # A list of allowed colors
-        self.allowed_colors = ['b', 'r', 'g', 'y', 'k', 'w', 'm', 'c']
+        self.allowed_colors = ['b', 'r', 'g', 'y', 'k', 'w', 'm', 'c', 'e']
 
         # We create the options and add it to our main layout (it also creates
         # the basis fiels)
@@ -178,6 +179,7 @@ class full_window(QW.QMainWindow):
             el = QW.QLineEdit()
             el.setEnabled(True)
             el.setMaxLength(1)
+            el.setText('e')
             el.editingFinished.connect(
                 lambda i=i, el=el: self.update_basis_color(
                     'preset', i, el.text()))
@@ -187,10 +189,16 @@ class full_window(QW.QMainWindow):
     def create_user_basis(self):
         # Basis-stuff
         self.layout_basis = QW.QGridLayout()
+        names = ['color', 'x', 'y', 'z']
+        for n, name in enumerate(names):
+            label = QW.QLabel(name)
+            label.setAlignment(QC.Qt.AlignCenter)
+            self.layout_basis.addWidget(label, 0, n)
         no_basis = 5
         no_coords = 3
         self.basis_coord_widgets = np.empty((no_basis, no_coords),
                                             dtype=object)
+        self.basis_color_widgets = []
         self.basis_check_widgets = []
         # Create all the basis coordinate widgets
         for i in range(no_basis):
@@ -209,7 +217,17 @@ class full_window(QW.QMainWindow):
                 # Add the QLineEdit to the array of basis coordinate widgets
                 # and to the layout
                 self.basis_coord_widgets[i, j] = el
-                self.layout_basis.addWidget(el, i, j)
+                self.layout_basis.addWidget(el, i + 1, j + 1)
+
+            # Add a color lineedit for each basis atom
+            el = QW.QLineEdit()
+            el.setText(str('e'))
+            el.setMaxLength(1)
+            el.editingFinished.connect(
+                lambda i=i, el=el:
+                    self.update_basis_color('user', i, el.text()))
+            self.basis_color_widgets.append(el)
+            self.layout_basis.addWidget(el, i + 1, 0)
 
             # Add a checkbox for each basis atom
             check = QW.QCheckBox()
@@ -221,7 +239,7 @@ class full_window(QW.QMainWindow):
 
             # Add the checkbox to the list of widgets, and the layout.
             self.basis_check_widgets.append(check)
-            self.layout_basis.addWidget(check, i, no_coords + 1)
+            self.layout_basis.addWidget(check, i + 1, no_coords + 2)
 
         # It's ugly but it works. We make the checkbox to stuff
         self.basis_check_widgets[0].stateChanged.connect(
