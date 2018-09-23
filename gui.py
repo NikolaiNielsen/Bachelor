@@ -161,7 +161,7 @@ class full_window(QW.QMainWindow):
     def create_preset_basis(self, n_basis):
         # So far the largest number of atoms in a preset basis is 4.
         self.layout_preset_basis = QW.QGridLayout()
-        names = ['color', 'x', 'y', 'z']
+        names = ['x', 'y', 'z', 'color']
         for n, name in enumerate(names):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
@@ -175,7 +175,7 @@ class full_window(QW.QMainWindow):
                 el = QW.QLineEdit()
                 el.setEnabled(False)
                 self.preset_basis_coord_widgets[i, j] = el
-                self.layout_preset_basis.addWidget(el, i + 1, j + 1)
+                self.layout_preset_basis.addWidget(el, i + 1, j)
             el = QW.QLineEdit()
             el.setEnabled(True)
             el.setMaxLength(1)
@@ -184,25 +184,25 @@ class full_window(QW.QMainWindow):
                 lambda i=i, el=el: self.update_basis_color(
                     'preset', i, el.text()))
             self.preset_basis_color_widgets[i] = el
-            self.layout_preset_basis.addWidget(el, i + 1, 0)
+            self.layout_preset_basis.addWidget(el, i + 1, n_coords)
 
     def create_user_basis(self):
         # Basis-stuff
         self.layout_basis = QW.QGridLayout()
-        names = ['color', 'x', 'y', 'z']
+        n_basis = 5
+        n_coords = 3
+        names = ['x', 'y', 'z', 'color']
         for n, name in enumerate(names):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
             self.layout_basis.addWidget(label, 0, n)
-        no_basis = 5
-        no_coords = 3
-        self.basis_coord_widgets = np.empty((no_basis, no_coords),
+        self.basis_coord_widgets = np.empty((n_basis, n_coords),
                                             dtype=object)
         self.basis_color_widgets = []
         self.basis_check_widgets = []
         # Create all the basis coordinate widgets
-        for i in range(no_basis):
-            for j in range(no_coords):
+        for i in range(n_basis):
+            for j in range(n_coords):
                 # A QLineEdit for each of the basis atoms coordinates
                 el = QW.QLineEdit()
                 el.setText(str(0))
@@ -217,7 +217,7 @@ class full_window(QW.QMainWindow):
                 # Add the QLineEdit to the array of basis coordinate widgets
                 # and to the layout
                 self.basis_coord_widgets[i, j] = el
-                self.layout_basis.addWidget(el, i + 1, j + 1)
+                self.layout_basis.addWidget(el, i + 1, j)
 
             # Add a color lineedit for each basis atom
             el = QW.QLineEdit()
@@ -227,7 +227,7 @@ class full_window(QW.QMainWindow):
                 lambda i=i, el=el:
                     self.update_basis_color('user', i, el.text()))
             self.basis_color_widgets.append(el)
-            self.layout_basis.addWidget(el, i + 1, 0)
+            self.layout_basis.addWidget(el, i + 1, n_coords)
 
             # Add a checkbox for each basis atom
             check = QW.QCheckBox()
@@ -239,7 +239,7 @@ class full_window(QW.QMainWindow):
 
             # Add the checkbox to the list of widgets, and the layout.
             self.basis_check_widgets.append(check)
-            self.layout_basis.addWidget(check, i + 1, no_coords + 2)
+            self.layout_basis.addWidget(check, i + 1, n_coords + 2)
 
         # It's ugly but it works. We make the checkbox to stuff
         self.basis_check_widgets[0].stateChanged.connect(
