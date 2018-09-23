@@ -1,7 +1,7 @@
 import sys
 from cmp import *
 
-from PyQt5 import QtWidgets as QW, QtGui as QG
+from PyQt5 import QtWidgets as QW, QtGui as QG, QtCore as QC
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
@@ -82,6 +82,9 @@ class full_window(QW.QMainWindow):
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
 
+        # A list of allowed colors
+        self.allowed_colors = ['b', 'r', 'g', 'y', 'k', 'w', 'm', 'c']
+
         # We create the options and add it to our main layout (it also creates
         # the basis fiels)
         self.create_options()
@@ -157,15 +160,29 @@ class full_window(QW.QMainWindow):
     def create_preset_basis(self, n_basis):
         # So far the largest number of atoms in a preset basis is 4.
         self.layout_preset_basis = QW.QGridLayout()
+        names = ['color', 'x', 'y', 'z']
+        for n, name in enumerate(names):
+            label = QW.QLabel(name)
+            label.setAlignment(QC.Qt.AlignCenter)
+            self.layout_preset_basis.addWidget(label, 0, n)
         n_coords = 3
         self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
                                                    dtype=object)
+        self.preset_basis_color_widgets = np.empty(n_basis, dtype=object)
         for i in range(n_basis):
             for j in range(n_coords):
                 el = QW.QLineEdit()
                 el.setEnabled(False)
                 self.preset_basis_coord_widgets[i, j] = el
-                self.layout_preset_basis.addWidget(el, i, j)
+                self.layout_preset_basis.addWidget(el, i + 1, j + 1)
+            el = QW.QLineEdit()
+            el.setEnabled(True)
+            el.setMaxLength(1)
+            el.editingFinished.connect(
+                lambda i=i, el=el: self.update_basis_color(
+                    'preset', i, el.text()))
+            self.preset_basis_color_widgets[i] = el
+            self.layout_preset_basis.addWidget(el, i + 1, 0)
 
     def create_user_basis(self):
         # Basis-stuff
@@ -278,6 +295,14 @@ class full_window(QW.QMainWindow):
         except ValueError:
             pass
         self.update_lattice()
+
+    def update_basis_color(self, type_, num, text):
+        colors = self.lattice_config['{}_colors'.format(type_)]
+        text = text.lower()
+        if text not in self.allowed_colors:
+            print('you did wrong!')
+        else:
+            colors[num] = text
 
     def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
