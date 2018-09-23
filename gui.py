@@ -52,8 +52,8 @@ class full_window(QW.QMainWindow):
             'b': 1.2,
             'c': 1.5,
             'theta': 80,
-            'beta': 90,
-            'gamma': 90,
+            'beta': 70,
+            'gamma': 60,
             'lattice': 'simple cubic',
             'max_preset_basis': 4
         }
@@ -250,6 +250,12 @@ class full_window(QW.QMainWindow):
         for n in self.needed_params[text]:
             self.param_fields[n].setEnabled(True)
 
+        # We should also load the default values for the parameters
+        for n, param in enumerate(self.parameter_names):
+            self.lattice_config[param] = self.default_config[param]
+            self.param_fields[n].setText(str(self.lattice_config[param]))
+
+        # And then we update the lattice
         self.update_lattice()
 
     def update_preset_basis_widgets(self):
