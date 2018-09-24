@@ -1,5 +1,6 @@
 import sys
 from cmp import *
+from itertools import compress
 
 from PyQt5 import QtWidgets as QW, QtGui as QG, QtCore as QC
 
@@ -322,6 +323,7 @@ class full_window(QW.QMainWindow):
             print('you did wrong!')
         else:
             colors[num] = text
+            self.plot_lattice()
 
     def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
@@ -374,12 +376,12 @@ class full_window(QW.QMainWindow):
         enabled_basis_atoms = []
         for i in self.basis_check_widgets:
             enabled_basis_atoms.append(i.isChecked())
-
         # update the enabled_user_basis config and plot the lattice with the
         # new basis
         new_basis = self.lattice_config['user_basis'][enabled_basis_atoms]
         self.lattice_config['enabled_user_basis'] = new_basis
-        new_colors = self.lattice_config['user_colors'][enabled_basis_atoms]
+        new_colors = self.lattice_config['user_colors']
+        new_colors = list(compress(new_colors, enabled_basis_atoms))
         self.lattice_config['enabled_user_colors'] = new_colors
         self.plot_lattice()
 
