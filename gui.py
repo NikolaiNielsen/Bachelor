@@ -42,6 +42,7 @@ class full_window(QW.QMainWindow):
             'a3': d[2],
             'preset_basis': d[3],
             'user_colors': ['e'] * 5,
+            'enabled_user_colors': [],
             'preset_colors': ['e'] * 4,
             'sizes': d[5],
             'enabled_user_basis': np.empty((1, 3)),
@@ -337,9 +338,18 @@ class full_window(QW.QMainWindow):
         user_basis = self.lattice_config['enabled_user_basis']
         basis = np.vstack((preset_basis, user_basis))
 
+        user_colors = self.lattice_config['enabled_user_colors']
+        preset_colors = self.lattice_config['preset_colors']
+        n_preset_basis = np.atleast_2d(preset_basis).shape[0]
+        preset_colors = preset_colors[:n_preset_basis]
+        colors = preset_colors + user_colors
+        # List comprehension to change 'e' to 'xkcd:cement'
+        colors = ['xkcd:cement' if i == 'e' else i for i in colors]
+
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
                                                   basis=basis,
+                                                  colors=colors,
                                                   fig=self.static_fig,
                                                   ax=self.static_ax,
                                                   returns=True,
@@ -369,6 +379,8 @@ class full_window(QW.QMainWindow):
         # new basis
         new_basis = self.lattice_config['user_basis'][enabled_basis_atoms]
         self.lattice_config['enabled_user_basis'] = new_basis
+        new_colors = self.lattice_config['user_colors'][enabled_basis_atoms]
+        self.lattice_config['enabled_user_colors'] = new_colors
         self.plot_lattice()
 
     def tester(self, i):
