@@ -176,6 +176,8 @@ class full_window(QW.QMainWindow):
             for j in range(n_coords):
                 el = QW.QLineEdit()
                 el.setEnabled(False)
+                if i == 0:
+                    el.setText('0')
                 self.preset_basis_coord_widgets[i, j] = el
                 self.layout_preset_basis.addWidget(el, i + 1, j)
             el = QW.QLineEdit()
