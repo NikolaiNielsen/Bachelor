@@ -58,7 +58,8 @@ class full_window(QW.QMainWindow):
             'beta': 70,
             'gamma': 60,
             'lattice': 'simple cubic',
-            'max_preset_basis': 4
+            'max_preset_basis': 4,
+            'max_basis': 5
         }
         # Needed parameters for each lattice (a, b, c, theta, beta, gamma)
         self.needed_params = {
@@ -131,7 +132,7 @@ class full_window(QW.QMainWindow):
             field = QW.QLineEdit()
 
             # Only allow floats and 2 decimals to input
-            field.setValidator(QG.QDoubleValidator(decimals=2))
+            field.setValidator(QG.QDoubleValidator(decimals=3))
 
             # Populate with default values
             field.setText(str(self.lattice_config[name]))
@@ -152,48 +153,48 @@ class full_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
-        self.create_preset_basis(
-            n_basis=self.lattice_config['max_preset_basis'])
-        self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
-        self.layout_options.addLayout(self.layout_preset_basis)
+        # self.create_preset_basis(
+        #     n_basis=self.lattice_config['max_preset_basis'])
+        # self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
+        # self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
-        self.layout_options.addWidget(QW.QLabel('User specified basis'))
+        # self.layout_options.addWidget(QW.QLabel('Basis'))
         self.layout_options.addLayout(self.layout_basis)
 
-    def create_preset_basis(self, n_basis):
-        # So far the largest number of atoms in a preset basis is 4.
-        self.layout_preset_basis = QW.QGridLayout()
-        names = ['x', 'y', 'z', 'color']
-        for n, name in enumerate(names):
-            label = QW.QLabel(name)
-            label.setAlignment(QC.Qt.AlignCenter)
-            self.layout_preset_basis.addWidget(label, 0, n)
-        n_coords = 3
-        self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
-                                                   dtype=object)
-        self.preset_basis_color_widgets = np.empty(n_basis, dtype=object)
-        for i in range(n_basis):
-            for j in range(n_coords):
-                el = QW.QLineEdit()
-                el.setEnabled(False)
-                if i == 0:
-                    el.setText('0')
-                self.preset_basis_coord_widgets[i, j] = el
-                self.layout_preset_basis.addWidget(el, i + 1, j)
-            el = QW.QLineEdit()
-            el.setEnabled(True)
-            el.setMaxLength(1)
-            el.setText('e')
-            el.editingFinished.connect(
-                lambda i=i, el=el: self.update_basis_color(
-                    'preset', i, el.text()))
-            self.preset_basis_color_widgets[i] = el
-            self.layout_preset_basis.addWidget(el, i + 1, n_coords)
+    # def create_preset_basis(self, n_basis):
+    #     # So far the largest number of atoms in a preset basis is 4.
+    #     self.layout_preset_basis = QW.QGridLayout()
+    #     names = ['x', 'y', 'z', 'color']
+    #     for n, name in enumerate(names):
+    #         label = QW.QLabel(name)
+    #         label.setAlignment(QC.Qt.AlignCenter)
+    #         self.layout_preset_basis.addWidget(label, 0, n)
+    #     n_coords = 3
+    #     self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
+    #                                                dtype=object)
+    #     self.preset_basis_color_widgets = np.empty(n_basis, dtype=object)
+    #     for i in range(n_basis):
+    #         for j in range(n_coords):
+    #             el = QW.QLineEdit()
+    #             el.setEnabled(False)
+    #             if i == 0:
+    #                 el.setText('0')
+    #             self.preset_basis_coord_widgets[i, j] = el
+    #             self.layout_preset_basis.addWidget(el, i + 1, j)
+    #         el = QW.QLineEdit()
+    #         el.setEnabled(True)
+    #         el.setMaxLength(1)
+    #         el.setText('e')
+    #         el.editingFinished.connect(
+    #             lambda i=i, el=el: self.update_basis_color(
+    #                 'preset', i, el.text()))
+    #         self.preset_basis_color_widgets[i] = el
+    #         self.layout_preset_basis.addWidget(el, i + 1, n_coords)
 
     def create_user_basis(self):
         # Basis-stuff
         self.layout_basis = QW.QGridLayout()
-        n_basis = 5
+        n_basis = self.lattice_config['max_basis']
         n_coords = 3
         names = ['x', 'y', 'z', 'color']
         for n, name in enumerate(names):
@@ -212,7 +213,7 @@ class full_window(QW.QMainWindow):
                 el.setText(str(0))
                 el.setEnabled(False)
                 el.setValidator(
-                    QG.QDoubleValidator(decimals=2))
+                    QG.QDoubleValidator(decimals=3))
                 # Pass basis and coordinate number, along with value, to
                 # update_basis_val
                 el.editingFinished.connect(
@@ -271,11 +272,19 @@ class full_window(QW.QMainWindow):
                                                   theta=theta,
                                                   beta=beta,
                                                   gamma=gamma)
-
         # Update primitive lattice vectors and (preset) basis.
-        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
+        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'user_basis'),
                                             (a1, a2, a3, basis))))
-        self.update_preset_basis_widgets()
+        n_basis = np.atleast_2d(basis).shape[0]
+        if n_basis > 1:
+            self.start_lattice_with_basis()
+        else:
+            # If the user chose a preset without a basis, we just give it an
+            # empty basis, and disable those that aren't needed
+            basis = np.zeros((self.lattice_config['max_basis'], 3))
+            self.lattice_config['user_basis'] = basis
+            self.start_lattice_without_basis()
+        # self.update_preset_basis_widgets()
         self.plot_lattice()
 
     def update_lattice_name(self, text):
@@ -298,16 +307,16 @@ class full_window(QW.QMainWindow):
         self.update_lattice()
 
     def update_preset_basis_widgets(self):
-        basis = np.atleast_2d(self.lattice_config['preset_basis'])
+        basis = np.atleast_2d(self.lattice_config['user_basis'])
         for n_atom, atom in enumerate(basis):
             for n_coord, coord in enumerate(atom):
-                el = self.preset_basis_coord_widgets[n_atom, n_coord]
+                el = self.basis_coord_widgets[n_atom, n_coord]
                 el.setText("{0:.3f}".format(coord))
         n_basis = basis.shape[0]
-        for i in range(n_basis, self.lattice_config['max_preset_basis']):
+        for i in range(n_basis, self.lattice_config['max_basis']):
             for j in range(3):
-                el = self.preset_basis_coord_widgets[i, j]
-                el.setText('')
+                el = self.basis_coord_widgets[i, j]
+                el.setText('0')
 
     def update_config_parameter(self, param, text):
         # This function updates the relevant parameter in the lattice_config
@@ -386,6 +395,36 @@ class full_window(QW.QMainWindow):
         new_colors = list(compress(new_colors, enabled_basis_atoms))
         self.lattice_config['enabled_user_colors'] = new_colors
         self.plot_lattice()
+
+    def start_lattice_with_basis(self):
+        # This function runs when the user chooses a preset which includes a
+        # basis (like wurtzite). It hides the unneeded basis widgets (like all
+        # the checkboxes), and disables the ones that are needed, so the user
+        # can't change them.
+        n_basis = np.atleast_2d(self.lattice_config['user_basis']).shape[0]
+        max_basis = self.lattice_config['max_basis']
+        unneeded_coords = self.basis_coord_widgets[n_basis:max_basis]
+        for el in unneeded_coords.flatten():
+            el.setHidden(True)
+        for i in self.basis_check_widgets:
+            i.setHidden(True)
+        for i in self.basis_color_widgets[n_basis:max_basis]:
+            i.setHidden(True)
+
+    def start_lattice_without_basis(self):
+        # This function runs when the user chooses a preset which does not
+        # include a basis (ie a pure Bravais lattice). It shows all basis
+        # widgets again and loads an empty basis
+        n_basis = self.lattice_config['max_basis']
+        basis = np.zeros((n_basis, 3))
+        self.lattice_config['user_basis'] = basis
+        for el in self.basis_coord_widgets.flatten():
+            el.setHidden(False)
+        for el in self.basis_check_widgets:
+            el.setHidden(False)
+            el.setEnabled(False)
+        for el in self.basis_color_widgets:
+            el.setHidden(False)
 
     def tester(self, i):
         print(i)

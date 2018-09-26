@@ -10,4 +10,9 @@ fermi surface
 - Intersecting planes (need OpenGL compliant)
 - Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
 
-Default parameters for lattices (change back when lattice is changed)
+
+Include instruction for use in jupyter notebook
+Dropdown menu for colors
+tooltip for parameters
+only one type of basis (so no editing with wurtzite, for example)
+About section.
