@@ -82,6 +82,11 @@ class full_window(QW.QMainWindow):
             'wurtzite': [0, 1],
             'zincblende': [0]
         }
+        self.presets_with_basis = [
+            'wurtzite',
+            'diamond',
+            'zincblende'
+        ]
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
 
@@ -152,13 +157,11 @@ class full_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
-        self.create_preset_basis(
-            n_basis=self.lattice_config['max_preset_basis'])
-        self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
-        self.layout_options.addLayout(self.layout_preset_basis)
+        # self.create_preset_basis(
+        #     n_basis=self.lattice_config['max_preset_basis'])
+        # self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
+        # self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
-        self.layout_options.addWidget(QW.QLabel('User specified basis'))
-        self.layout_options.addLayout(self.layout_basis)
 
     def create_preset_basis(self, n_basis):
         # So far the largest number of atoms in a preset basis is 4.
@@ -189,6 +192,8 @@ class full_window(QW.QMainWindow):
                     'preset', i, el.text()))
             self.preset_basis_color_widgets[i] = el
             self.layout_preset_basis.addWidget(el, i + 1, n_coords)
+        self.current_basis_layout = self.layout_preset_basis
+        self.layout_options.addLayout(self.layout_preset_basis)
 
     def create_user_basis(self):
         # Basis-stuff
@@ -256,6 +261,8 @@ class full_window(QW.QMainWindow):
             lambda: self.hide_basis_widgets(3))
         self.basis_check_widgets[4].stateChanged.connect(
             lambda: self.hide_basis_widgets(4))
+        self.current_basis_layout = self.layout_basis
+        self.layout_options.addLayout(self.layout_basis)
 
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
@@ -279,7 +286,17 @@ class full_window(QW.QMainWindow):
         self.plot_lattice()
 
     def update_lattice_name(self, text):
-        # Set the lattice name
+        # Delete current basis layout.
+        self.delete_layout(self.current_basis_layout)
+        if text in self.presets_with_basis:
+            # We have a preset with a basis, so we delete the user basis and
+            # load the preset basis
+            self.create_preset_basis(4)
+            self.current_basis_layout = self.layout_preset_basis
+        else:
+            self.create_user_basis()
+            self.current_basis_layout = self.layout_basis
+
         self.lattice_config['lattice'] = text
 
         # disable all fields and enable only those needed. It's the easiest
@@ -386,6 +403,16 @@ class full_window(QW.QMainWindow):
         new_colors = list(compress(new_colors, enabled_basis_atoms))
         self.lattice_config['enabled_user_colors'] = new_colors
         self.plot_lattice()
+
+    def delete_layout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                else:
+                    self.delete_layout(item.layout())
 
     def tester(self, i):
         print(i)
