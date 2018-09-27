@@ -47,10 +47,10 @@ class full_window(QW.QMainWindow):
             'a3': d[2],
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
-            'enabled_user_colors': [],
+            'enabled_user_colors': ['xkcd:cement'],
             'preset_colors': ['xkcd:cement'] * 4,
             'sizes': d[5],
-            'enabled_user_basis': np.empty((1, 3)),
+            'enabled_user_basis': np.zeros((1, 3)),
             'user_basis': np.zeros((5, 3)),
             'lim_type': d[6],
             'grid_type': None,
@@ -165,10 +165,6 @@ class full_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
-        # self.create_preset_basis(
-        #     n_basis=self.lattice_config['max_preset_basis'])
-        # self.layout_options.addWidget(QW.QLabel('Preset specified basis'))
-        # self.layout_options.addLayout(self.layout_preset_basis)
         self.create_user_basis()
 
     def create_preset_basis(self, n_basis):
