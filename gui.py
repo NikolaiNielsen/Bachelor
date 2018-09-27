@@ -215,7 +215,8 @@ class full_window(QW.QMainWindow):
                 # A QLineEdit for each of the basis atoms coordinates
                 el = QW.QLineEdit()
                 el.setText(str(0))
-                el.setEnabled(False)
+                # We want the first to be enabled
+                el.setEnabled(i == 0)
                 el.setValidator(
                     QG.QDoubleValidator(decimals=2))
                 # Pass basis and coordinate number, along with value, to
@@ -243,7 +244,7 @@ class full_window(QW.QMainWindow):
 
             # Add a checkbox for each basis atom
             check = QW.QCheckBox()
-            check.setChecked(False)
+            check.setChecked(i == 0)
 
             # For some reason this doesn't work when we do it in a loop...
             # check.stateChanged.connect(
