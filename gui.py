@@ -176,7 +176,7 @@ class full_window(QW.QMainWindow):
         n_coords = 3
         self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
                                                    dtype=object)
-        self.preset_basis_color_widgets = np.empty(n_basis, dtype=object)
+        self.preset_basis_color_widgets = []
         for i in range(n_basis):
             for j in range(n_coords):
                 el = QW.QLineEdit()
@@ -189,8 +189,8 @@ class full_window(QW.QMainWindow):
             el.addItems(self.colors)
             el.activated[str].connect(
                 lambda i=i, el=el: self.update_basis_color(
-                    'preset', self.basis_color_widgets.index(el), i))
-            self.preset_basis_color_widgets[i] = el
+                    'preset', self.preset_basis_color_widgets.index(el), i))
+            self.preset_basis_color_widgets.append(el)
             self.layout_preset_basis.addWidget(el, i + 1, n_coords)
         self.current_basis_layout = self.layout_preset_basis
         self.layout_options.addLayout(self.layout_preset_basis)
