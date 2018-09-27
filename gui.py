@@ -301,7 +301,7 @@ class full_window(QW.QMainWindow):
         if text in self.presets_with_basis:
             # We have a preset with a basis, so we delete the user basis and
             # load the preset basis
-            self.create_preset_basis(4)
+            self.create_preset_basis(self.presets_with_basis[text])
             self.current_basis_layout = self.layout_preset_basis
         else:
             self.create_user_basis()
@@ -330,11 +330,6 @@ class full_window(QW.QMainWindow):
             for n_coord, coord in enumerate(atom):
                 el = self.preset_basis_coord_widgets[n_atom, n_coord]
                 el.setText("{0:.3f}".format(coord))
-        n_basis = basis.shape[0]
-        for i in range(n_basis, self.lattice_config['max_preset_basis']):
-            for j in range(3):
-                el = self.preset_basis_coord_widgets[i, j]
-                el.setText('')
 
     def update_config_parameter(self, param, text):
         # This function updates the relevant parameter in the lattice_config
