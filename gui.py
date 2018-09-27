@@ -292,7 +292,8 @@ class full_window(QW.QMainWindow):
         # Update primitive lattice vectors and (preset) basis.
         self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
                                             (a1, a2, a3, basis))))
-        self.update_preset_basis_widgets()
+        if name in self.presets_with_basis:
+            self.update_preset_basis_widgets()
         self.plot_lattice()
 
     def update_lattice_name(self, text):
