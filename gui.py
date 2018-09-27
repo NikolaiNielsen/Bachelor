@@ -356,15 +356,17 @@ class full_window(QW.QMainWindow):
         a1 = self.lattice_config['a1']
         a2 = self.lattice_config['a2']
         a3 = self.lattice_config['a3']
-        preset_basis = self.lattice_config['preset_basis']
-        user_basis = self.lattice_config['enabled_user_basis']
-        basis = np.vstack((preset_basis, user_basis))
 
-        user_colors = self.lattice_config['enabled_user_colors']
-        preset_colors = self.lattice_config['preset_colors']
-        n_preset_basis = np.atleast_2d(preset_basis).shape[0]
-        preset_colors = preset_colors[:n_preset_basis]
-        colors = preset_colors + user_colors
+        # Grab the basis and colors
+        if self.lattice_config['lattice'] in self.presets_with_basis:
+            # We are dealing with a preset with basis
+            basis = self.lattice_config['preset_basis']
+            n_basis = np.atleast_2d(basis).shape[0]
+            colors = self.lattice_config['preset_colors']
+            colors = colors[:n_basis]
+        else:
+            colors = self.lattice_config['enabled_user_colors']
+            basis = self.lattice_config['enabled_user_basis']
 
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
