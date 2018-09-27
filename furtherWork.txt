@@ -12,7 +12,5 @@ fermi surface
 
 
 Include instruction for use in jupyter notebook
-Dropdown menu for colors
 tooltip for parameters
-only one type of basis (so no editing with wurtzite, for example)
 About section.
