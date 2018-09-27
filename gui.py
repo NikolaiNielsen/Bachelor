@@ -35,7 +35,9 @@ class full_window(QW.QMainWindow):
                          'diamond',
                          'wurtzite',
                          'zincblende']
-
+        self.colors = [
+            'xkcd:cement', 'red', 'blue', 'green', 'cyan',
+            'magenta', 'black', 'yellow']
         # A dictionary of the default values for lattice plotting
         self.default_config = {
             'a1': d[0],
@@ -183,13 +185,8 @@ class full_window(QW.QMainWindow):
                     el.setText('0')
                 self.preset_basis_coord_widgets[i, j] = el
                 self.layout_preset_basis.addWidget(el, i + 1, j)
-            el = QW.QLineEdit()
-            el.setEnabled(True)
-            el.setMaxLength(1)
-            el.setText('e')
-            el.editingFinished.connect(
-                lambda i=i, el=el: self.update_basis_color(
-                    'preset', i, el.text()))
+            el = QW.QComboBox()
+            el.addItems(self.colors)
             self.preset_basis_color_widgets[i] = el
             self.layout_preset_basis.addWidget(el, i + 1, n_coords)
         self.current_basis_layout = self.layout_preset_basis
@@ -229,12 +226,8 @@ class full_window(QW.QMainWindow):
                 self.layout_basis.addWidget(el, i + 1, j)
 
             # Add a color lineedit for each basis atom
-            el = QW.QLineEdit()
-            el.setText(str('e'))
-            el.setMaxLength(1)
-            el.editingFinished.connect(
-                lambda i=i, el=el:
-                    self.update_basis_color('user', i, el.text()))
+            el = QW.QComboBox()
+            el.addItems(self.colors)
             self.basis_color_widgets.append(el)
             self.layout_basis.addWidget(el, i + 1, n_coords)
 
