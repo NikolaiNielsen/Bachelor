@@ -34,7 +34,9 @@ class full_window(QW.QMainWindow):
                          'rhombohedral',
                          'diamond',
                          'wurtzite',
-                         'zincblende']
+                         'zincblende',
+                         'conventional fcc',
+                         'conventional bcc']
         self.colors = [
             'xkcd:cement', 'red', 'blue', 'green', 'cyan',
             'magenta', 'black', 'yellow']
@@ -82,13 +84,17 @@ class full_window(QW.QMainWindow):
             'rhombohedral': [0],
             'diamond': [0],
             'wurtzite': [0, 1],
-            'zincblende': [0]
+            'zincblende': [0],
+            'conventional fcc': [0],
+            'conventional bcc': [0]
         }
-        self.presets_with_basis = [
-            'wurtzite',
-            'diamond',
-            'zincblende'
-        ]
+        self.presets_with_basis = {
+            'wurtzite': 4,
+            'diamond': 2,
+            'zincblende': 2,
+            'conventional fcc': 4,
+            'conventional bcc': 2
+        }
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
 
