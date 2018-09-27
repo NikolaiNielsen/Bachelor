@@ -189,7 +189,7 @@ class full_window(QW.QMainWindow):
             el.addItems(self.colors)
             el.activated[str].connect(
                 lambda i=i, el=el: self.update_basis_color(
-                    'preset', i, el.currentText()))
+                    'preset', self.basis_color_widgets.index(el), i))
             self.preset_basis_color_widgets[i] = el
             self.layout_preset_basis.addWidget(el, i + 1, n_coords)
         self.current_basis_layout = self.layout_preset_basis
@@ -231,9 +231,12 @@ class full_window(QW.QMainWindow):
             # Add a color lineedit for each basis atom
             el = QW.QComboBox()
             el.addItems(self.colors)
+            # Okay, for some reason i is the combo-box text. I don't know why.
+            # So we're gonna do a slight hack to find the proper "i". We're
+            # gonna index the list of color widgets
             el.activated[str].connect(
                 lambda i=i, el=el: self.update_basis_color(
-                    'user', i, el.currentText()))
+                    'user', self.basis_color_widgets.index(el), i))
 
             self.basis_color_widgets.append(el)
             self.layout_basis.addWidget(el, i + 1, n_coords)
@@ -339,7 +342,7 @@ class full_window(QW.QMainWindow):
         colors = self.lattice_config['{}_colors'.format(type_)]
         text = text.lower()
         colors[num] = text
-        self.plot_lattice()
+        self.update_basis()
 
     def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
@@ -409,8 +412,8 @@ class full_window(QW.QMainWindow):
                 else:
                     self.delete_layout(item.layout())
 
-    def tester(self, i):
-        print(i)
+    def tester(self, arg1, arg2):
+        print(arg1, arg2)
 
     def quit(self):
         sys.exit()
