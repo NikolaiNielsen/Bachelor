@@ -81,9 +81,14 @@ def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
 
     # Ugly hack for fixing bcc involving juggling of limits, so we plot 2 unit
     # cells (conventional) in each direction
-    if (lattice_type == "bcc" and max_ == [2, 2, 2] and
-            lim_type == "proper" and unit_type == "conventional"):
+    if (lattice_type in ['bcc', 'tetragonal body centred',
+                         'orthorhombic body centred'] and
+        max_ == [2, 2, 2] and lim_type == "proper" and (
+            unit_type == "conventional")):
         max_ = [0, 0, 4]
+    elif ('base centred' in lattice_type and max_ == [2, 2, 2] and
+          lim_type == "proper" and unit_type == "conventional"):
+        max_ = [0, 4, 2]
 
     return (a1, a2, a3, lattice, basis, colors, sizes, grid_type, unit_type,
             lattice_type, lattice_name, max_, min_, lim_type)
