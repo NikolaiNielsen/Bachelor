@@ -131,6 +131,8 @@ class full_window(QW.QMainWindow):
         # Create the lattice chooser dropdown
         self.lattice_chooser = QW.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
+        sep_index = len(self.lattices) - len(self.presets_with_basis)
+        self.lattice_chooser.insertSeparator(sep_index)
         self.lattice_chooser.activated[str].connect(self.update_lattice_name)
 
         # Create the parameter layout
