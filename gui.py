@@ -44,9 +44,9 @@ class full_window(QW.QMainWindow):
             'a2': d[1],
             'a3': d[2],
             'preset_basis': d[3],
-            'user_colors': ['e'] * 5,
+            'user_colors': ['xkcd:cement'] * 5,
             'enabled_user_colors': [],
-            'preset_colors': ['e'] * 4,
+            'preset_colors': ['xkcd:cement'] * 4,
             'sizes': d[5],
             'enabled_user_basis': np.empty((1, 3)),
             'user_basis': np.zeros((5, 3)),
@@ -187,6 +187,9 @@ class full_window(QW.QMainWindow):
                 self.layout_preset_basis.addWidget(el, i + 1, j)
             el = QW.QComboBox()
             el.addItems(self.colors)
+            el.activated[str].connect(
+                lambda i=i, el=el: self.update_basis_color(
+                    'preset', i, el.currentText()))
             self.preset_basis_color_widgets[i] = el
             self.layout_preset_basis.addWidget(el, i + 1, n_coords)
         self.current_basis_layout = self.layout_preset_basis
@@ -228,6 +231,10 @@ class full_window(QW.QMainWindow):
             # Add a color lineedit for each basis atom
             el = QW.QComboBox()
             el.addItems(self.colors)
+            el.activated[str].connect(
+                lambda i=i, el=el: self.update_basis_color(
+                    'user', i, el.currentText()))
+
             self.basis_color_widgets.append(el)
             self.layout_basis.addWidget(el, i + 1, n_coords)
 
@@ -331,11 +338,8 @@ class full_window(QW.QMainWindow):
     def update_basis_color(self, type_, num, text):
         colors = self.lattice_config['{}_colors'.format(type_)]
         text = text.lower()
-        if text not in self.allowed_colors:
-            print('you did wrong!')
-        else:
-            colors[num] = text
-            self.plot_lattice()
+        colors[num] = text
+        self.plot_lattice()
 
     def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
@@ -357,8 +361,6 @@ class full_window(QW.QMainWindow):
         n_preset_basis = np.atleast_2d(preset_basis).shape[0]
         preset_colors = preset_colors[:n_preset_basis]
         colors = preset_colors + user_colors
-        # List comprehension to change 'e' to 'xkcd:cement'
-        colors = ['xkcd:cement' if i == 'e' else i for i in colors]
 
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
