@@ -267,6 +267,10 @@ class full_window(QW.QMainWindow):
             lambda: self.hide_basis_widgets(3))
         self.basis_check_widgets[4].stateChanged.connect(
             lambda: self.hide_basis_widgets(4))
+
+        # We also reset the basis and colors:
+        self.lattice_config = self.default_config.copy()
+
         self.current_basis_layout = self.layout_basis
         self.layout_options.addLayout(self.layout_basis)
 
