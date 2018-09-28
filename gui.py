@@ -121,6 +121,11 @@ class full_window(QW.QMainWindow):
 
     def create_options(self):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+        self.parameter_text = ['a', 'b', 'c', 'alpha (degrees)',
+                               'beta (degrees)', 'gamma (degrees)']
+        self.parameter_tooltips = ['', '', '', 'Angle between side 1 and 3',
+                                   'Angle between side 1 and 2',
+                                   'Angle between side 2 and 3']
         self.param_labels = []
         self.param_fields = []
         self.layout_options = QW.QVBoxLayout()
@@ -139,11 +144,13 @@ class full_window(QW.QMainWindow):
         self.layout_parameters = QW.QFormLayout()
         self.layout_parameters.addRow(self.button_show, self.lattice_chooser)
 
-        for name in self.parameter_names:
+        for n, name in enumerate(self.parameter_names):
             # Create all the parameter labels and fields.
-
-            self.param_labels.append(QW.QLabel(name, self))
+            label = QW.QLabel(self.parameter_text[n], self)
+            label.setToolTip(self.parameter_tooltips[n])
+            self.param_labels.append(label)
             field = QW.QLineEdit()
+            field.setToolTip(self.parameter_tooltips[n])
 
             # Only allow floats and 2 decimals to input
             field.setValidator(QG.QDoubleValidator(decimals=2))
