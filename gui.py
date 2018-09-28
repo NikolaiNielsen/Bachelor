@@ -58,13 +58,13 @@ class full_window(QW.QMainWindow):
             'a': 1,
             'b': 1.2,
             'c': 1.5,
-            'theta': 80,
+            'alpha': 80,
             'beta': 70,
             'gamma': 60,
             'lattice': 'simple cubic',
             'max_preset_basis': 4
         }
-        # Needed parameters for each lattice (a, b, c, theta, beta, gamma)
+        # Needed parameters for each lattice (a, b, c, alpha, beta, gamma)
         self.needed_params = {
             'simple cubic': [0],
             'bcc': [0],
@@ -120,7 +120,7 @@ class full_window(QW.QMainWindow):
         self.static_ax.mouse_init()
 
     def create_options(self):
-        self.parameter_names = ['a', 'b', 'c', 'theta', 'beta', 'gamma']
+        self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
         self.param_labels = []
         self.param_fields = []
         self.layout_options = QW.QVBoxLayout()
@@ -281,13 +281,13 @@ class full_window(QW.QMainWindow):
         a = self.lattice_config['a']
         b = self.lattice_config['b']
         c = self.lattice_config['c']
-        theta = self.lattice_config['theta'] * np.pi / 180
+        alpha = self.lattice_config['alpha'] * np.pi / 180
         beta = self.lattice_config['beta'] * np.pi / 180
         gamma = self.lattice_config['gamma'] * np.pi / 180
         name = self.lattice_config['lattice']
         (a1, a2, a3), basis, _ = lattices.chooser(lattice_name=name,
                                                   a=a, b=b, c=c,
-                                                  theta=theta,
+                                                  alpha=alpha,
                                                   beta=beta,
                                                   gamma=gamma)
 
