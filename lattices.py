@@ -457,8 +457,8 @@ def classifier(a1, a2, a3, basis):
 def chooser(lattice_name="simple cubic",
             a=1, b=1.25, c=1.5,
             alpha=80 * np.pi / 180,
-            gamma=70 * np.pi / 180,
-            beta=60 * np.pi / 180, verbose=False):
+            beta=60 * np.pi / 180,
+            gamma=70 * np.pi / 180, verbose=False):
     """
     Outputs the chosen lattice and basis
     """
