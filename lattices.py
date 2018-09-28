@@ -538,8 +538,8 @@ def chooser(lattice_name="simple cubic",
     # HCP (just hexagonal)
     L["hcp"] = lhexa1
     # Triclinc stuff
-    cx = c * np.cos(beta)
-    cy = c * (np.cos(theta) - np.cos(beta) * np.cos(gamma)) / np.sin(gamma)
+    cx = c * np.cos(theta)
+    cy = c * (np.cos(beta) - np.cos(theta) * np.cos(gamma)) / np.sin(gamma)
     cz = np.sqrt(c**2 - cx**2 - cy**2)
     ltri = np.array([[a, 0, 0], [b * np.cos(gamma), b * np.sin(gamma), 0],
                      [cx, cy, cz]])
