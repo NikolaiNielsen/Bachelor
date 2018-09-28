@@ -456,7 +456,7 @@ def classifier(a1, a2, a3, basis):
 
 def chooser(lattice_name="simple cubic",
             a=1, b=1.25, c=1.5,
-            theta=80 * np.pi / 180,
+            alpha=80 * np.pi / 180,
             gamma=70 * np.pi / 180,
             beta=60 * np.pi / 180, verbose=False):
     """
@@ -465,7 +465,7 @@ def chooser(lattice_name="simple cubic",
     # inputs:
     # - lattice_name:       string
     # - a, b, c:            floats
-    # - theta, gamma, beta: floats, radians
+    # - alpha, gamma, beta: floats, radians
     #
     # outputs:
     # - lattice:            ndarray (3,3)
@@ -515,19 +515,19 @@ def chooser(lattice_name="simple cubic",
     L["orthorhombic base centred"] = lobase
     # simple monoclic
     lsmono = np.array([[a, 0, 0], [0, b, 0],
-                       [c * np.cos(theta), 0, c * np.sin(theta)]])
+                       [c * np.cos(alpha), 0, c * np.sin(alpha)]])
     L["simple monoclinic"] = lsmono
     # base centred monoclinic
     lbcmono = np.array([[a, 0, 0], [a / 2, b / 2, 0],
-                        [c * np.cos(theta), 0, c * np.sin(theta)]])
+                        [c * np.cos(alpha), 0, c * np.sin(alpha)]])
     L["base centred monoclinic"] = lbcmono
     # Base centred monoclinic (2)
     lbcmono2 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0],
-                         [c * np.cos(theta), 0, c * np.sin(theta)]])
+                         [c * np.cos(alpha), 0, c * np.sin(alpha)]])
     L["base centred monoclinic 2"] = lbcmono2
     # Base centred monoclinic (3)
     lbcmono3 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0],
-                         [a * np.cos(theta), 0, a * np.sin(theta)]])
+                         [a * np.cos(alpha), 0, a * np.sin(alpha)]])
     L["base centred monoclinic 1"] = lbcmono3
     # Hexagonal 1
     lhexa1 = np.array([[a, 0, 0], [a / 2, np.sqrt(3) * a / 2, 0], [0, 0, a]])
@@ -538,8 +538,8 @@ def chooser(lattice_name="simple cubic",
     # HCP (just hexagonal)
     L["hcp"] = lhexa1
     # Triclinc stuff
-    cx = c * np.cos(theta)
-    cy = c * (np.cos(beta) - np.cos(theta) * np.cos(gamma)) / np.sin(gamma)
+    cx = c * np.cos(alpha)
+    cy = c * (np.cos(beta) - np.cos(alpha) * np.cos(gamma)) / np.sin(gamma)
     cz = np.sqrt(c**2 - cx**2 - cy**2)
     ltri = np.array([[a, 0, 0], [b * np.cos(gamma), b * np.sin(gamma), 0],
                      [cx, cy, cz]])
