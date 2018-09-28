@@ -463,12 +463,14 @@ def chooser(lattice_name="simple cubic",
     Outputs the chosen lattice and basis
     """
     # inputs:
-    # - lattice_name:   string
+    # - lattice_name:       string
+    # - a, b, c:            floats
+    # - theta, gamma, beta: floats, radians
     #
     # outputs:
-    # - lattice:        ndarray (3,3)
-    # - basis:          ndarray (3,)/(n,3)
-    # - lattice_name:   string
+    # - lattice:            ndarray (3,3)
+    # - basis:              ndarray (3,)/(n,3)
+    # - lattice_name:       string
 
     # Let's just sanitize the input
     lattice_name = lattice_name.lower()
