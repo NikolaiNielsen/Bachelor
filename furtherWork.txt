@@ -14,5 +14,4 @@ fermi surface
 problems with orthorhombic face centred not always behaving (a=1, b=1.2, c=1.5)
 Problems with gridlines for base centred monoclinic
 Include instruction for use in jupyter notebook
-tooltip for parameters
 About section.
