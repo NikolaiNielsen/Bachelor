@@ -7,18 +7,20 @@ import scattering
 import band_structure
 import control
 
-eq = np.isclose
-
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [2, 2, 2])
+
+
+eq = np.isclose
 
 
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=None, arrows=True, grid=True,
-        verbose=False, returns=False, fig=None, ax=None, plots=True):
+        verbose=False, returns=False, fig=None, ax=None, plots=True,
+        rounder=True, checks=True):
     """
     Creates, limits and plots the lattice
     """
@@ -42,11 +44,14 @@ def Lattice(
                                                     lattice_name,
                                                     max_, min_,
                                                     lim_type,
+                                                    checks,
                                                     verbose)
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_type=unit_type)
+    if rounder:
+        r_min, r_max = np.around([r_min, r_max], decimals=5)
     if verbose:
         print("Limits found as: (type: {})".format(lim_type))
         print("r_min, r_max, n_min, n_max:")
@@ -61,6 +66,9 @@ def Lattice(
 
     objects = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                  n_min, n_max)
+    if rounder:
+        atomic_positions = np.around(objects[0], decimals=5)
+        objects = [atomic_positions] + [i for i in objects[1:]]
     if verbose:
         print("Number of atoms and lattice points before limiting:")
         print(objects[0].size / 3, np.sum(objects[-1]))

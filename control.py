@@ -4,7 +4,7 @@ import lattices
 
 def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
                                unit_type, lattice_name,
-                               max_, min_, lim_type, verbose):
+                               max_, min_, lim_type, checks, verbose):
     # Input sanitization:
 
     if lattice_name is not None:
@@ -17,9 +17,11 @@ def lattice_input_sanitization(a1, a2, a3, basis, colors, sizes, grid_type,
         basis = np.array(basis)
         lattice_type = lattices.classifier(a1, a2, a3, basis)
 
-        # Rotate the lattice
-        a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
-                                             lattice_type, verbose=verbose)
+        if checks:
+            # Rotate the lattice, but only if we actually need to check it (for
+            # example when we're not dealing with the gui)
+            a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
+                                                 lattice_type, verbose=verbose)
     lattice = np.array([a1, a2, a3])
 
     # We need the number of basis-vectors.

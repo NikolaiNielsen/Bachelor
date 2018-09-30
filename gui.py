@@ -386,7 +386,8 @@ class full_window(QW.QMainWindow):
                                                   fig=self.static_fig,
                                                   ax=self.static_ax,
                                                   returns=True,
-                                                  plots=False)
+                                                  plots=False,
+                                                  checks=False)
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
