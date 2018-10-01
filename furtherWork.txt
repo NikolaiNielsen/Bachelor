@@ -11,7 +11,6 @@ fermi surface
 - Strong potential limit for harmonic (Find out why 1 is the strong potential limit)
 
 
-problems with orthorhombic face centred not always behaving (a=1, b=1.2, c=1.5)
 Problems with gridlines for base centred monoclinic
 Include instruction for use in jupyter notebook
 About section.
