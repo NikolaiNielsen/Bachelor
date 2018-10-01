@@ -6,6 +6,7 @@ import lattices
 import scattering
 import band_structure
 import control
+import gui
 
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
@@ -558,3 +559,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     if returns:
         return fig, ax, ax2
     plt.show()
+
+
+if __name__ == "__main__":
+    gui.main()
