@@ -19,6 +19,9 @@ class full_window(QW.QMainWindow):
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
         self.setWindowTitle(self.title)
+        bar = self.menuBar()
+        about = bar.addAction('About')
+        about.triggered.connect(self.about_section)
 
         # A list of names for available lattice presets
         self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
@@ -426,6 +429,14 @@ class full_window(QW.QMainWindow):
                     widget.setParent(None)
                 else:
                     self.delete_layout(item.layout())
+
+    def about_section(self):
+        author = 'Created by Nikolai Plambech Nielsen, lpk331@alumni.ku.dk.'
+        msg = QW.QMessageBox()
+        msg.setText('Visualizations of concepts in Condensed Matter Physics')
+        msg.setWindowTitle('About')
+        msg.setInformativeText(author)
+        msg.exec_()
 
     def tester(self, arg1, arg2):
         print(arg1, arg2)
