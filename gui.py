@@ -181,12 +181,21 @@ class full_window(QW.QMainWindow):
 
     def create_preset_basis(self, n_basis):
         # So far the largest number of atoms in a preset basis is 4.
-        self.layout_preset_basis = QW.QGridLayout()
+        self.layout_preset_basis = QW.QVBoxLayout()
+        self.basis_title = QW.QLabel('Basis coordinates')
+        self.basis_title.setAlignment(QC.Qt.AlignCenter)
+
+        font = QG.QFont()
+        font.setBold(True)
+        self.basis_title.setFont(font)
+        self.layout_preset_basis.addWidget(self.basis_title)
+
+        self.layout_preset_basis_grid = QW.QGridLayout()
         names = ['x', 'y', 'z', 'color']
         for n, name in enumerate(names):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
-            self.layout_preset_basis.addWidget(label, 0, n)
+            self.layout_preset_basis_grid.addWidget(label, 0, n)
         n_coords = 3
         self.preset_basis_coord_widgets = np.empty((n_basis, n_coords),
                                                    dtype=object)
@@ -198,27 +207,35 @@ class full_window(QW.QMainWindow):
                 if i == 0:
                     el.setText('0')
                 self.preset_basis_coord_widgets[i, j] = el
-                self.layout_preset_basis.addWidget(el, i + 1, j)
+                self.layout_preset_basis_grid.addWidget(el, i + 1, j)
             el = QW.QComboBox()
             el.addItems(self.colors)
             el.activated[str].connect(
                 lambda i=i, el=el: self.update_basis_color(
                     'preset', self.preset_basis_color_widgets.index(el), i))
             self.preset_basis_color_widgets.append(el)
-            self.layout_preset_basis.addWidget(el, i + 1, n_coords)
+            self.layout_preset_basis_grid.addWidget(el, i + 1, n_coords)
+        self.layout_preset_basis.addLayout(self.layout_preset_basis_grid)
         self.current_basis_layout = self.layout_preset_basis
         self.layout_options.addLayout(self.layout_preset_basis)
 
     def create_user_basis(self):
         # Basis-stuff
-        self.layout_basis = QW.QGridLayout()
+        font = QG.QFont()
+        font.setBold(True)
+        self.layout_basis = QW.QVBoxLayout()
+        self.basis_title = QW.QLabel('Basis coordinates')
+        self.basis_title.setAlignment(QC.Qt.AlignCenter)
+        self.basis_title.setFont(font)
+        self.layout_basis.addWidget(self.basis_title)
+        self.layout_basis_grid = QW.QGridLayout()
         n_basis = 5
         n_coords = 3
         names = ['x', 'y', 'z', 'color']
         for n, name in enumerate(names):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
-            self.layout_basis.addWidget(label, 0, n)
+            self.layout_basis_grid.addWidget(label, 0, n)
         self.basis_coord_widgets = np.empty((n_basis, n_coords),
                                             dtype=object)
         self.basis_color_widgets = []
@@ -241,7 +258,7 @@ class full_window(QW.QMainWindow):
                 # Add the QLineEdit to the array of basis coordinate widgets
                 # and to the layout
                 self.basis_coord_widgets[i, j] = el
-                self.layout_basis.addWidget(el, i + 1, j)
+                self.layout_basis_grid.addWidget(el, i + 1, j)
 
             # Add a color lineedit for each basis atom
             el = QW.QComboBox()
@@ -254,7 +271,7 @@ class full_window(QW.QMainWindow):
                     'user', self.basis_color_widgets.index(el), i))
 
             self.basis_color_widgets.append(el)
-            self.layout_basis.addWidget(el, i + 1, n_coords)
+            self.layout_basis_grid.addWidget(el, i + 1, n_coords)
 
             # Add a checkbox for each basis atom
             check = QW.QCheckBox()
@@ -266,7 +283,7 @@ class full_window(QW.QMainWindow):
 
             # Add the checkbox to the list of widgets, and the layout.
             self.basis_check_widgets.append(check)
-            self.layout_basis.addWidget(check, i + 1, n_coords + 2)
+            self.layout_basis_grid.addWidget(check, i + 1, n_coords + 2)
 
         # It's ugly but it works. We make the checkbox to stuff
         self.basis_check_widgets[0].stateChanged.connect(
@@ -284,6 +301,7 @@ class full_window(QW.QMainWindow):
         self.lattice_config = self.default_config.copy()
 
         self.current_basis_layout = self.layout_basis
+        self.layout_basis.addLayout(self.layout_basis_grid)
         self.layout_options.addLayout(self.layout_basis)
 
     def update_lattice(self):
