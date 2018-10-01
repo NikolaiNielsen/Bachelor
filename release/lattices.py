@@ -2,7 +2,6 @@
 import itertools
 
 import numpy as np
-import exercise
 
 eq = np.isclose
 
@@ -134,14 +133,10 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
         for ny in range(n_min[1], n_max[1] + 1):
             for nz in range(n_min[2], n_max[2] + 1):
                 lattice_coefficients[counter, ] = np.array([nx, ny, nz]).T
-                # position = nx * a1 + ny * a2 + nz * a3
-                position, basis_position = exercise.lattice_position(
-                    a1, a2, a3, nx, ny, nz, basis
-                )
+                position = nx * a1 + ny * a2 + nz * a3
                 for n_atom in range(n_basis):
-                    # atomic_positions[counter, ] = (position +
-                    #                                basis[n_atom, ])
-                    atomic_positions[counter, ] = basis_position[n_atom, ]
+                    atomic_positions[counter, ] = (position +
+                                                   basis[n_atom, ])
                     atomic_colors.append(colors[n_atom])
                     atomic_sizes.append(size_default * sizes[n_atom])
 

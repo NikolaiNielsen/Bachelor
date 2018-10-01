@@ -12,5 +12,3 @@ fermi surface
 
 
 Problems with gridlines for base centred monoclinic
-Include instruction for use in jupyter notebook
-About section.
