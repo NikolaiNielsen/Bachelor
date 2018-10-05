@@ -15,6 +15,16 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
+        self.lattice_window = lattice_window()
+        self.layout_main.addWidget(self.lattice_window)
+
+
+class lattice_window(QW.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self._main = QW.QWidget()
+        self.setCentralWidget(self._main)
+        self.layout_main = QW.QHBoxLayout(self._main)
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
