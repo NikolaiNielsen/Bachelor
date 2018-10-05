@@ -14,7 +14,7 @@ class full_window(QW.QMainWindow):
         super().__init__()
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
-        main_layout = QW.QHBoxLayout(self._main)
+        self.layout_main = QW.QHBoxLayout(self._main)
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
@@ -107,7 +107,7 @@ class full_window(QW.QMainWindow):
         # We create the options and add it to our main layout (it also creates
         # the basis fiels)
         self.create_options()
-        main_layout.addLayout(self.layout_options)
+        self.layout_main.addLayout(self.layout_options)
 
         # Enable only the needed parameter fields.
         for n in self.needed_params[self.lattice_config['lattice']]:
@@ -118,7 +118,7 @@ class full_window(QW.QMainWindow):
         # a toolbar. Lastly enable mouse support for Axes3D
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
-        main_layout.addWidget(self.static_canvas)
+        self.layout_main.addWidget(self.static_canvas)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
 
