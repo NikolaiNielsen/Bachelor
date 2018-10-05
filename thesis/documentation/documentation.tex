@@ -41,16 +41,23 @@
 	\maketitle
 	
 	\section{Introduction}
-	The program in this project is written in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages. As such those two packages are all you really need to run the software.
+	The program in this project is written in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages, with \href{www.pypi.org/project/PyQt5/}{PyQt5} being used for the GUI. The versions used in development was
+	\begin{itemize}
+		\item Python v3.6.5
+		\item NumPy v1.14.3
+		\item Matplotlib v2.2.2
+		\item PyQt 5.9.2
+	\end{itemize}
+	The program should work with newer versions, though maybe not if they are major overhauls (say going from Numpy 1.x.y to 2.x.y). You can find instructions on how to install the different packages on their respective websites.
 	
-	It is however recommended that you install \href{https://www.anaconda.com/}{Anaconda}, which is a Python distribution that also includes both NumPy and Matplotlib, along with a wealth of other packages useful for scientific computing. The \href{http://jupyter.org/}{Jupyter} package, especially, is useful, as it allows the user to write a bunch of small scripts (called cells) in a single file (called a notebook), and run the cells individually and quickly, while sharing the workspace between cells (i.e., variables persist between cells). A quick intro to Jupyter notebooks can be found at \href{http://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook Basics.ipynb}{this link}.
+	It is however recommended that you install \href{https://www.anaconda.com/}{Anaconda}, which is a Python distribution that also includes both NumPy, Matplotlib and PyQt5, along with a wealth of other packages useful for scientific computing. The \href{http://jupyter.org/}{Jupyter} package, especially, is useful, as it allows the user to write a bunch of small scripts (called cells) in a single file (called a notebook), and run the cells individually and quickly, while sharing the workspace between cells (i.e., variables persist between cells). A quick intro to Jupyter notebooks can be found at \href{http://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook Basics.ipynb}{this link}.
 	
 	\section{Installation}
 	As recommended we will install the Anaconda distribution. Download the software from here: \url{https://www.anaconda.com/download/}. Install the software, and when asked if you want to include Anaconda to the path (or something along those lines) say: ``Yes''. This will allow you to start Python from your command line/terminal with the command \texttt{python}.
 	
 	When Anaconda has been installed, you need the files from the project, these can be found on GitHub, at \url{https://github.com/NikolaiNielsen/Bachelor} (Or a \href{https://github.com/NikolaiNielsen/Bachelor/archive/master.zip}{direct download link}).
 	
-	Extract the code from the archive. The files \texttt{cmp.py}, \texttt{lattices.py}, \texttt{scattering.py}, \texttt{band\_structure.py} are all necessary, while \texttt{test.ipynb} includes some code examples.
+	Extract the code from the archive. The files \texttt{cmp.py}, \texttt{lattices.py}, \texttt{scattering.py}, \texttt{band\_structure.py} and \texttt{gui.py} are all necessary, while \texttt{test.ipynb} includes some code examples.
 	
 	To run the code you can do one of a couple of things:
 	\begin{itemize}
@@ -63,9 +70,10 @@
 	\section{Usage}
 	The first commands you need to type is
 	\begin{lstlisting}
+%matplotlib notebook
 from cmp import *
-%matplotlib notebook\end{lstlisting}
-	The first line will import the 4 main functions, \texttt{Lattices}, \texttt{Reciprocal}, \texttt{Scattering} and \texttt{Band\_structure}, along with the numpy package (accessed as \texttt{np}) and pyplot package (a subpackage of matplotlib, accessed as \texttt{plt}). The second line is only needed when using Jupyter notebooks, and makes the plots interactive (this line may need to be executed twice for it to work properly).
+	\end{lstlisting}
+	The second line will import the 4 main functions, \texttt{Lattices}, \texttt{Reciprocal}, \texttt{Scattering} and \texttt{Band\_structure}, along with the numpy package (accessed as \texttt{np}) and pyplot package (a subpackage of matplotlib, accessed as \texttt{plt}). The first line is only needed when using Jupyter notebooks, and makes the plots interactive.
 	
 	Now you can start using the 4 functions to plot things. The functions take the following arguments:
 	\subsection{\texorpdfstring{\texttt{Lattice()}}{Lattice}}

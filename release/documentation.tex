@@ -1,0 +1,76 @@
+% Nikolai Nielsens "Fysiske Fag" preamble
+\documentclass[a4paper,11pt]{article}
+\usepackage[english]{babel}
+\usepackage{Nikolai}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{wrapfig}
+
+\usepackage{pdfpages}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{Maroon}{RGB}{175,50,53}
+\definecolor{OliveGreen}{RGB}{60,128,49}
+\definecolor{Orange}{RGB}{245,129,55}
+
+\lstset{ %
+	language=python,
+	numbers=left,
+	stepnumber=1,
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false, 
+	tabsize=4,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries\color{Maroon},
+	commentstyle=\itshape\color{OliveGreen},
+	identifierstyle=\color{blue},
+	stringstyle=\color{Orange},
+}
+
+% Til nummerering af ligninger. Så der står (afsnit.ligning) og ikke bare (ligning)
+\numberwithin{equation}{section}
+
+\newcommand{\coef}[1]{_{[#1]}}
+
+\title{Documentation for the \texorpdfstring{\texttt{cmp.py}}{cmp.py} script}
+\date{}
+
+\begin{document}
+	\maketitle
+	
+	\section{Introduction}
+	The program in this project is written in the open source programming language \href{www.python.org}{Python}, using the standard library, along with the \href{www.numpy.org}{NumPy} and \href{www.matplotlib.org}{Matplotlib} packages, with \href{www.pypi.org/project/PyQt5/}{PyQt5} being used for the GUI. The versions used in development was
+	\begin{itemize}
+		\item Python 3.6.5
+		\item NumPy 1.14.3
+		\item Matplotlib 2.2.2
+		\item PyQt 5.9.2
+	\end{itemize}
+	The program should work with newer versions, though maybe not if they are major updates (where a package changes its leftmost version number). You can find instructions on how to install the different packages on their respective websites.
+	
+	It is however recommended that you install \href{https://www.anaconda.com/}{Anaconda}, which is a Python distribution that also includes both NumPy, Matplotlib and PyQt5, along with a wealth of other packages useful for scientific computing. The \href{http://jupyter.org/}{Jupyter} package, especially, is useful, as it allows the user to write a bunch of small scripts (called cells) in a single file (called a notebook), and run the cells individually and quickly, while sharing the workspace between cells (i.e., variables persist between cells). A quick intro to Jupyter notebooks can be found at \href{http://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook Basics.ipynb}{this link}.
+	
+	\section{Installation}
+	As recommended we will install the \href{https://www.anaconda.com/download/}{Anaconda distribution}. Download and install the software, and when asked if you want to include Anaconda to the path (or something along those lines) say: ``Yes''. This will allow you to start Python from your command line/terminal with the command \texttt{python}.
+	
+	Next you will need the files \texttt{cmp.py}, \texttt{lattices.py}, \texttt{gui.py} and \texttt{notebook.ipynb}, which can be found on the course page, or at \href{https://github.com/NikolaiNielsen/Bachelor/tree/gui/release}{the following GitHub page}.
+	
+	\section{Usage}
+	There are two main ways of starting the program. Either directly from the command line or from a Jupyter Notebook. Using the command line:
+	\begin{itemize}
+		\item Start the terminal/command line
+		\item navigate to the directory where you downloaded the files to.
+		\item type \texttt{python cmp.py} and press return.
+	\end{itemize}
+	or using Jupyter Notebooks:
+	\begin{itemize}
+		\item Start Jupyter Notebooks. Either by opening the terminal/command line and typing \texttt{jupyter notebook}, or by opening the program \texttt{anaconda-navigator}, installed with Anaconda, and then launch Jupyter Notebooks from there
+		\item A browser window should have appeared. Navigate to the directory where you downloaded the files to and open the file \texttt{notebook.ipynb}.
+		\item in the open cell type \texttt{run cmp.py} and press ctrl+return to run the cell.
+	\end{itemize}
+	
+	
+
+\end{document}

@@ -5,20 +5,22 @@ from mpl_toolkits.mplot3d import Axes3D
 import lattices
 import scattering
 import band_structure
-import control
+import gui
 
-eq = np.isclose
-
-d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]), 
+d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [2, 2, 2])
+
+
+eq = np.isclose
 
 
 def Lattice(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=None, arrows=True, grid=True,
-        verbose=False, returns=False, fig=None, ax=None, plots=True):
+        verbose=False, returns=False, fig=None, ax=None, plots=True,
+        rounder=True, checks=True):
     """
     Creates, limits and plots the lattice
     """
@@ -32,21 +34,97 @@ def Lattice(
     num_plane_points = 20
 
     # Input sanitization
-    (a1, a2, a3, lattice, basis, colors, sizes, grid_type, unit_type,
-     lattice_type, lattice_name, max_, min_,
-     lim_type) = control.lattice_input_sanitization(a1, a2, a3,
-                                                    basis, colors,
-                                                    sizes,
-                                                    grid_type,
-                                                    unit_type,
-                                                    lattice_name,
-                                                    max_, min_,
-                                                    lim_type,
-                                                    verbose)
+    if lattice_name is not None:
+        lattice, basis, lattice_type = lattices.chooser(lattice_name,
+                                                        verbose=verbose)
+        a1, a2, a3 = lattice
+        # Classify the lattice
+    else:
+        a1, a2, a3 = np.array([a1, a2, a3])
+        basis = np.array(basis)
+        lattice_type = lattices.classifier(a1, a2, a3, basis)
+
+        if checks:
+            # Rotate the lattice, but only if we actually need to check it (for
+            # example when we're not dealing with the gui)
+            a1, a2, a3, basis = lattices.rotator(a1, a2, a3, basis,
+                                                 lattice_type, verbose=verbose)
+    lattice = np.array([a1, a2, a3])
+
+    # We need the number of basis-vectors.
+    # If there is only 1 basis vector, then len(np.shape(basis)) == 1
+    # otherwise the length is 2, and the first element is number of basis
+    # vectors
+    length_basis = np.shape(basis)
+    if len(length_basis) == 1:
+        n_basis = 1
+    elif len(length_basis) > 1:
+        n_basis = length_basis[0]
+
+    # Make a list, n_basis long, for the colors and sizes,
+    # if they're not specified.
+    c_name = colors.__class__.__name__
+    if c_name == "str":
+        c = colors
+        colors = []
+        for i in range(n_basis):
+            colors.append(c)
+    elif c_name == "list" and len(colors) < n_basis:
+        c = colors[0]
+        colors = []
+        for i in range(n_basis):
+            colors.append(c)
+
+    s_name = sizes.__class__.__name__
+    if s_name == "int" or s_name == "float":
+        s = sizes
+        sizes = []
+        for i in range(n_basis):
+            sizes.append(s)
+    elif s_name == "list" and len(sizes) < n_basis:
+        s = sizes[0]
+        sizes = []
+        for i in range(n_basis):
+            sizes.append(s)
+
+    # Choosing gridline and unit cell type. First the default settings.
+    latticelines = lattices.latticelines
+    unitcells = lattices.unitcells
+
+    if grid_type is None:
+        grid_type = latticelines[lattice_type]
+
+    if unit_type is None:
+        unit_type = unitcells[lattice_type]
+    else:
+        try:
+            unit_type = unit_type.lower()
+        except AttributeError:
+            print('Please input a string for unit_type. Giving primitive')
+            unit_type = "primitive"
+
+        if unit_type not in ["primitive", "conventional"]:
+            print(("Input either 'primitive' or 'conventional' for type."
+                   " Giving 'primitive'"))
+            unit_type = "primitive"
+
+    # Ugly hack for fixing bcc involving juggling of limits, so we plot 2 unit
+    # cells (conventional) in each direction
+    if (lattice_type in ['bcc', 'tetragonal body centred',
+                         'orthorhombic body centred'] and
+        max_ == [2, 2, 2] and lim_type == "proper" and (
+            unit_type == "conventional")):
+        max_ = [0, 0, 4]
+    elif ('base centred' in lattice_type and max_ == [2, 2, 2] and
+          lim_type == "proper" and unit_type == "conventional"):
+        max_ = [0, 4, 2]
+
     # set the range of lattice vectors to be calculated
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_type=unit_type)
+    if rounder:
+        r_min, r_max = np.around([r_min, r_max], decimals=5)
     if verbose:
         print("Limits found as: (type: {})".format(lim_type))
         print("r_min, r_max, n_min, n_max:")
@@ -61,6 +139,9 @@ def Lattice(
 
     objects = lattices.generator(a1, a2, a3, basis, colors, sizes,
                                  n_min, n_max)
+    if rounder:
+        atomic_positions = np.around(objects[0], decimals=5)
+        objects = [atomic_positions] + [i for i in objects[1:]]
     if verbose:
         print("Number of atoms and lattice points before limiting:")
         print(objects[0].size / 3, np.sum(objects[-1]))
@@ -550,3 +631,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     if returns:
         return fig, ax, ax2
     plt.show()
+
+
+if __name__ == "__main__":
+    gui.main()
