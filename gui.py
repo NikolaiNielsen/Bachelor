@@ -101,9 +101,6 @@ class full_window(QW.QMainWindow):
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
 
-        # A list of allowed colors
-        self.allowed_colors = ['b', 'r', 'g', 'y', 'k', 'w', 'm', 'c', 'e']
-
         # We create the options and add it to our main layout (it also creates
         # the basis fiels)
         self.create_options()
