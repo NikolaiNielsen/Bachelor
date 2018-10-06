@@ -78,7 +78,26 @@ class lattice_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
+        self.create_variables()
+        # We create the options and add it to our main layout (it also creates
+        # the basis fiels)
+        self.create_options()
+        self.layout_main.addLayout(self.layout_options)
 
+        # Enable only the needed parameter fields.
+        for n in self.needed_params[self.lattice_config['lattice']]:
+            self.param_fields[n].setEnabled(True)
+
+        # Create the default plot and return the figure and axis objects for
+        # it. Then create the FigureCanvas, add them all to the layout and add
+        # a toolbar. Lastly enable mouse support for Axes3D
+        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
+        self.static_canvas = FigureCanvas(self.static_fig)
+        self.layout_main.addWidget(self.static_canvas)
+        self.addToolBar(NavigationToolbar(self.static_canvas, self))
+        self.static_ax.mouse_init()
+
+    def create_variables(self):
         # A list of names for available lattice presets
         self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
                          'tetragonal', 'tetragonal body centred',
@@ -156,24 +175,6 @@ class lattice_window(QW.QMainWindow):
         }
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
-
-        # We create the options and add it to our main layout (it also creates
-        # the basis fiels)
-        self.create_options()
-        self.layout_main.addLayout(self.layout_options)
-
-        # Enable only the needed parameter fields.
-        for n in self.needed_params[self.lattice_config['lattice']]:
-            self.param_fields[n].setEnabled(True)
-
-        # Create the default plot and return the figure and axis objects for
-        # it. Then create the FigureCanvas, add them all to the layout and add
-        # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
-        self.static_canvas = FigureCanvas(self.static_fig)
-        self.layout_main.addWidget(self.static_canvas)
-        self.addToolBar(NavigationToolbar(self.static_canvas, self))
-        self.static_ax.mouse_init()
 
     def create_options(self):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
