@@ -23,8 +23,26 @@ class full_window(QW.QMainWindow):
         self.title = "Crystal Structure"
         self.setWindowTitle(self.title)
         bar = self.menuBar()
+        programs = bar.addMenu('Programs')
+        lattices = programs.addAction('Crystal Structure')
+        lattices.triggered.connect(self.create_lattice)
+        scattering = programs.addAction('Scattering')
+        scattering.triggered.connect(self.create_scattering)
         about = bar.addAction('About')
         about.triggered.connect(self.about_section)
+
+    def create_lattice(self):
+        # First we delete the current main layout
+        self.delete_layout(self.layout_main)
+
+        # Next we create the new one
+        self.lattice_window = lattice_window()
+        self.layout_main.addWidget(self.lattice_window)
+
+    def create_scattering(self):
+        self.delete_layout(self.layout_main)
+        self.scattering_window = scattering_window()
+        self.layout_main.addWidget(self.scattering_window)
 
     def about_section(self):
         author = 'Created by Nikolai Plambech Nielsen, lpk331@alumni.ku.dk.\n'
@@ -482,6 +500,15 @@ class lattice_window(QW.QMainWindow):
                     widget.setParent(None)
                 else:
                     self.delete_layout(item.layout())
+
+
+class scattering_window(QW.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = QW.QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.layout.addWidget(QW.QLabel('hello'))
 
 
 def main():
