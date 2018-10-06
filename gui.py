@@ -18,13 +18,6 @@ class full_window(QW.QMainWindow):
         self.lattice_window = lattice_window()
         self.layout_main.addWidget(self.lattice_window)
 
-
-class lattice_window(QW.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self._main = QW.QWidget()
-        self.setCentralWidget(self._main)
-        self.layout_main = QW.QHBoxLayout(self._main)
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
         self.title = "Crystal Structure"
@@ -32,6 +25,41 @@ class lattice_window(QW.QMainWindow):
         bar = self.menuBar()
         about = bar.addAction('About')
         about.triggered.connect(self.about_section)
+
+    def about_section(self):
+        author = 'Created by Nikolai Plambech Nielsen, lpk331@alumni.ku.dk.\n'
+        author2 = 'The whole code can be found on '
+        author3 = 'https://github.com/NikolaiNielsen/bachelor'
+        author = author + author2 + author3
+        msg = QW.QMessageBox()
+        msg.setText('Visualizations of concepts in Condensed Matter Physics')
+        msg.setWindowTitle('About')
+        msg.setInformativeText(author)
+        msg.exec_()
+
+    def delete_layout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                else:
+                    self.delete_layout(item.layout())
+
+    def tester(self, arg1, arg2):
+        print(arg1, arg2)
+
+    def quit(self):
+        sys.exit()
+
+
+class lattice_window(QW.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self._main = QW.QWidget()
+        self.setCentralWidget(self._main)
+        self.layout_main = QW.QHBoxLayout(self._main)
 
         # A list of names for available lattice presets
         self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
@@ -454,20 +482,6 @@ class lattice_window(QW.QMainWindow):
                     widget.setParent(None)
                 else:
                     self.delete_layout(item.layout())
-
-    def about_section(self):
-        author = 'Created by Nikolai Plambech Nielsen, lpk331@alumni.ku.dk.'
-        msg = QW.QMessageBox()
-        msg.setText('Visualizations of concepts in Condensed Matter Physics')
-        msg.setWindowTitle('About')
-        msg.setInformativeText(author)
-        msg.exec_()
-
-    def tester(self, arg1, arg2):
-        print(arg1, arg2)
-
-    def quit(self):
-        sys.exit()
 
 
 def main():
