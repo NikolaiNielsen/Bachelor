@@ -277,7 +277,8 @@ def Scattering(lattice_name='simple cubic',
                verbose=False,
                returns=False,
                colors=None,
-               laue_scale=1):
+               laue_scale=1,
+               plots=False):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     g_col = 'k'
@@ -630,7 +631,9 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
 
     if returns:
         return fig, ax, ax2
-    plt.show()
+
+    if plots:
+        plt.show()
 
 
 if __name__ == "__main__":
