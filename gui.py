@@ -83,17 +83,15 @@ class lattice_window(QW.QMainWindow):
         # the basis fiels)
         self.create_options()
         self.layout_main.addLayout(self.layout_options)
+        self.create_plot_window()
+        self.layout_main.addWidget(self.static_canvas)
 
-        # Enable only the needed parameter fields.
-        for n in self.needed_params[self.lattice_config['lattice']]:
-            self.param_fields[n].setEnabled(True)
-
+    def create_plot_window(self):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
         self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
-        self.layout_main.addWidget(self.static_canvas)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
 
@@ -231,6 +229,9 @@ class lattice_window(QW.QMainWindow):
                                           self.param_fields[n])
 
         self.layout_options.addLayout(self.layout_parameters)
+        # Enable only the needed parameter fields.
+        for n in self.needed_params[self.lattice_config['lattice']]:
+            self.param_fields[n].setEnabled(True)
         self.create_user_basis()
 
     def create_preset_basis(self, n_basis):
@@ -503,13 +504,9 @@ class lattice_window(QW.QMainWindow):
                     self.delete_layout(item.layout())
 
 
-class scattering_window(QW.QWidget):
+class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
-        self.layout = QW.QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.layout.addWidget(QW.QLabel('hello'))
 
 
 def main():
