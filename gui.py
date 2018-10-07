@@ -508,6 +508,88 @@ class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
 
+    def create_variables(self):
+        self.lattices = ['simple cubic', 'conventional fcc',
+                         'conventional bcc']
+        self.colors = [
+            'xkcd:cement', 'red', 'blue', 'green', 'cyan',
+            'magenta', 'black', 'yellow']
+        # A dictionary of the default values for lattice plotting
+        self.default_config = {
+            'a1': d[0],
+            'a2': d[1],
+            'a3': d[2],
+            'preset_basis': d[3],
+            'user_colors': ['xkcd:cement'] * 5,
+            'enabled_user_colors': ['xkcd:cement'],
+            'preset_colors': ['xkcd:cement'] * 4,
+            'sizes': d[5],
+            'enabled_user_basis': np.zeros((1, 3)),
+            'user_basis': np.zeros((5, 3)),
+            'lattice': 'simple cubic',
+            'max_preset_basis': 4
+        }
+        self.presets_with_basis = {
+            'wurtzite': 4,
+            'diamond': 2,
+            'zincblende': 2,
+            'conventional fcc': 4,
+            'conventional bcc': 2
+        }
+        self.lattice_config = self.default_config.copy()
+
+    def create_plot_window(self):
+        # Create the default plot and return the figure and axis objects for
+        # it. Then create the FigureCanvas, add them all to the layout and add
+        # a toolbar. Lastly enable mouse support for Axes3D
+        self.static_fig, self.static_ax, self.static_ax2 = Scattering(
+            returns=True, plots=False)
+        self.static_canvas = FigureCanvas(self.static_fig)
+        self.addToolBar(NavigationToolbar(self.static_canvas, self))
+        self.static_ax.mouse_init()
+        self.static_ax2.mouse_init()
+
+    def create_options(self):
+        self.layout_options = QW.QVBoxLayout()
+        # Create the lattice chooser dropdown
+        self.lattice_chooser = QW.QComboBox(self)
+        self.lattice_chooser.addItems(self.lattices)
+        sep_index = len(self.lattices) - len(self.presets_with_basis)
+        self.lattice_chooser.insertSeparator(sep_index)
+        self.lattice_chooser.activated[str].connect(self.update_lattice_name)
+        self.layout_options.addWidget(self.lattice_chooser)
+        self.create_user_basis()
+
+    def update_lattice_name(self, text):
+        # Delete current basis layout.
+        self.delete_layout(self.current_basis_layout)
+        if text in self.presets_with_basis:
+            # We have a preset with a basis, so we delete the user basis and
+            # load the preset basis
+            self.create_preset_basis(self.presets_with_basis[text])
+            self.current_basis_layout = self.layout_preset_basis
+        else:
+            self.create_user_basis()
+            self.current_basis_layout = self.layout_basis
+
+        self.lattice_config['lattice'] = text
+
+        # And then we update the lattice
+        self.update_lattice()
+
+    def update_lattice(self):
+        # Grab a new lattice based on the parameters in lattice_config
+        a = 1
+        name = self.lattice_config['lattice']
+        (a1, a2, a3), basis, _ = lattices.chooser(lattice_name=name, a=a)
+
+        # Update primitive lattice vectors and (preset) basis.
+        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
+                                            (a1, a2, a3, basis))))
+        if name in self.presets_with_basis:
+            self.update_preset_basis_widgets()
+        self.plot_lattice()
+
 
 def main():
     qapp = QW.QApplication(sys.argv)
