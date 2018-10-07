@@ -547,7 +547,6 @@ class scattering_window(lattice_window):
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
-        self.static_ax2.mouse_init()
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
