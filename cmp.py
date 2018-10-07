@@ -234,7 +234,8 @@ def Reciprocal(
         a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=(1, 1, 1), arrows=True, grid=True,
-        verbose=False, returns=False):
+        verbose=False, returns=False, fig=None, ax=None, plots=True,
+        rounder=True, checks=True):
     if returns:
         fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
                           basis=basis,
@@ -249,7 +250,10 @@ def Reciprocal(
                           arrows=arrows,
                           grid=grid,
                           verbose=verbose,
-                          returns=True)
+                          returns=True,
+                          rounder=rounder,
+                          checks=checks,
+                          plots=plots)
         return fig, ax
     else:
         Lattice(a1=a1, a2=a2, a3=a3,
@@ -264,7 +268,10 @@ def Reciprocal(
                 indices=indices,
                 arrows=arrows,
                 grid=grid,
-                verbose=verbose)
+                verbose=verbose,
+                rounder=rounder,
+                checks=checks,
+                plots=plots)
 
 
 def Scattering(lattice_name='simple cubic',
