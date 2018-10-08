@@ -580,11 +580,10 @@ class scattering_window(lattice_window):
         # Grab a new lattice based on the parameters in lattice_config
         a = 1
         name = self.lattice_config['lattice']
-        (a1, a2, a3), basis, _ = lattices.chooser(lattice_name=name, a=a)
+        _, basis, _ = lattices.chooser(lattice_name=name, a=a)
 
         # Update primitive lattice vectors and (preset) basis.
-        self.lattice_config.update(dict(zip(('a1', 'a2', 'a3', 'preset_basis'),
-                                            (a1, a2, a3, basis))))
+        self.lattice_config['preset_basis'] = basis
         if name in self.presets_with_basis:
             self.update_preset_basis_widgets()
         self.plot_lattice()
