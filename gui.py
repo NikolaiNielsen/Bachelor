@@ -613,10 +613,10 @@ class scattering_window(lattice_window):
             el.editingFinished.connect(
                 lambda i=i, el=el: self.update_form_factor(i, el.text()))
             self.form_factor_fields.append(el)
-            self.current_layout.addWidget(el, i + 1, 4)
+            self.current_basis_layout.addWidget(el, i + 1, 4)
             if move_checkboxes:
                 el = self.basis_check_widgets[i]
-                self.current_layout.addWidget(el, i + 1, 5)
+                self.current_basis_layout.addWidget(el, i + 1, 5)
 
     def update_form_factor(self, i, text):
         print(i, text)
