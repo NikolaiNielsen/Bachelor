@@ -173,6 +173,7 @@ class lattice_window(QW.QMainWindow):
         }
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
+        self.current = 'user'
 
     def create_options(self):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
@@ -303,8 +304,7 @@ class lattice_window(QW.QMainWindow):
                 el.setText(str(0))
                 # We want the first to be enabled
                 el.setEnabled(i == 0)
-                el.setValidator(
-                    QG.QDoubleValidator(decimals=2))
+                el.setValidator(QG.QDoubleValidator(decimals=2))
                 # Pass basis and coordinate number, along with value, to
                 # update_basis_val
                 el.editingFinished.connect(
@@ -389,9 +389,11 @@ class lattice_window(QW.QMainWindow):
             # load the preset basis
             self.create_preset_basis(self.presets_with_basis[text])
             self.current_basis_layout = self.layout_preset_basis
+            self.current = 'preset'
         else:
             self.create_user_basis()
             self.current_basis_layout = self.layout_basis
+            self.current = 'user'
 
         self.lattice_config['lattice'] = text
 
@@ -537,6 +539,7 @@ class scattering_window(lattice_window):
             'conventional bcc': 2
         }
         self.lattice_config = self.default_config.copy()
+        self.current = 'user'
 
     def create_plot_window(self):
         # Create the default plot and return the figure and axis objects for
@@ -567,11 +570,13 @@ class scattering_window(lattice_window):
             # load the preset basis
             self.create_preset_basis(self.presets_with_basis[text])
             self.current_basis_layout = self.layout_preset_basis
+            self.current = 'preset'
         else:
             self.create_user_basis()
             self.current_basis_layout = self.layout_basis
-
+            self.current = 'user'
         self.lattice_config['lattice'] = text
+        self.add_form_factors()
 
         # And then we update the lattice
         self.update_lattice()
@@ -587,6 +592,30 @@ class scattering_window(lattice_window):
         if name in self.presets_with_basis:
             self.update_preset_basis_widgets()
         self.plot_lattice()
+
+    def add_form_factors(self):
+        # This method runs whenever a basis has been created, to add the form
+        # factors. I do this because then I can reuse as much code as possible
+        # First we find out whether we're using a preset or user basis
+        if self.lattice_config['lattice'] in self.presets_with_basis:
+            lattice_name = self.lattice_config['lattice']
+            n_basis = self.presets_with_basis[lattice_name]
+            move_checkboxes = False
+        else:
+            n_basis = 5
+            move_checkboxes = True
+
+        self.form_factor_fields = []
+        for i in range(n_basis):
+            el = QW.QLineEdit()
+            el.setValidator(QG.QDoubleValidator(decimals=2))
+            self.form_factor_fields.append(el)
+            self.current_layout.addWidget(el, i + 1, 4)
+        
+
+
+
+
 
 
 def main():
