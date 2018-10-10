@@ -608,14 +608,18 @@ class scattering_window(lattice_window):
         self.form_factor_fields = []
         for i in range(n_basis):
             el = QW.QLineEdit()
+            el.setText('1')
             el.setValidator(QG.QDoubleValidator(decimals=2))
+            el.editingFinished.connect(
+                lambda i=i, el=el: self.update_form_factor(i, el.text()))
             self.form_factor_fields.append(el)
             self.current_layout.addWidget(el, i + 1, 4)
-        
+            if move_checkboxes:
+                el = self.basis_check_widgets[i]
+                self.current_layout.addWidget(el, i + 1, 5)
 
-
-
-
+    def update_form_factor(self, i, text):
+        print(i, text)
 
 
 def main():
