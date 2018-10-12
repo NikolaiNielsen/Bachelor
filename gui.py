@@ -523,6 +523,8 @@ class scattering_window(lattice_window):
             'a3': d[2],
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
+            'form_factors': [1] * 5,
+            'enabled_form_factors': [1],
             'enabled_user_colors': ['xkcd:cement'],
             'preset_colors': ['xkcd:cement'] * 4,
             'sizes': d[5],
@@ -594,17 +596,18 @@ class scattering_window(lattice_window):
         # This method runs whenever a basis has been created, to add the form
         # factors. I do this because then I can reuse as much code as possible
         # First we find out whether we're using a preset or user basis
+        place = 4
         if self.lattice_config['lattice'] in self.presets_with_basis:
             lattice_name = self.lattice_config['lattice']
             n_basis = self.presets_with_basis[lattice_name]
             self.current_basis_layout = self.layout_preset_basis_grid
             move_checkboxes = False
-            place = 4
         else:
             n_basis = 5
-            place = 4
             self.current_basis_layout = self.layout_basis_grid
             move_checkboxes = True
+
+        self.lattice_config['form_factors'] = [1] * n_basis
 
         self.form_factor_fields = []
         label = QW.QLabel('Form Factors')
@@ -613,6 +616,8 @@ class scattering_window(lattice_window):
         for i in range(n_basis):
             el = QW.QLineEdit()
             el.setText('1')
+            if i:
+                el.setEnabled(False)
             el.setValidator(QG.QDoubleValidator(decimals=2))
             el.editingFinished.connect(
                 lambda i=i, el=el: self.update_form_factor(i, el.text()))
@@ -623,7 +628,33 @@ class scattering_window(lattice_window):
                 self.current_basis_layout.addWidget(el, i + 1, place + 1)
 
     def update_form_factor(self, i, text):
-        print(i, text)
+        self.lattice_config['form_factor'][i] = float(text)
+        self.update_basis()
+
+    def hide_basis_widgets(self, basis_no):
+        # enable or disable basis coord widgets and update the basis
+        checkbox = self.basis_check_widgets[basis_no]
+        for le in self.basis_coord_widgets[basis_no]:
+            le.setEnabled(checkbox.isChecked())
+        self.form_factor_fields[basis_no].setEnabled(checkbox.isChecked())
+        self.update_basis()
+
+    def update_basis(self):
+        # We get a list of basis atoms that are enabled
+        enabled_basis_atoms = []
+        for i in self.basis_check_widgets:
+            enabled_basis_atoms.append(i.isChecked())
+        # update the enabled_user_basis config and plot the lattice with the
+        # new basis
+        new_basis = self.lattice_config['user_basis'][enabled_basis_atoms]
+        new_colors = self.lattice_config['user_colors']
+        new_colors = list(compress(new_colors, enabled_basis_atoms))
+        form_factors = self.lattice_config['form_factors']
+        form_factors = list(compress(form_factors, enabled_basis_atoms))
+        self.lattice_config['enabled_user_basis'] = new_basis
+        self.lattice_config['enabled_user_colors'] = new_colors
+        self.lattice_config['enabled_form_factors'] = form_factors
+        self.plot_lattice()
 
 
 def main():
