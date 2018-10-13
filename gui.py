@@ -616,7 +616,7 @@ class scattering_window(lattice_window):
         for i in range(n_basis):
             el = QW.QLineEdit()
             el.setText('1')
-            if i:
+            if i and move_checkboxes:
                 el.setEnabled(False)
             el.setValidator(QG.QDoubleValidator(decimals=2))
             el.editingFinished.connect(
@@ -671,11 +671,11 @@ class scattering_window(lattice_window):
             n_basis = np.atleast_2d(basis).shape[0]
             colors = self.lattice_config['preset_colors']
             colors = colors[:n_basis]
+            form_factors = self.lattice_config['form_factors']
         else:
             colors = self.lattice_config['enabled_user_colors']
             basis = self.lattice_config['enabled_user_basis']
-
-        form_factors = self.lattice_config['enabled_form_factors']
+            form_factors = self.lattice_config['enabled_form_factors']
 
         # Plot the new lattice
         self.static_fig, self.static_ax, self.static_ax2 = Scattering(
