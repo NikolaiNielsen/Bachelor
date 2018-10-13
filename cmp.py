@@ -285,6 +285,8 @@ def Scattering(lattice_name='simple cubic',
                returns=False,
                colors=None,
                laue_scale=1,
+               fig=None,
+               axes=None,
                plots=False):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
@@ -382,12 +384,16 @@ def Scattering(lattice_name='simple cubic',
 
     # Plotting the basics
     detector_screen_position = [0.7, 0.2, 0.25, 0.625]
-    fig = plt.figure(figsize=(10, 4))
-    ax = fig.gca(projection="3d")
-    ax.set_position([0, 0, 0.7, 1])
+    if fig is None:
+        fig = plt.figure(figsize=(10, 4))
+    if axes is None:
+        ax = fig.gca(projection="3d")
+        ax.set_position([0, 0, 0.7, 1])
 
-    # Create second set of axes for detection screen
-    ax2 = plt.axes(detector_screen_position)
+        # Create second set of axes for detection screen
+        ax2 = plt.axes(detector_screen_position)
+    else:
+        ax, ax2 = axes
     ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
 
     # Plot atoms
