@@ -597,11 +597,13 @@ class scattering_window(lattice_window):
         if self.lattice_config['lattice'] in self.presets_with_basis:
             lattice_name = self.lattice_config['lattice']
             n_basis = self.presets_with_basis[lattice_name]
-            self.current_basis_layout = self.layout_preset_basis_grid
+            self.current_basis_grid = self.layout_preset_basis_grid
+            self.current_basis_layout = self.layout_preset_basis
             move_checkboxes = False
         else:
             n_basis = 5
-            self.current_basis_layout = self.layout_basis_grid
+            self.current_basis_grid = self.layout_basis_grid
+            self.current_basis_layout = self.layout_basis
             move_checkboxes = True
 
         self.lattice_config['form_factors'] = [1] * n_basis
@@ -609,7 +611,7 @@ class scattering_window(lattice_window):
         self.form_factor_fields = []
         label = QW.QLabel('Form Factors')
         label.setAlignment(QC.Qt.AlignCenter)
-        self.current_basis_layout.addWidget(label, 0, place)
+        self.current_basis_grid.addWidget(label, 0, place)
         for i in range(n_basis):
             el = QW.QLineEdit()
             el.setText('1')
@@ -619,10 +621,10 @@ class scattering_window(lattice_window):
             el.editingFinished.connect(
                 lambda i=i, el=el: self.update_form_factor(i, el.text()))
             self.form_factor_fields.append(el)
-            self.current_basis_layout.addWidget(el, i + 1, place)
+            self.current_basis_grid.addWidget(el, i + 1, place)
             if move_checkboxes:
                 el = self.basis_check_widgets[i]
-                self.current_basis_layout.addWidget(el, i + 1, place + 1)
+                self.current_basis_grid.addWidget(el, i + 1, place + 1)
 
     def update_form_factor(self, i, text):
         self.lattice_config['form_factors'][i] = float(text)
