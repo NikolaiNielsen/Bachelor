@@ -173,7 +173,6 @@ class lattice_window(QW.QMainWindow):
         }
         # Copy of the default config. This is what the user'll actually change
         self.lattice_config = self.default_config.copy()
-        self.current = 'user'
 
     def create_options(self):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
@@ -389,11 +388,9 @@ class lattice_window(QW.QMainWindow):
             # load the preset basis
             self.create_preset_basis(self.presets_with_basis[text])
             self.current_basis_layout = self.layout_preset_basis
-            self.current = 'preset'
         else:
             self.create_user_basis()
             self.current_basis_layout = self.layout_basis
-            self.current = 'user'
 
         self.lattice_config['lattice'] = text
 
