@@ -628,7 +628,7 @@ class scattering_window(lattice_window):
                 self.current_basis_layout.addWidget(el, i + 1, place + 1)
 
     def update_form_factor(self, i, text):
-        self.lattice_config['form_factor'][i] = float(text)
+        self.lattice_config['form_factors'][i] = float(text)
         self.update_basis()
 
     def hide_basis_widgets(self, basis_no):
@@ -655,6 +655,40 @@ class scattering_window(lattice_window):
         self.lattice_config['enabled_user_colors'] = new_colors
         self.lattice_config['enabled_form_factors'] = form_factors
         self.plot_lattice()
+
+    def plot_lattice(self):
+        # This function takes the values from lattice_config and uses them to
+        # update the plot.
+
+        # Clear the axes
+        self.static_ax.clear()
+        self.static_ax2.clear()
+
+        # Grab the basis and colors
+        if self.lattice_config['lattice'] in self.presets_with_basis:
+            # We are dealing with a preset with basis
+            basis = self.lattice_config['preset_basis']
+            n_basis = np.atleast_2d(basis).shape[0]
+            colors = self.lattice_config['preset_colors']
+            colors = colors[:n_basis]
+        else:
+            colors = self.lattice_config['enabled_user_colors']
+            basis = self.lattice_config['enabled_user_basis']
+
+        form_factors = self.lattice_config['enabled_form_factors']
+
+        # Plot the new lattice
+        self.static_fig, self.static_ax, self.static_ax2 = Scattering(
+            basis=basis,
+            colors=colors,
+            form_factor=form_factors,
+            fig=self.static_fig,
+            axes=(self.static_ax, self.static_ax2),
+            returns=True,
+            plots=False)
+
+        # Remember to have the canvas draw it!
+        self.static_canvas.draw()
 
 
 def main():
