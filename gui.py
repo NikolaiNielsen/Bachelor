@@ -15,13 +15,10 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.lattice_window = lattice_window()
-        self.layout_main.addWidget(self.lattice_window)
+        self.create_scattering()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
-        self.title = "Crystal Structure"
-        self.setWindowTitle(self.title)
         bar = self.menuBar()
         programs = bar.addMenu('Programs')
         lattices = programs.addAction('Crystal Structure')
@@ -32,6 +29,8 @@ class full_window(QW.QMainWindow):
         about.triggered.connect(self.about_section)
 
     def create_lattice(self):
+        self.title = 'Crystal structure'
+        self.setWindowTitle(self.title)
         # First we delete the current main layout
         self.delete_layout(self.layout_main)
 
@@ -40,6 +39,8 @@ class full_window(QW.QMainWindow):
         self.layout_main.addWidget(self.lattice_window)
 
     def create_scattering(self):
+        self.title = 'Neutron scattering simulation'
+        self.setWindowTitle(self.title)
         self.delete_layout(self.layout_main)
         self.scattering_window = scattering_window()
         self.layout_main.addWidget(self.scattering_window)
@@ -531,9 +532,6 @@ class scattering_window(lattice_window):
             'max_preset_basis': 4
         }
         self.presets_with_basis = {
-            'wurtzite': 4,
-            'diamond': 2,
-            'zincblende': 2,
             'conventional fcc': 4,
             'conventional bcc': 2
         }
