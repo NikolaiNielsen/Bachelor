@@ -550,13 +550,24 @@ class scattering_window(lattice_window):
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
+
         # Create the lattice chooser dropdown
         self.lattice_chooser = QW.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
         sep_index = len(self.lattices) - len(self.presets_with_basis)
         self.lattice_chooser.insertSeparator(sep_index)
         self.lattice_chooser.activated[str].connect(self.update_lattice_name)
+
+        # Create the k_in fields
+        self.layout_k_in = QW.QHBoxLayout()
+        k_in_label = QW.QLabel('k_in')
+        k_in_label.setAlignment(QC.Qt.AlignCenter)
+
+        self.layout_k_in.addWidget(k_in_label)
+
+        # Add stuff to the layout
         self.layout_options.addWidget(self.lattice_chooser)
+        self.layout_options.addLayout(self.layout_k_in)
         self.create_user_basis()
         self.add_form_factors()
 
