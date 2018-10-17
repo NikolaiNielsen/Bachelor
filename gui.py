@@ -519,6 +519,7 @@ class scattering_window(lattice_window):
             'a1': d[0],
             'a2': d[1],
             'a3': d[2],
+            'k_in': np.array([0, 0, -1.5]),
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
             'form_factors': [1] * 5,
@@ -560,10 +561,18 @@ class scattering_window(lattice_window):
 
         # Create the k_in fields
         self.layout_k_in = QW.QHBoxLayout()
-        k_in_label = QW.QLabel('k_in')
+        k_in_label = QW.QLabel('k_in, [2pi/a]')
         k_in_label.setAlignment(QC.Qt.AlignCenter)
-
         self.layout_k_in.addWidget(k_in_label)
+        self.k_in_fields = []
+        for i in range(3):
+            el = QW.QLineEdit()
+            el.setText(str(self.lattice_config['k_in'][i]))
+            el.setValidator(QG.QDoubleValidator(decimals=2))
+            el.editingFinished.connect(
+                lambda i=i, el=el: self.update_k(i, el.text()))
+            self.k_in_fields.append(el)
+            self.layout_k_in.addWidget(el)
 
         # Add stuff to the layout
         self.layout_options.addWidget(self.lattice_chooser)
@@ -664,6 +673,15 @@ class scattering_window(lattice_window):
         self.lattice_config['enabled_form_factors'] = form_factors
         self.plot_lattice()
 
+    def update_k(self, coord_no, text):
+        if coord_no == 2:
+            # The z-coordinate
+            num = -abs(float(text))
+        else:
+            num = float(text)
+        self.lattice_config['k_in'][coord_no] = num
+        self.plot_lattice()
+
     def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
@@ -684,10 +702,12 @@ class scattering_window(lattice_window):
             colors = self.lattice_config['enabled_user_colors']
             basis = self.lattice_config['enabled_user_basis']
             form_factors = self.lattice_config['enabled_form_factors']
+        k_in = self.lattice_config['k_in']
 
         # Plot the new lattice
         self.static_fig, self.static_ax, self.static_ax2 = Scattering(
             basis=basis,
+            k_in=k_in,
             colors=colors,
             form_factor=form_factors,
             fig=self.static_fig,
