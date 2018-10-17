@@ -574,9 +574,17 @@ class scattering_window(lattice_window):
             self.k_in_fields.append(el)
             self.layout_k_in.addWidget(el)
 
+        # Note on k_in
+        str_ = ('Note: k_in is specified in units of 2pi/a, '
+                'and that the z-component will always be '
+                'passed as a negative value')
+        note_label = QW.QLabel(str_)
+        note_label.setWordWrap(True)
+
         # Add stuff to the layout
         self.layout_options.addWidget(self.lattice_chooser)
         self.layout_options.addLayout(self.layout_k_in)
+        self.layout_options.addWidget(note_label)
         self.create_user_basis()
         self.add_form_factors()
 
