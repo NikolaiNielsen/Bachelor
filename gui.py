@@ -543,8 +543,10 @@ class scattering_window(lattice_window):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax, self.static_ax2 = Scattering(
-            returns=True, plots=False)
+        self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
+            returns=True, return_indices=True, plots=False)
+        self.lattice_config['indices'] = indices
+        self.default_config['indices'] = indices
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
@@ -562,7 +564,6 @@ class scattering_window(lattice_window):
         # Create the k_in fields
         self.layout_k_in = QW.QHBoxLayout()
         k_in_label = QW.QLabel('k_in, [2pi/a]')
-        k_in_label.setAlignment(QC.Qt.AlignCenter)
         self.layout_k_in.addWidget(k_in_label)
         self.k_in_fields = []
         for i in range(3):
@@ -581,9 +582,18 @@ class scattering_window(lattice_window):
         note_label = QW.QLabel(str_)
         note_label.setWordWrap(True)
 
+        # Highlighting stuff
+        self.layout_highlight = QW.QHBoxLayout()
+        self.highlight_combo = QW.QComboBox()
+        highlight_label = QW.QLabel('Highlight indices')
+
+        self.layout_highlight.addWidget(highlight_label)
+        self.layout_highlight.addWidget(self.highlight_combo)
+
         # Add stuff to the layout
         self.layout_options.addWidget(self.lattice_chooser)
         self.layout_options.addLayout(self.layout_k_in)
+        self.layout_options.addLayout(self.layout_highlight)
         self.layout_options.addWidget(note_label)
         self.create_user_basis()
         self.add_form_factors()
