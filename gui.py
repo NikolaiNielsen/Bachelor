@@ -581,9 +581,14 @@ class scattering_window(lattice_window):
             self.layout_k_in.addWidget(el)
 
         # Note on k_in
-        str_ = ('Note: k_in is specified in units of 2pi/a, '
+        str_ = ('k_in is specified in units of 2pi/a, '
                 'and that the z-component will always be '
-                'passed as a negative value')
+                'passed as a negative value. So -|k_in,z|. \n'
+                'Highlighting a set of Miller indices shows the following:\n'
+                '- The outgoing wave vector in red\n'
+                '- The reciprocal lattice vector, which gave rise to the '
+                'scattering event, in green.\n'
+                '- The family of lattice planes the reciprocal lattice vector')
         note_label = QW.QLabel(str_)
         note_label.setWordWrap(True)
 
