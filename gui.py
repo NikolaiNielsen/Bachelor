@@ -709,9 +709,10 @@ class scattering_window(lattice_window):
         self.plot_lattice()
 
     def update_indices(self, indices):
-        self.lattice_config['indices'] = [None] + indices
+        self.lattice_config['indices'] = [None] + indices.tolist()
         self.highlight_combo.clear()
-        self.highlight_combo.addItems(self.lattice_config['indices'])
+        str_list = [str(i) for i in self.lattice_config['indices']]
+        self.highlight_combo.addItems(str_list)
 
     def update_highlight(self, i):
         highlight = self.lattice_config['indices'][i]
@@ -757,7 +758,7 @@ class scattering_window(lattice_window):
         if not only_highlight:
             # If we don't only highlight stuff (ie we've changed the basis or
             # form factors), we also update the list of highlights
-            self.update_indices()
+            self.update_indices(indices)
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
