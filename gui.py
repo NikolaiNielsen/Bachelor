@@ -520,11 +520,13 @@ class scattering_window(lattice_window):
             'a2': d[1],
             'a3': d[2],
             'k_in': np.array([0, 0, -1.5]),
-            'indices': [[-1, -1, 2],
+            'indices': [None,
+                        [-1, -1, 2],
                         [-1, 1, 2],
                         [0, 0, 3],
                         [1, -1, 2],
                         [1, 1, 2]],
+            'highlight': None,
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
             'form_factors': [1] * 5,
@@ -706,11 +708,15 @@ class scattering_window(lattice_window):
         self.lattice_config['k_in'][coord_no] = num
         self.plot_lattice()
 
-    def update_indices(self):
-        print(self.lattice_config['indices'])
+    def update_indices(self, indices):
+        self.lattice_config['indices'] = [None] + indices
+        self.highlight_combo.clear()
+        self.highlight_combo.addItems(self.lattice_config['indices'])
 
     def update_highlight(self, i):
-        print(i)
+        highlight = self.lattice_config['indices'][i]
+        self.lattice_config['highlight'] = highlight
+        self.plot_lattice(only_highlight=True)
 
     def plot_lattice(self, only_highlight=False):
         # This function takes the values from lattice_config and uses them to
@@ -733,6 +739,7 @@ class scattering_window(lattice_window):
             basis = self.lattice_config['enabled_user_basis']
             form_factors = self.lattice_config['enabled_form_factors']
         k_in = self.lattice_config['k_in']
+        highlight = self.lattice_config['highlight']
 
         # Plot the new lattice
         self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
@@ -740,13 +747,13 @@ class scattering_window(lattice_window):
             k_in=k_in,
             colors=colors,
             form_factor=form_factors,
+            highlight=highlight,
             fig=self.static_fig,
             axes=(self.static_ax, self.static_ax2),
             returns=True,
             return_indices=True,
             plots=False)
 
-        self.lattice_config['indices'] = indices
         if not only_highlight:
             # If we don't only highlight stuff (ie we've changed the basis or
             # form factors), we also update the list of highlights
