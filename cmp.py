@@ -224,11 +224,11 @@ def Lattice(
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-    if returns:
-        return fig, ax
-
     if plots:
         plt.show()
+
+    if returns:
+        return fig, ax
 
 
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
@@ -243,11 +243,12 @@ def Scattering(lattice_name='simple cubic',
                normalize=True,
                verbose=False,
                returns=False,
+               return_indices=False,
                colors=None,
                laue_scale=1,
                fig=None,
                axes=None,
-               plots=False):
+               plots=True):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     g_col = 'k'
@@ -524,15 +525,22 @@ def Scattering(lattice_name='simple cubic',
     else:
         ax.set_title(tit2)
     ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
+    if plots:
+        plt.show()
+    return_list = []
     if returns:
-        return fig, ax, ax2
-    plt.show()
+        return_list += [fig, ax, ax2]
+    if return_indices:
+        return_list.append(indices)
+    if returns or return_indices:
+        return return_list
 
 
 def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
                    potential="harmonic", edges=False,
                    E_F=None,
-                   returns=False):
+                   returns=False,
+                   plots=True):
 
     # First some input sanitization
     potentials = {"harmonic": band_structure.VG_cos,
@@ -602,11 +610,11 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     ax2.set_ylabel(r'$k_y/k_0$')
     ax2.set_title('Fermi surface')
 
-    if returns:
-        return fig, ax, ax2
-
     if plots:
         plt.show()
+
+    if returns:
+        return fig, ax, ax2
 
 
 if __name__ == "__main__":
