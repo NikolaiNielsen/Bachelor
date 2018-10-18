@@ -520,6 +520,11 @@ class scattering_window(lattice_window):
             'a2': d[1],
             'a3': d[2],
             'k_in': np.array([0, 0, -1.5]),
+            'indices': [[-1, -1, 2],
+                        [-1, 1, 2],
+                        [0, 0, 3],
+                        [1, -1, 2],
+                        [1, 1, 2]],
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
             'form_factors': [1] * 5,
@@ -545,8 +550,6 @@ class scattering_window(lattice_window):
         # a toolbar. Lastly enable mouse support for Axes3D
         self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
             returns=True, return_indices=True, plots=False)
-        self.lattice_config['indices'] = indices
-        self.default_config['indices'] = indices
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
@@ -584,8 +587,11 @@ class scattering_window(lattice_window):
 
         # Highlighting stuff
         self.layout_highlight = QW.QHBoxLayout()
-        self.highlight_combo = QW.QComboBox()
         highlight_label = QW.QLabel('Highlight indices')
+        self.highlight_combo = QW.QComboBox()
+        str_indices = [str(i) for i in self.lattice_config['indices']]
+        self.highlight_combo.addItems(str_indices)
+        self.highlight_combo.activated[int].connect(self.update_highlight)
 
         self.layout_highlight.addWidget(highlight_label)
         self.layout_highlight.addWidget(self.highlight_combo)
@@ -700,7 +706,13 @@ class scattering_window(lattice_window):
         self.lattice_config['k_in'][coord_no] = num
         self.plot_lattice()
 
-    def plot_lattice(self):
+    def update_indices(self):
+        print(self.lattice_config['indices'])
+
+    def update_highlight(self, i):
+        print(i)
+
+    def plot_lattice(self, only_highlight=False):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
 
@@ -723,7 +735,7 @@ class scattering_window(lattice_window):
         k_in = self.lattice_config['k_in']
 
         # Plot the new lattice
-        self.static_fig, self.static_ax, self.static_ax2 = Scattering(
+        self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
             basis=basis,
             k_in=k_in,
             colors=colors,
@@ -731,7 +743,14 @@ class scattering_window(lattice_window):
             fig=self.static_fig,
             axes=(self.static_ax, self.static_ax2),
             returns=True,
+            return_indices=True,
             plots=False)
+
+        self.lattice_config['indices'] = indices
+        if not only_highlight:
+            # If we don't only highlight stuff (ie we've changed the basis or
+            # form factors), we also update the list of highlights
+            self.update_indices()
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
