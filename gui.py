@@ -535,23 +535,47 @@ class lattice_plane_window(lattice_window):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
             el.editingFinished.connect(
-                lambda i=i, el=el: self.update_indices(i, el.text()))
+                lambda i=i, el=el: self.update_index(i, el.text()))
             self.layout_indices.addWidget(el)
             self.index_widgets.append(el)
         self.layout_parameters.addRow(indices_label, self.layout_indices)
 
         # Next we make sure that the necessary back end is there (at least
         # config wise)
-        self.default_config['indices'] = None
-        self.lattice_config['indices'] = None
+        self.default_config['indices'] = [None] * 3
+        self.lattice_config['indices'] = [None] * 3
+        self.default_config['enable_indices'] = True
+        self.lattice_config['enable_indices'] = True
 
     def enable_indices(self):
         enabled = self.show_indices.isChecked()
         for el in self.index_widgets:
             el.setEnabled(enabled)
-            
-    def update_indices(self, num, text):
-        print(num, text)
+
+        self.lattice_config['enable_indices'] = enabled
+        if enabled:
+            self.check_indices()
+
+    def update_index(self, num, text):
+        if len(text) != 0:
+            self.lattice_config['indices'][num] = int(text)
+            self.check_indices()
+        else:
+            # We shouldn't do anything as we have an invalid value in the field
+            pass
+
+    def check_indices(self):
+        # This function only runs if the indices are actually enabled, and the
+        # user wants to plot a lattice.
+
+        # First we get the text (and lengths) of all the index lineedits
+        text = [i.text() for i in self.index_widgets]
+        text_lengths = [len(i) for i in text]
+        if 0 in text_lengths:
+            # We have invalid indices, and we don't want to update the plot
+            pass
+        else:
+            self.plot_lattice(indices)
 
 
 class scattering_window(lattice_window):
