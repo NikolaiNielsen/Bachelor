@@ -558,7 +558,7 @@ class scattering_window(lattice_window):
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
-
+        self.layout_options_form = QW.QFormLayout()
         # Create the lattice chooser dropdown
         self.lattice_chooser = QW.QComboBox(self)
         self.lattice_chooser.addItems(self.lattices)
@@ -569,7 +569,6 @@ class scattering_window(lattice_window):
         # Create the k_in fields
         self.layout_k_in = QW.QHBoxLayout()
         k_in_label = QW.QLabel('k_in, [2pi/a]')
-        self.layout_k_in.addWidget(k_in_label)
         self.k_in_fields = []
         for i in range(3):
             el = QW.QLineEdit()
@@ -581,21 +580,15 @@ class scattering_window(lattice_window):
             self.layout_k_in.addWidget(el)
 
         # Highlighting stuff
-        self.layout_highlight = QW.QHBoxLayout()
         highlight_label = QW.QLabel('Highlight indices')
         self.highlight_combo = QW.QComboBox()
         str_indices = [str(i) for i in self.lattice_config['indices']]
         self.highlight_combo.addItems(str_indices)
         self.highlight_combo.activated[int].connect(self.update_highlight)
-        self.layout_highlight.addWidget(highlight_label)
-        self.layout_highlight.addWidget(self.highlight_combo)
 
         # The show all checkbox
-        self.layout_show_all = QW.QHBoxLayout()
         show_all_label = QW.QLabel('Show all')
-        self.layout_show_all.addWidget(show_all_label)
         self.show_all_checkbox = QW.QCheckBox()
-        self.layout_show_all.addWidget(self.show_all_checkbox)
 
         # Note on k_in
         str_ = ('k_in is specified in units of 2pi/a, '
@@ -610,11 +603,12 @@ class scattering_window(lattice_window):
         note_label.setWordWrap(True)
 
         # Add stuff to the layout
-        self.layout_options.addWidget(self.lattice_chooser)
-        self.layout_options.addLayout(self.layout_k_in)
-        self.layout_options.addLayout(self.layout_highlight)
-        self.layout_options.addLayout(self.layout_show_all)
-        self.layout_options.addWidget(note_label)
+        self.layout_options.addLayout(self.layout_options_form)
+        self.layout_options_form.addRow(self.lattice_chooser)
+        self.layout_options_form.addRow(k_in_label, self.layout_k_in)
+        self.layout_options_form.addRow(highlight_label, self.highlight_combo)
+        self.layout_options_form.addRow(show_all_label, self.show_all_checkbox)
+        self.layout_options_form.addRow(note_label)
         self.create_user_basis()
         self.add_form_factors()
 
