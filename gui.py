@@ -580,6 +580,23 @@ class scattering_window(lattice_window):
             self.k_in_fields.append(el)
             self.layout_k_in.addWidget(el)
 
+        # Highlighting stuff
+        self.layout_highlight = QW.QHBoxLayout()
+        highlight_label = QW.QLabel('Highlight indices')
+        self.highlight_combo = QW.QComboBox()
+        str_indices = [str(i) for i in self.lattice_config['indices']]
+        self.highlight_combo.addItems(str_indices)
+        self.highlight_combo.activated[int].connect(self.update_highlight)
+        self.layout_highlight.addWidget(highlight_label)
+        self.layout_highlight.addWidget(self.highlight_combo)
+
+        # The show all checkbox
+        self.layout_show_all = QW.QHBoxLayout()
+        show_all_label = QW.QLabel('Show all')
+        self.layout_show_all.addWidget(show_all_label)
+        self.show_all_checkbox = QW.QCheckBox()
+        self.layout_show_all.addWidget(self.show_all_checkbox)
+
         # Note on k_in
         str_ = ('k_in is specified in units of 2pi/a, '
                 'and that the z-component will always be '
@@ -592,21 +609,11 @@ class scattering_window(lattice_window):
         note_label = QW.QLabel(str_)
         note_label.setWordWrap(True)
 
-        # Highlighting stuff
-        self.layout_highlight = QW.QHBoxLayout()
-        highlight_label = QW.QLabel('Highlight indices')
-        self.highlight_combo = QW.QComboBox()
-        str_indices = [str(i) for i in self.lattice_config['indices']]
-        self.highlight_combo.addItems(str_indices)
-        self.highlight_combo.activated[int].connect(self.update_highlight)
-
-        self.layout_highlight.addWidget(highlight_label)
-        self.layout_highlight.addWidget(self.highlight_combo)
-
         # Add stuff to the layout
         self.layout_options.addWidget(self.lattice_chooser)
         self.layout_options.addLayout(self.layout_k_in)
         self.layout_options.addLayout(self.layout_highlight)
+        self.layout_options.addLayout(self.layout_show_all)
         self.layout_options.addWidget(note_label)
         self.create_user_basis()
         self.add_form_factors()
