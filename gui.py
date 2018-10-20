@@ -23,6 +23,8 @@ class full_window(QW.QMainWindow):
         programs = bar.addMenu('Programs')
         lattices = programs.addAction('Crystal Structure')
         lattices.triggered.connect(self.create_lattice)
+        lattice_planes = programs.addAction('Lattice Planes')
+        lattice_planes.triggered.connect(self.create_lattice_planes)
         scattering = programs.addAction('Scattering')
         scattering.triggered.connect(self.create_scattering)
         about = bar.addAction('About')
@@ -44,6 +46,13 @@ class full_window(QW.QMainWindow):
         self.delete_layout(self.layout_main)
         self.scattering_window = scattering_window()
         self.layout_main.addWidget(self.scattering_window)
+
+    def create_lattice_planes(self):
+        self.title = 'Families of lattice planes'
+        self.setWindowTitle(self.title)
+        self.delete_layout(self.layout_main)
+        self.lattice_plane_window = lattice_plane_window()
+        self.layout_main.addWidget(self.lattice_plane_window)
 
     def about_section(self):
         author = 'Created by Nikolai Plambech Nielsen, lpk331@alumni.ku.dk.\n'
@@ -502,6 +511,15 @@ class lattice_window(QW.QMainWindow):
                     widget.setParent(None)
                 else:
                     self.delete_layout(item.layout())
+
+
+class lattice_plane_window(lattice_window):
+    def __init__(self):
+        super().__init__()
+        self.create_miller_indices()
+
+    def create_miller_indices(self):
+        print('hello')
 
 
 class scattering_window(lattice_window):
