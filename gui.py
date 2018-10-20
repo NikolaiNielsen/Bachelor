@@ -534,8 +534,7 @@ class lattice_plane_window(lattice_window):
         for i in range(3):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
-            el.editingFinished.connect(
-                lambda i=i, el=el: self.update_index(i, el.text()))
+            el.editingFinished.connect(self.check_indices)
             self.layout_indices.addWidget(el)
             self.index_widgets.append(el)
         self.layout_parameters.addRow(indices_label, self.layout_indices)
@@ -556,14 +555,6 @@ class lattice_plane_window(lattice_window):
         if enabled:
             self.check_indices()
 
-    def update_index(self, num, text):
-        if len(text) != 0:
-            self.lattice_config['indices'][num] = int(text)
-            self.check_indices()
-        else:
-            # We shouldn't do anything as we have an invalid value in the field
-            pass
-
     def check_indices(self):
         # This function only runs if the indices are actually enabled, and the
         # user wants to plot a lattice.
@@ -575,7 +566,9 @@ class lattice_plane_window(lattice_window):
             # We have invalid indices, and we don't want to update the plot
             pass
         else:
-            self.plot_lattice(indices)
+            # We populate the list of indices if there are no invalid indices
+            self.lattice_config['indices'] = [int(i) for i in text]
+
 
 
 class scattering_window(lattice_window):
