@@ -522,20 +522,34 @@ class lattice_plane_window(lattice_window):
         # This function adds the miller indices stuff we need for specifying
         # the family of lattice planes
 
-        # First we create the things we need, then we add them to the existing
+        # First we create the widgets we need, then we add them to the existing
         # layout:
         indices_label = QW.QLabel('Miller indices')
         self.layout_indices = QW.QHBoxLayout()
-        self.indices_widgets = []
+        self.index_widgets = []
+        self.show_indices = QW.QCheckBox()
+        self.show_indices.setChecked(True)
+        self.show_indices.stateChanged.connect(self.enable_indices)
+        self.layout_indices.addWidget(self.show_indices)
         for i in range(3):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
             el.editingFinished.connect(
                 lambda i=i, el=el: self.update_indices(i, el.text()))
             self.layout_indices.addWidget(el)
-            self.indices_widgets.append(el)
+            self.index_widgets.append(el)
         self.layout_parameters.addRow(indices_label, self.layout_indices)
 
+        # Next we make sure that the necessary back end is there (at least
+        # config wise)
+        self.default_config['indices'] = None
+        self.lattice_config['indices'] = None
+
+    def enable_indices(self):
+        enabled = self.show_indices.isChecked()
+        for el in self.index_widgets:
+            el.setEnabled(enabled)
+            
     def update_indices(self, num, text):
         print(num, text)
 
