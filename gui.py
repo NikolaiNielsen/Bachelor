@@ -527,6 +527,7 @@ class scattering_window(lattice_window):
                         [1, -1, 2],
                         [1, 1, 2]],
             'highlight': None,
+            'show_all': False,
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
             'form_factors': [1] * 5,
@@ -589,6 +590,7 @@ class scattering_window(lattice_window):
         # The show all checkbox
         show_all_label = QW.QLabel('Show all')
         self.show_all_checkbox = QW.QCheckBox()
+        self.show_all_checkbox.stateChanged.connect(self.show_all)
 
         # Note on k_in
         str_ = ('k_in is specified in units of 2pi/a, '
@@ -725,6 +727,12 @@ class scattering_window(lattice_window):
         self.lattice_config['highlight'] = highlight
         self.plot_lattice(only_highlight=True)
 
+    def show_all(self):
+        # get the state of the checkbox
+        show_all = self.show_all_checkbox.isChecked()
+        self.lattice_config['show_all'] = show_all
+        self.plot_lattice(only_highlight=True)
+
     def plot_lattice(self, only_highlight=False):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
@@ -747,6 +755,7 @@ class scattering_window(lattice_window):
             form_factors = self.lattice_config['enabled_form_factors']
         k_in = self.lattice_config['k_in']
         highlight = self.lattice_config['highlight']
+        show_all = self.lattice_config['show_all']
 
         # Plot the new lattice
         self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
@@ -757,6 +766,7 @@ class scattering_window(lattice_window):
             highlight=highlight,
             fig=self.static_fig,
             axes=(self.static_ax, self.static_ax2),
+            show_all=show_all,
             returns=True,
             return_indices=True,
             plots=False)
