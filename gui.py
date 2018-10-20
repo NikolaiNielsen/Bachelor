@@ -725,17 +725,22 @@ class scattering_window(lattice_window):
     def update_highlight(self, i):
         highlight = self.lattice_config['indices'][i]
         self.lattice_config['highlight'] = highlight
-        self.plot_lattice(only_highlight=True)
+        self.plot_lattice(no_change=True)
 
     def show_all(self):
         # get the state of the checkbox
         show_all = self.show_all_checkbox.isChecked()
         self.lattice_config['show_all'] = show_all
-        self.plot_lattice(only_highlight=True)
+        self.plot_lattice(no_change=True)
 
-    def plot_lattice(self, only_highlight=False):
+    def plot_lattice(self, no_change=False):
         # This function takes the values from lattice_config and uses them to
-        # update the plot.
+        # update the plot. no_change is a flag, set if the basis/form factors
+        # aren't changed
+
+        # Get the veiwing angle of the axes (so we can remember it)
+        azim = self.static_ax.azim
+        elev = self.static_ax.elev
 
         # Clear the axes
         self.static_ax.clear()
@@ -770,8 +775,9 @@ class scattering_window(lattice_window):
             returns=True,
             return_indices=True,
             plots=False)
+        self.static_ax.view_init(elev, azim)
 
-        if not only_highlight:
+        if not no_change:
             # If we don't only highlight stuff (ie we've changed the basis or
             # form factors), we also update the list of highlights
             self.update_indices(indices)
