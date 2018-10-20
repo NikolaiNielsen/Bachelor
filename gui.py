@@ -15,7 +15,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_scattering()
+        self.create_lattice_planes()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -519,7 +519,25 @@ class lattice_plane_window(lattice_window):
         self.create_miller_indices()
 
     def create_miller_indices(self):
-        print('hello')
+        # This function adds the miller indices stuff we need for specifying
+        # the family of lattice planes
+
+        # First we create the things we need, then we add them to the existing
+        # layout:
+        indices_label = QW.QLabel('Miller indices')
+        self.layout_indices = QW.QHBoxLayout()
+        self.indices_widgets = []
+        for i in range(3):
+            el = QW.QLineEdit()
+            el.setValidator(QG.QIntValidator())
+            el.editingFinished.connect(
+                lambda i=i, el=el: self.update_indices(i, el.text()))
+            self.layout_indices.addWidget(el)
+            self.indices_widgets.append(el)
+        self.layout_parameters.addRow(indices_label, self.layout_indices)
+
+    def update_indices(self, num, text):
+        print(num, text)
 
 
 class scattering_window(lattice_window):
