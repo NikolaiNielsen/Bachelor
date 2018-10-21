@@ -356,6 +356,7 @@ def Scattering(lattice_name='simple cubic',
     else:
         ax, ax2 = axes
     ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
+    ax2.set_aspect('equal', 'box')
 
     # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
