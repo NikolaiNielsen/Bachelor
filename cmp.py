@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from functools import partial
 
 import lattices
 import scattering
@@ -223,48 +224,14 @@ def Lattice(
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-    if returns:
-        return fig, ax
-
     if plots:
         plt.show()
 
-
-def Reciprocal(
-        a1=d[0], a2=d[1], a3=d[2], basis=d[3], colors=d[4], sizes=d[5],
-        lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
-        unit_type=None, indices=(1, 1, 1), arrows=True, grid=True,
-        verbose=False, returns=False):
     if returns:
-        fig, ax = Lattice(a1=a1, a2=a2, a3=a3,
-                          basis=basis,
-                          colors=colors,
-                          sizes=sizes,
-                          lim_type=lim_type,
-                          grid_type=grid_type,
-                          max_=max_,
-                          unit_type=unit_type,
-                          lattice_name=lattice_name,
-                          indices=indices,
-                          arrows=arrows,
-                          grid=grid,
-                          verbose=verbose,
-                          returns=True)
         return fig, ax
-    else:
-        Lattice(a1=a1, a2=a2, a3=a3,
-                basis=basis,
-                colors=colors,
-                sizes=sizes,
-                lim_type=lim_type,
-                grid_type=grid_type,
-                max_=max_,
-                unit_type=unit_type,
-                lattice_name=lattice_name,
-                indices=indices,
-                arrows=arrows,
-                grid=grid,
-                verbose=verbose)
+
+
+Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
 
 def Scattering(lattice_name='simple cubic',
@@ -276,8 +243,12 @@ def Scattering(lattice_name='simple cubic',
                normalize=True,
                verbose=False,
                returns=False,
+               return_indices=False,
                colors=None,
-               laue_scale=1):
+               laue_scale=1,
+               fig=None,
+               axes=None,
+               plots=True):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
     g_col = 'k'
@@ -374,13 +345,18 @@ def Scattering(lattice_name='simple cubic',
 
     # Plotting the basics
     detector_screen_position = [0.7, 0.2, 0.25, 0.625]
-    fig = plt.figure(figsize=(10, 4))
-    ax = fig.gca(projection="3d")
-    ax.set_position([0, 0, 0.7, 1])
+    if fig is None:
+        fig = plt.figure(figsize=(10, 4))
+    if axes is None:
+        ax = fig.gca(projection="3d")
+        ax.set_position([0, 0, 0.7, 1])
 
-    # Create second set of axes for detection screen
-    ax2 = plt.axes(detector_screen_position)
+        # Create second set of axes for detection screen
+        ax2 = plt.axes(detector_screen_position)
+    else:
+        ax, ax2 = axes
     ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
+    ax2.set_aspect('equal', 'box')
 
     # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
@@ -550,15 +526,22 @@ def Scattering(lattice_name='simple cubic',
     else:
         ax.set_title(tit2)
     ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
+    if plots:
+        plt.show()
+    return_list = []
     if returns:
-        return fig, ax, ax2
-    plt.show()
+        return_list += [fig, ax, ax2]
+    if return_indices:
+        return_list.append(indices)
+    if returns or return_indices:
+        return return_list
 
 
 def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
                    potential="harmonic", edges=False,
                    E_F=None,
-                   returns=False):
+                   returns=False,
+                   plots=True):
 
     # First some input sanitization
     potentials = {"harmonic": band_structure.VG_cos,
@@ -628,9 +611,11 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     ax2.set_ylabel(r'$k_y/k_0$')
     ax2.set_title('Fermi surface')
 
+    if plots:
+        plt.show()
+
     if returns:
         return fig, ax, ax2
-    plt.show()
 
 
 if __name__ == "__main__":
