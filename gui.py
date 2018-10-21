@@ -613,6 +613,7 @@ class lattice_plane_window(lattice_window):
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
 
+
 class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
@@ -702,14 +703,16 @@ class scattering_window(lattice_window):
         self.show_all_checkbox.stateChanged.connect(self.show_all)
 
         # Note on k_in
-        str_ = ('k_in is specified in units of 2pi/a, '
+        str_ = ('Notes:\n\n'
+                'k_in is specified in units of 2pi/a, '
                 'and that the z-component will always be '
-                'passed as a negative value. So -|k_in,z|. \n'
+                'passed as a negative value. So -|k_in,z|. \n\n'
                 'Highlighting a set of Miller indices shows the following:\n'
                 '- The outgoing wave vector in red\n'
                 '- The reciprocal lattice vector, which gave rise to the '
-                'scattering event, in green.\n'
-                '- The family of lattice planes the reciprocal lattice vector')
+                'scattering event, in green\n'
+                '- The family of lattice planes for the reciprocal lattice '
+                'vector.')
         note_label = QW.QLabel(str_)
         note_label.setWordWrap(True)
 
