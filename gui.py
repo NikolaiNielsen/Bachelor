@@ -554,6 +554,8 @@ class lattice_plane_window(lattice_window):
         self.lattice_config['enable_indices'] = enabled
         if enabled:
             self.check_indices()
+        else:
+            self.plot_lattice(plot_indices=False)
 
     def check_indices(self):
         # This function only runs if the indices are actually enabled, and the
@@ -568,8 +570,48 @@ class lattice_plane_window(lattice_window):
         else:
             # We populate the list of indices if there are no invalid indices
             self.lattice_config['indices'] = [int(i) for i in text]
+            self.plot_lattice(plot_indices=True)
 
+    def plot_lattice(self, plot_indices=False):
+        # This function takes the values from lattice_config and uses them to
+        # update the plot.
 
+        # Clear the axes
+        self.static_ax.clear()
+
+        # Grab lattice vectors and basis(es) from lattice_config
+        a1 = self.lattice_config['a1']
+        a2 = self.lattice_config['a2']
+        a3 = self.lattice_config['a3']
+
+        # Grab the basis and colors
+        if self.lattice_config['lattice'] in self.presets_with_basis:
+            # We are dealing with a preset with basis
+            basis = self.lattice_config['preset_basis']
+            n_basis = np.atleast_2d(basis).shape[0]
+            colors = self.lattice_config['preset_colors']
+            colors = colors[:n_basis]
+        else:
+            colors = self.lattice_config['enabled_user_colors']
+            basis = self.lattice_config['enabled_user_basis']
+
+        if plot_indices:
+            indices = self.lattice_config['indices']
+        else:
+            indices = None
+        # Plot the new lattice
+        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
+                                                  basis=basis,
+                                                  colors=colors,
+                                                  fig=self.static_fig,
+                                                  ax=self.static_ax,
+                                                  indices=indices,
+                                                  returns=True,
+                                                  plots=False,
+                                                  checks=False)
+
+        # Remember to have the canvas draw it!
+        self.static_canvas.draw()
 
 class scattering_window(lattice_window):
     def __init__(self):
