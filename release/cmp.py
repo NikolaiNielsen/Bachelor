@@ -5,7 +5,6 @@ from functools import partial
 
 import lattices
 import scattering
-import band_structure
 import gui
 
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
