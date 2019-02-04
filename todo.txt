@@ -1,0 +1,24 @@
+Fix when d is outside of the lattice (lattice planes)
+Delete base centred cubic
+Specify primitive/conventional for bcc/fcc
+Show also reciprocal lattice when plotting lattice planes (points instead of balls)
+ - show b1, b2, b3 (h,k,l actually)
+ - try rotating boths
+ - checkbox to show/hide og gridlines
+ - dynamic changing of n/m min and n/m max
+
+
+Scattering
+- hide basis stuff for bcc and fcc
+- Add "restricted" simple cubic. so 3 presets and one "free" simple cubic
+- figure out scattering triangle arrow heads
+- try notes on hover
+- default to show all
+- more distance between figures
+- label on detection plane 
+- try two different figures (for main and detection screen)
+- Two main views: one microscopic and one macroscopic.Sync rotation
+- Only show lattice planes on the microscopic view
+- Make detection screen always square (main view)
+
+Check out other libraries (mayavi2, plotly)
