@@ -16,6 +16,8 @@ latticelines = {'base centred monoclinic': 'latticevectors',
                 'base centred monoclinic 2': 'latticevectors',
                 'base centred monoclinic 3': 'latticevectors',
                 'bcc': 'axes',
+                'primitive bcc': 'axes',
+                'primitive fcc': 'axes',
                 'conventional bcc': 'axes',
                 'conventional fcc': 'axes',
                 'fcc': 'axes',
@@ -45,6 +47,8 @@ unitcells = {'base centred monoclinic': 'primitive',
              'base centred monoclinic 2': 'primitive',
              'base centred monoclinic 3': 'primitive',
              'bcc': 'conventional',
+             'primitive bcc': 'conventional',
+             'primitive fcc': 'conventional',
              'conventional bcc': 'conventional',
              'conventional fcc': 'conventional',
              'fcc': 'conventional',
@@ -477,9 +481,11 @@ def chooser(lattice_name="simple cubic",
     # BCC
     lbcc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, a / 2]])
     L["bcc"] = lbcc
+    L["primitive bcc"] = lbcc
     # FCC
     lfcc = np.array([[a / 2, a / 2, 0], [a / 2, 0, a / 2], [0, a / 2, a / 2]])
     L["fcc"] = lfcc
+    L["primitive fcc"] = lbcc
     # Tetragonal
     ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, b]])
     L["tetragonal"] = ltetra

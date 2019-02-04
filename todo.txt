@@ -1,5 +1,4 @@
 Fix when d is outside of the lattice (lattice planes)
-Specify primitive/conventional for bcc/fcc
 Show also reciprocal lattice when plotting lattice planes (points instead of balls)
  - show b1, b2, b3 (h,k,l actually)
  - try rotating boths
