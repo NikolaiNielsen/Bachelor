@@ -1,5 +1,4 @@
 Fix when d is outside of the lattice (lattice planes)
-Delete base centred cubic
 Specify primitive/conventional for bcc/fcc
 Show also reciprocal lattice when plotting lattice planes (points instead of balls)
  - show b1, b2, b3 (h,k,l actually)
@@ -13,7 +12,6 @@ Scattering
 - Add "restricted" simple cubic. so 3 presets and one "free" simple cubic
 - figure out scattering triangle arrow heads
 - try notes on hover
-- default to show all
 - more distance between figures
 - label on detection plane 
 - try two different figures (for main and detection screen)

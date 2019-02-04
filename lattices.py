@@ -11,8 +11,7 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
-latticelines = {'base centred cubic': 'axes',
-                'base centred monoclinic': 'latticevectors',
+latticelines = {'base centred monoclinic': 'latticevectors',
                 'base centred monoclinic 1': 'latticevectors',
                 'base centred monoclinic 2': 'latticevectors',
                 'base centred monoclinic 3': 'latticevectors',
@@ -41,8 +40,7 @@ latticelines = {'base centred cubic': 'axes',
                 'wurtzite': 'latticevectors',
                 'undetermined': 'latticevectors'}
 
-unitcells = {'base centred cubic': 'conventional',
-             'base centred monoclinic': 'primitive',
+unitcells = {'base centred monoclinic': 'primitive',
              'base centred monoclinic 1': 'primitive',
              'base centred monoclinic 2': 'primitive',
              'base centred monoclinic 3': 'primitive',
@@ -482,9 +480,6 @@ def chooser(lattice_name="simple cubic",
     # FCC
     lfcc = np.array([[a / 2, a / 2, 0], [a / 2, 0, a / 2], [0, a / 2, a / 2]])
     L["fcc"] = lfcc
-    # Base Centered Cubic
-    lcbase = np.array([[a, 0, 0], [a / 2, a / 2, 0], [0, 0, a]])
-    L["base centred cubic"] = lcbase
     # Tetragonal
     ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, b]])
     L["tetragonal"] = ltetra

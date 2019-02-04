@@ -115,7 +115,7 @@ class lattice_window(QW.QMainWindow):
 
     def create_variables(self):
         # A list of names for available lattice presets
-        self.lattices = ['simple cubic', 'bcc', 'fcc', 'base centred cubic',
+        self.lattices = ['simple cubic', 'bcc', 'fcc',
                          'tetragonal', 'tetragonal body centred',
                          'tetragonal face centred', 'orthorhombic',
                          'orthorhombic body centred',
@@ -163,7 +163,6 @@ class lattice_window(QW.QMainWindow):
             'simple cubic': [0],
             'bcc': [0],
             'fcc': [0],
-            'base centred cubic': [0],
             'tetragonal': [0, 1],
             'tetragonal body centred': [0, 1],
             'tetragonal face centred': [0, 1],
