@@ -8,6 +8,10 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
+d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
+     np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
+     [2, 2, 2])
+
 
 class full_window(QW.QMainWindow):
     def __init__(self):
@@ -19,6 +23,8 @@ class full_window(QW.QMainWindow):
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
+
+        # creating the menu-bar and populating it.
         bar = self.menuBar()
         programs = bar.addMenu('Programs')
         lattices = programs.addAction('Crystal Structure')
@@ -27,6 +33,8 @@ class full_window(QW.QMainWindow):
         lattice_planes.triggered.connect(self.create_lattice_planes)
         scattering = programs.addAction('Scattering')
         scattering.triggered.connect(self.create_scattering)
+
+        # small about section.
         about = bar.addAction('About')
         about.triggered.connect(self.about_section)
 
@@ -624,7 +632,7 @@ class scattering_window(lattice_window):
         self.colors = [
             'xkcd:cement', 'red', 'blue', 'green', 'cyan',
             'magenta', 'black', 'yellow']
-        # A dictionary of the default values for lattice plotting
+        # A dictionary of the default valueFalse lattice plotting
         self.default_config = {
             'a1': d[0],
             'a2': d[1],
@@ -637,7 +645,7 @@ class scattering_window(lattice_window):
                         [1, -1, 2],
                         [1, 1, 2]],
             'highlight': None,
-            'show_all': False,
+            'show_all': True,
             'preset_basis': d[3],
             'user_colors': ['xkcd:cement'] * 5,
             'form_factors': [1] * 5,
@@ -700,6 +708,7 @@ class scattering_window(lattice_window):
         # The show all checkbox
         show_all_label = QW.QLabel('Show all')
         self.show_all_checkbox = QW.QCheckBox()
+        self.show_all_checkbox.setChecked(True)
         self.show_all_checkbox.stateChanged.connect(self.show_all)
 
         # Note on k_in
