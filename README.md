@@ -1,20 +1,23 @@
 # Bachelor
 
 ## Code todo
-- [x] Fix conventional / Primitive stuff
-- [x] Fix axis gridlines (when there are no atoms there)
-- [x] Fix normalization of k_in (when inputting integer)
-- [ ] Better scattering examples
-- [ ] Figure out why the notebook doesn't work by default
-- [x] Scattering - fix highlighting not changing color of scattering in main window
-- [ ] Default angle with highlight
-- [x] Include outgoing wavevector when highlighting
-- [x] Fix label when not normalizing
-- [x] Show Laue condition (k_in - k_scatter = G)
-- [ ] Smaller figure size - tooltip text clips on right edge
-- [x] Only show n form factors
-- [x] Limits on detection screen
-- [x] Just lines going out when highlighting.
-- [x] Increase plane_z (maybe also rel edge size)
-- [x] Plotting contour in fermi surface - bright red
-- [x] ability to change E_F (slider)
+
+#### lattice planes
+- [] fix when $d$ os outside of lattice
+- [] also show reciprocal lattice when plotting lattice planes
+- [] show b1, b2, b3 (h,k,l actually)
+- [] rotate both figures simultaniously
+- [] checkbox to toggle gridlines on reciprocal lattice
+- [] dynamic changing of n/m min and n/m max
+
+#### scattering
+- [] hide basis stuff for preset bases
+- [] transfer notes to tooltips
+- [] label on detection plane
+- [] recreate with two figures, one macroscopic, one microscopic
+- [] show scattering triangle only on microscopic figure
+- [] show lattice planes only on microscopic figure
+- [] make detection screen always square (and only on macroscopic view)
+
+#### general
+- [] check out other libraries (mayavi2, plotly, etc)
