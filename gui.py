@@ -626,7 +626,13 @@ class scattering_window(lattice_window):
         super().__init__()
 
     def create_variables(self):
-        self.lattices = ['simple cubic', 'conventional fcc',
+        self.lattice_names = ['cubic with a basis',
+                              'simple cubic',     
+                              'conventional fcc',
+                              'conventional bcc']
+        self.lattices = ['cubic with a basis',
+                         'simple cubic',
+                         'conventional fcc',
                          'conventional bcc']
         self.colors = [
             'xkcd:cement', 'red', 'blue', 'green', 'cyan',
@@ -654,10 +660,11 @@ class scattering_window(lattice_window):
             'sizes': d[5],
             'enabled_user_basis': np.zeros((1, 3)),
             'user_basis': np.zeros((5, 3)),
-            'lattice': 'simple cubic',
+            'lattice': 'cubic with a basis',
             'max_preset_basis': 4
         }
         self.presets_with_basis = {
+            'simple cubic': 1,
             'conventional fcc': 4,
             'conventional bcc': 2
         }
