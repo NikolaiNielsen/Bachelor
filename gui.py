@@ -538,7 +538,7 @@ class lattice_plane_window(lattice_window):
         self.show_indices.setChecked(True)
         self.show_indices.stateChanged.connect(self.enable_indices)
         self.layout_indices.addWidget(self.show_indices)
-        for i in range(3):
+        for _ in range(3):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
             el.editingFinished.connect(self.check_indices)
@@ -675,7 +675,7 @@ class scattering_window(lattice_window):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
+        self.static_fig, self.static_ax, self.static_ax2, _ = Scattering(
             returns=True, return_indices=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
