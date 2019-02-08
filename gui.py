@@ -19,7 +19,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_lattice()
+        self.create_scattering()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -751,7 +751,7 @@ class scattering_window(lattice_window):
             #self.create_preset_basis(self.presets_with_basis[text])
             #self.add_form_factors()
             #self.modify_preset_basis()
-            self.preset_form_factors()
+            self.preset_form_factors(text)
         else:
             self.create_user_basis()
             self.add_form_factors()
@@ -759,7 +759,7 @@ class scattering_window(lattice_window):
         # And then we update the lattice
         self.update_lattice()
 
-    def preset_form_factors(self):
+    def preset_form_factors(self, text):
         # method for creating the form factor (and color) fields for lattices 
         # with a preset basis
         self.preset_grid = QW.QGridLayout()
@@ -768,6 +768,27 @@ class scattering_window(lattice_window):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
             self.preset_grid.addWidget(label, 0, n)
+        
+        latticespec = self.presets_with_basis[text]
+        self.form_factor_fields = []
+        self.color_widgets = []
+        for n in range(len(latticespec) - 1):
+            label = QW.QLabel(f'Atom type {n+1}')
+            label.setAlignment(QC.Qt.AlignCenter)
+            self.preset_grid.addWidget(label, n+1, 0)
+
+            el = QW.QComboBox()
+            el.addItems(self.colors)
+            self.preset_grid.addWidget(el, n+1, 1)
+            self.color_widgets.append(el)
+
+            el = QW.QLineEdit()
+            el.setText('1')
+            el.setValidator(QG.QDoubleValidator(decimals=2))
+            el.editingFinished.connect(
+                lambda i=n, el=el: self.update_form_factor(i, el.text()))
+            self.preset_grid.addWidget(el, n+1, 2)
+            self.form_factor_fields.append(el)
         self.layout_options.addLayout(self.preset_grid)
 
     def update_lattice(self):
