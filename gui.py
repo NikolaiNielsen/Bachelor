@@ -664,9 +664,9 @@ class scattering_window(lattice_window):
             'max_preset_basis': 4
         }
         self.presets_with_basis = {
-            'simple cubic': 1,
-            'conventional fcc': 4,
-            'conventional bcc': 2
+            'simple cubic': [1, [0]],
+            'conventional fcc': [4, [0], [1,2,3]],
+            'conventional bcc': [2, [0], [1]]
         }
         self.lattice_config = self.default_config.copy()
         self.current = 'user'
@@ -751,7 +751,7 @@ class scattering_window(lattice_window):
             #self.create_preset_basis(self.presets_with_basis[text])
             #self.add_form_factors()
             #self.modify_preset_basis()
-            pass
+            self.preset_form_factors()
         else:
             self.create_user_basis()
             self.add_form_factors()
@@ -759,8 +759,16 @@ class scattering_window(lattice_window):
         # And then we update the lattice
         self.update_lattice()
 
-    def modify_preset_basis(self):
-        self.layout_preset_basis.hide(True)
+    def preset_form_factors(self):
+        # method for creating the form factor (and color) fields for lattices 
+        # with a preset basis
+        self.preset_grid = QW.QGridLayout()
+        names = ['', 'color', 'form factor']
+        for n, name in enumerate(names):
+            label = QW.QLabel(name)
+            label.setAlignment(QC.Qt.AlignCenter)
+            self.preset_grid.addWidget(label, 0, n)
+        self.layout_options.addLayout(self.preset_grid)
 
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
