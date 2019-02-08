@@ -744,17 +744,23 @@ class scattering_window(lattice_window):
     def update_lattice_name(self, text):
         # Delete current basis layout.
         self.delete_layout(self.current_basis_layout)
+        self.lattice_config['lattice'] = text
         if text in self.presets_with_basis:
             # We have a preset with a basis, so we delete the user basis and
             # load the preset basis
-            self.create_preset_basis(self.presets_with_basis[text])
+            #self.create_preset_basis(self.presets_with_basis[text])
+            #self.add_form_factors()
+            #self.modify_preset_basis()
+            pass
         else:
             self.create_user_basis()
-        self.lattice_config['lattice'] = text
-        self.add_form_factors()
+            self.add_form_factors()
 
         # And then we update the lattice
         self.update_lattice()
+
+    def modify_preset_basis(self):
+        self.layout_preset_basis.hide(True)
 
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
@@ -764,8 +770,8 @@ class scattering_window(lattice_window):
 
         # Update primitive lattice vectors and (preset) basis.
         self.lattice_config['preset_basis'] = basis
-        if name in self.presets_with_basis:
-            self.update_preset_basis_widgets()
+        #if name in self.presets_with_basis:
+        #    self.update_preset_basis_widgets()
         self.plot_lattice()
 
     def add_form_factors(self):
