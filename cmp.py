@@ -191,19 +191,20 @@ def Lattice(
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
         # vector and the planes
-        ax.quiver(0, 0, 0, d[0], d[1], d[2])
-        ax.text(d[0] / 2, d[1] / 2, d[2] / 2, '$d$')
+        start = a1 + a2 + a3
+        ax.quiver(*start, *d)
+        ax.text(*(start+d/2), '$d$')
         for p in planes:
             ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
                             alpha=0.4)
     elif arrows:
         # otherwise we plot the lattice vectors
-        ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
-        ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
-        ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
-        ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
-        ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
-        ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
+        ax.quiver(0, 0, 0, *a1)
+        ax.quiver(0, 0, 0, *a2)
+        ax.quiver(0, 0, 0, *a3)
+        ax.text(*(a1/2), '$a_1$')
+        ax.text(*(a2/2), '$a_2$')
+        ax.text(*(a3/2), '$a_3$')
 
     # Set limits, orthographic projection (so we get the beautiful hexagons),
     # no automatic gridlines, and no axes
