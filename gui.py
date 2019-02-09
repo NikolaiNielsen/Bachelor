@@ -791,6 +791,7 @@ class scattering_window(lattice_window):
             self.preset_grid.addWidget(el, n, 2)
             self.form_factor_fields.append(el)
         self.layout_options.addLayout(self.preset_grid)
+        self.current_basis_layout = self.preset_grid
 
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
