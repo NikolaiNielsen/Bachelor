@@ -445,7 +445,11 @@ class lattice_window(QW.QMainWindow):
     def update_basis_color(self, type_, num, text):
         colors = self.lattice_config['{}_colors'.format(type_)]
         text = text.lower()
-        colors[num] = text
+        if isinstance(num, list):
+            for i in num:
+                colors[i] = text
+        else:
+            colors[num] = text
         self.update_basis()
 
     def plot_lattice(self):
@@ -792,6 +796,9 @@ class scattering_window(lattice_window):
             # color field
             el = QW.QComboBox()
             el.addItems(self.colors)
+            el.activated[str].connect(
+                lambda i=n, atoms=atoms: self.update_basis_color(
+                    'preset', atoms, i))
             self.preset_grid.addWidget(el, n, 1)
             self.color_widgets.append(el)
 
