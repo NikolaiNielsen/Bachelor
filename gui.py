@@ -772,22 +772,23 @@ class scattering_window(lattice_window):
         latticespec = self.presets_with_basis[text]
         self.form_factor_fields = []
         self.color_widgets = []
-        for n in range(len(latticespec) - 1):
-            label = QW.QLabel(f'Atom type {n+1}')
+        for n in range(1, len(latticespec)):
+            label = QW.QLabel(f'Atom type {n}')
             label.setAlignment(QC.Qt.AlignCenter)
-            self.preset_grid.addWidget(label, n+1, 0)
+            self.preset_grid.addWidget(label, n, 0)
 
             el = QW.QComboBox()
             el.addItems(self.colors)
-            self.preset_grid.addWidget(el, n+1, 1)
+            self.preset_grid.addWidget(el, n, 1)
             self.color_widgets.append(el)
 
             el = QW.QLineEdit()
             el.setText('1')
             el.setValidator(QG.QDoubleValidator(decimals=2))
+            atoms = latticespec[n]
             el.editingFinished.connect(
-                lambda i=n, el=el: self.update_form_factor(i, el.text()))
-            self.preset_grid.addWidget(el, n+1, 2)
+                lambda i=atoms, el=el: self.update_form_factor(i, el.text()))
+            self.preset_grid.addWidget(el, n, 2)
             self.form_factor_fields.append(el)
         self.layout_options.addLayout(self.preset_grid)
 
@@ -841,7 +842,11 @@ class scattering_window(lattice_window):
                 self.current_basis_grid.addWidget(el, i + 1, place + 1)
 
     def update_form_factor(self, i, text):
-        self.lattice_config['form_factors'][i] = float(text)
+        if isinstance(i, list):
+            for j in i:
+                self.lattice_config['form_factors'][j] = float(text)
+        else:
+            self.lattice_config['form_factors'][i] = float(text)
         self.update_basis()
 
     def hide_basis_widgets(self, basis_no):
