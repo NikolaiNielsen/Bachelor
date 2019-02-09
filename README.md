@@ -11,7 +11,7 @@
 - [ ] dynamic changing of n/m min and n/m max
 
 #### scattering
-- [ ] hide basis stuff for preset bases
+- [X] hide basis stuff for preset bases
 - [ ] transfer notes to tooltips
 - [ ] label on detection plane
 - [ ] recreate with two figures, one macroscopic, one microscopic
