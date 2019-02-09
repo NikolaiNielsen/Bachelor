@@ -762,34 +762,49 @@ class scattering_window(lattice_window):
     def preset_form_factors(self, text):
         # method for creating the form factor (and color) fields for lattices 
         # with a preset basis
+
+        # create a layout
         self.preset_grid = QW.QGridLayout()
+
+        # create the first row: labels
         names = ['', 'color', 'form factor']
         for n, name in enumerate(names):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
             self.preset_grid.addWidget(label, 0, n)
         
+        # grab the specs for the lattices. Each row consists of a label, a 
+        # color chooser and a form factor field
         latticespec = self.presets_with_basis[text]
+
+        # reset form factors to correct numbers
+        self.lattice_config['form_factors'] = [1] * latticespec[0]
         self.form_factor_fields = []
         self.color_widgets = []
         for n in range(1, len(latticespec)):
+            atoms = latticespec[n]
+            
+            # atom type label
             label = QW.QLabel(f'Atom type {n}')
             label.setAlignment(QC.Qt.AlignCenter)
             self.preset_grid.addWidget(label, n, 0)
 
+            # color field
             el = QW.QComboBox()
             el.addItems(self.colors)
             self.preset_grid.addWidget(el, n, 1)
             self.color_widgets.append(el)
 
+            # form factor field
             el = QW.QLineEdit()
             el.setText('1')
             el.setValidator(QG.QDoubleValidator(decimals=2))
-            atoms = latticespec[n]
             el.editingFinished.connect(
                 lambda i=atoms, el=el: self.update_form_factor(i, el.text()))
             self.preset_grid.addWidget(el, n, 2)
             self.form_factor_fields.append(el)
+        
+        # add the layout to options, and store it with a recognizable name
         self.layout_options.addLayout(self.preset_grid)
         self.current_basis_layout = self.preset_grid
 
