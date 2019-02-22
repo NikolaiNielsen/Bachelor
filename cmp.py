@@ -248,6 +248,8 @@ def plot_reciprocal(a1, a2, a3, fig, ax, indices, grid):
     G = h * b1 + k * b2 + ell * b3
     
     lattice = np.array([b1, b2, b3])
+    basis = np.array([0, 0, 0])
+    
     recip_fig = plt.figure(figsize=(10,4))
     recip_ax = fig.gca(projection="3d")
 
