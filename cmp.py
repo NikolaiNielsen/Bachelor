@@ -234,6 +234,24 @@ def Lattice(
 
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
+def plot_reciprocal(a1, a2, a3, fig, ax, indices, grid):
+
+    h, k, ell = indices
+    # First the scaling factor for the reciprocal lattice
+    scale = a1.dot(np.cross(a2, a3))
+    # Then the reciprocal lattice
+    b1 = 2 * np.pi * np.cross(a2, a3) / scale
+    b2 = 2 * np.pi * np.cross(a3, a1) / scale
+    b3 = 2 * np.pi * np.cross(a1, a2) / scale
+
+    # And the normal vector for the (hkl)-family of planes.
+    G = h * b1 + k * b2 + ell * b3
+    
+    lattice = np.array([b1, b2, b3])
+    recip_fig = plt.figure(figsize=(10,4))
+    recip_ax = fig.gca(projection="3d")
+
+    return recip_fig, recip_ax
 
 def Scattering(lattice_name='simple cubic',
                basis=None,
