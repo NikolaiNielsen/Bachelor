@@ -311,6 +311,11 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
+    # plot some arrows
+    recip_ax.quiver(0,0,0, *G)
+    recip_ax.text(*(G/2), f'$G, ({h},{k},{ell})$')
+
+    # making the axes prettier
     recip_ax.set_aspect('equal')
     recip_ax.set_proj_type('ortho')
 
