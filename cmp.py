@@ -235,14 +235,23 @@ def Lattice(
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
 def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
-                    grid=False, verbose=False, returns=False):
+                    grid=False, verbose=False, returns=False, limtype=0):
 
     h, k, ell = indices
 
     # we plot between -h and h with 1 lattice point as padding.
-    n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
-    n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
-
+    if limtype == 0:
+        n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
+        n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
+    elif limtype == 1:
+        n_min = np.array((min(h, 0), min(k, 0), min(ell, 0))) - 1
+        n_max = np.array((max(h, 0), max(k, 0), max(ell, 0))) + 1
+    elif limtype == 2:
+        n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell)))
+        n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell)))
+    elif limtype == 3:
+        n_min = np.array((min(h, 0), min(k, 0), min(ell, 0)))
+        n_max = np.array((max(h, 0), max(k, 0), max(ell, 0)))
     # we want black colors, and small dots
     colors = ['k']
     sizes = [0.5]
