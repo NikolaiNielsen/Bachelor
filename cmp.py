@@ -235,7 +235,7 @@ def Lattice(
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
 def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
-                    grid=False, verbose=False):
+                    grid=False, verbose=False, returns=False):
 
     h, k, ell = indices
 
@@ -249,7 +249,7 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
 
     # we use primitive unit cell, and lattice lines along lattice vectors
     unit_type = 'primitive'
-    latticelines = 'latticevectors'
+    grid_type = 'latticevectors'
 
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
@@ -279,12 +279,50 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
                                           unit_type=unit_type,
                                           lattice=lattice,
                                           verbose=verbose)
-    recip_fig = plt.figure(figsize=(10,4))
-    recip_ax = recip_fig.gca(projection="3d")
+    
+    if fig is None:
+        recip_fig = plt.figure(figsize=(4,4))
+    else:
+        recip_fig = fig
+    
+    if ax is None:
+        recip_ax = recip_fig.gca(projection="3d")
+    else:
+        recip_ax = ax
+
+    pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
+                                       lattice_position, grid_type,
+                                       verbose=verbose)
+    g_col = 'k'
+    g_w = 0.5
+    if grid:
+        for line in pruned_lines:
+            recip_ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
 
     recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
+    recip_ax.set_aspect('equal')
+    recip_ax.set_proj_type('ortho')
+
+    # plot_max = np.amax(r_max)
+    # plot_min = np.amin(r_min)
+    # recip_ax.set_xlim([plot_min, plot_max])
+    # recip_ax.set_ylim([plot_min, plot_max])
+    # recip_ax.set_zlim([plot_min, plot_max])
+    recip_ax.grid(False)
+    if not verbose:
+        recip_ax.axis('off')
+
+    # make the panes transparent (the plot box)
+    recip_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    recip_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    recip_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    
+    if returns:
+        return recip_fig, recip_ax
+    else:
+        plt.show()
     
 def Scattering(lattice_name='simple cubic',
                basis=None,
