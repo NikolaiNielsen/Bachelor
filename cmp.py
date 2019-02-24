@@ -332,11 +332,20 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     recip_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     recip_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     recip_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    
+    cid = recip_fig.canvas.mpl_connect(
+        'button_press_event', 
+        lambda event: rotatefig(event, recip_fig, recip_ax))
     if returns:
         return recip_fig, recip_ax
     else:
         plt.show()
+
+
+def rotatefig(event, fig1, ax1):
+    if event.button == 1:
+        elev, azim = ax1.elev, ax1.azim
+        print(elev, azim)
+    
     
 def Scattering(lattice_name='simple cubic',
                basis=None,
