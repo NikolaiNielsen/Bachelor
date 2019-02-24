@@ -280,10 +280,12 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
                                           lattice=lattice,
                                           verbose=verbose)
     recip_fig = plt.figure(figsize=(10,4))
-    recip_ax = fig.gca(projection="3d")
+    recip_ax = recip_fig.gca(projection="3d")
 
-    return recip_fig, recip_ax
+    recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
+    
 def Scattering(lattice_name='simple cubic',
                basis=None,
                k_in=np.array([0, 0, -1.5]),
