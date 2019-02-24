@@ -234,9 +234,23 @@ def Lattice(
 
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
-def plot_reciprocal(a1, a2, a3, fig, ax, indices, grid):
+def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
+                    grid=False, verbose=False):
 
     h, k, ell = indices
+
+    # we plot between -h and h with 1 lattice point as padding.
+    n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
+    n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
+
+    # we want black colors, and small dots
+    colors = ['k']
+    sizes = [0.5]
+
+    # we use primitive unit cell, and lattice lines along lattice vectors
+    unit_type = 'primitive'
+    latticelines = 'latticevectors'
+
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
     # Then the reciprocal lattice
@@ -247,9 +261,24 @@ def plot_reciprocal(a1, a2, a3, fig, ax, indices, grid):
     # And the normal vector for the (hkl)-family of planes.
     G = h * b1 + k * b2 + ell * b3
     
+    # Create the array of lattice vectors and basis
     lattice = np.array([b1, b2, b3])
     basis = np.array([0, 0, 0])
+
+    objects = lattices.generator(b1, b2, b3, basis, colors, sizes,
+                                 n_min, n_max)
     
+    atomic_positions = np.around(objects[0], decimals=5)
+    objects = [atomic_positions] + [i for i in objects[1:]]
+
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+     lattice_position) = lattices.limiter(points=objects[0],
+                                          objects=objects,
+                                          min_=n_min,
+                                          max_=n_max,
+                                          unit_type=unit_type,
+                                          lattice=lattice,
+                                          verbose=verbose)
     recip_fig = plt.figure(figsize=(10,4))
     recip_ax = fig.gca(projection="3d")
 
