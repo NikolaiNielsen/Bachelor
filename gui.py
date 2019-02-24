@@ -530,6 +530,7 @@ class lattice_plane_window(lattice_window):
 
         self.create_miller_indices()
         self.create_recip_plot()
+        self.plot_lattice(plot_indices=True)
         # cid = fig.canvas.mpl_connect(
         #     'button_press_event',
         #     lambda event: rotatefig(event, fig, ax))
@@ -556,6 +557,7 @@ class lattice_plane_window(lattice_window):
         for _ in range(3):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
+            el.setText('1')
             el.editingFinished.connect(self.check_indices)
             self.layout_indices.addWidget(el)
             self.index_widgets.append(el)
@@ -563,8 +565,8 @@ class lattice_plane_window(lattice_window):
 
         # Next we make sure that the necessary back end is there (at least
         # config wise)
-        self.default_config['indices'] = [None] * 3
-        self.lattice_config['indices'] = [None] * 3
+        self.default_config['indices'] = [1] * 3
+        self.lattice_config['indices'] = [1] * 3
         self.default_config['enable_indices'] = True
         self.lattice_config['enable_indices'] = True
 
