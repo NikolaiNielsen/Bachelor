@@ -5,7 +5,7 @@
 #### lattice planes
 - [X] fix when $d$ os outside of lattice
 - [X] also show reciprocal lattice when plotting lattice planes
-- [ ] show b1, b2, b3 (h,k,l actually)
+- [X] show b1, b2, b3 (h,k,l actually)
 - [ ] rotate both figures simultaniously
 - [ ] checkbox to toggle gridlines on reciprocal lattice
 - [X] dynamic changing of n/m min and n/m max
