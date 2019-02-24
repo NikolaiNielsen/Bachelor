@@ -527,7 +527,18 @@ class lattice_window(QW.QMainWindow):
 class lattice_plane_window(lattice_window):
     def __init__(self):
         super().__init__()
+
         self.create_miller_indices()
+        self.create_recip_plot()
+        # cid = fig.canvas.mpl_connect(
+        #     'button_press_event',
+        #     lambda event: rotatefig(event, fig, ax))
+
+    def create_recip_plot(self):
+        a1 = self.lattice_config['a1']
+        a2 = self.lattice_config['a2']
+        a3 = self.lattice_config['a3']
+        # self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3, )
 
     def create_miller_indices(self):
         # This function adds the miller indices stuff we need for specifying
