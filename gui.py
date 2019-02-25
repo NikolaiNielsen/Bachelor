@@ -530,6 +530,7 @@ class lattice_plane_window(lattice_window):
 
         self.create_miller_indices()
         self.create_recip_plot()
+        self.layout_main.addWidget(self.recip_canvas)
         self.plot_lattice(plot_indices=True)
         # cid = fig.canvas.mpl_connect(
         #     'button_press_event',
@@ -539,7 +540,12 @@ class lattice_plane_window(lattice_window):
         a1 = self.lattice_config['a1']
         a2 = self.lattice_config['a2']
         a3 = self.lattice_config['a3']
-        # self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3, )
+        self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
+                                                        returns=True)
+        self.recip_canvas = FigureCanvas(self.recip_fig)
+        self.addToolBar(NavigationToolbar(self.recip_canvas, self))
+        self.recip_ax.mouse_init()
+        
 
     def create_miller_indices(self):
         # This function adds the miller indices stuff we need for specifying
