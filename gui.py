@@ -531,7 +531,7 @@ class lattice_plane_window(lattice_window):
         self.create_miller_indices()
         self.create_recip_plot()
         self.layout_main.addWidget(self.recip_canvas)
-        self.plot_lattice(plot_indices=True)
+        self.plot_lattice()
         # cid = fig.canvas.mpl_connect(
         #     'button_press_event',
         #     lambda event: rotatefig(event, fig, ax))
@@ -585,7 +585,7 @@ class lattice_plane_window(lattice_window):
         if enabled:
             self.check_indices()
         else:
-            self.plot_lattice(plot_indices=False)
+            self.plot_lattice()
 
     def check_indices(self):
         # This function only runs if the indices are actually enabled, and the
@@ -600,9 +600,9 @@ class lattice_plane_window(lattice_window):
         else:
             # We populate the list of indices if there are no invalid indices
             self.lattice_config['indices'] = [int(i) for i in text]
-            self.plot_lattice(plot_indices=True)
+            self.plot_lattice()
 
-    def plot_lattice(self, plot_indices=True):
+    def plot_lattice(self):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
 
@@ -625,8 +625,7 @@ class lattice_plane_window(lattice_window):
         else:
             colors = self.lattice_config['enabled_user_colors']
             basis = self.lattice_config['enabled_user_basis']
-
-        if plot_indices:
+        if self.lattice_config['enable_indices']:
             indices = self.lattice_config['indices']
         else:
             indices = None
