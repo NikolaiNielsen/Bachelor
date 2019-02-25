@@ -608,6 +608,7 @@ class lattice_plane_window(lattice_window):
 
         # Clear the axes
         self.static_ax.clear()
+        self.recip_ax.clear()
 
         # Grab lattice vectors and basis(es) from lattice_config
         a1 = self.lattice_config['a1']
