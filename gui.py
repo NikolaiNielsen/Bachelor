@@ -602,7 +602,7 @@ class lattice_plane_window(lattice_window):
             self.lattice_config['indices'] = [int(i) for i in text]
             self.plot_lattice(plot_indices=True)
 
-    def plot_lattice(self, plot_indices=False):
+    def plot_lattice(self, plot_indices=True):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
 
