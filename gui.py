@@ -639,9 +639,16 @@ class lattice_plane_window(lattice_window):
                                                   returns=True,
                                                   plots=False,
                                                   checks=False)
+        
+        self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
+                                                        indices=indices,
+                                                        fig=self.recip_fig,
+                                                        ax=self.recip_ax,
+                                                        returns=True)
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
+        self.recip_canvas.draw()
 
 
 class scattering_window(lattice_window):
