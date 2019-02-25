@@ -237,21 +237,25 @@ Reciprocal = partial(Lattice, indices=(1, 1, 1))
 def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
                     grid=False, verbose=False, returns=False, limtype=0):
 
-    h, k, ell = indices
+    if indices is None:
+        n_min = np.array([-1, -1, -1])
+        n_max = np.array([1, 1, 1])
+    else:
+        h, k, ell = indices
 
-    # we plot between -h and h with 1 lattice point as padding.
-    if limtype == 0:
-        n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
-        n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
-    elif limtype == 1:
-        n_min = np.array((min(h, 0), min(k, 0), min(ell, 0))) - 1
-        n_max = np.array((max(h, 0), max(k, 0), max(ell, 0))) + 1
-    elif limtype == 2:
-        n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell)))
-        n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell)))
-    elif limtype == 3:
-        n_min = np.array((min(h, 0), min(k, 0), min(ell, 0)))
-        n_max = np.array((max(h, 0), max(k, 0), max(ell, 0)))
+        # we plot between -h and h with 1 lattice point as padding.
+        if limtype == 0:
+            n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
+            n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
+        elif limtype == 1:
+            n_min = np.array((min(h, 0), min(k, 0), min(ell, 0))) - 1
+            n_max = np.array((max(h, 0), max(k, 0), max(ell, 0))) + 1
+        elif limtype == 2:
+            n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell)))
+            n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell)))
+        elif limtype == 3:
+            n_min = np.array((min(h, 0), min(k, 0), min(ell, 0)))
+            n_max = np.array((max(h, 0), max(k, 0), max(ell, 0)))
     # we want black colors, and small dots
     colors = ['k']
     sizes = [0.5]
@@ -266,9 +270,6 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     b1 = 2 * np.pi * np.cross(a2, a3) / scale
     b2 = 2 * np.pi * np.cross(a3, a1) / scale
     b3 = 2 * np.pi * np.cross(a1, a2) / scale
-
-    # And the normal vector for the (hkl)-family of planes.
-    G = h * b1 + k * b2 + ell * b3
     
     # Create the array of lattice vectors and basis
     lattice = np.array([b1, b2, b3])
@@ -299,7 +300,7 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     else:
         recip_ax = ax
 
-    pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
+    pruned_lines = lattices.grid_lines(b1, b2, b3, atomic_positions,
                                        lattice_position, grid_type,
                                        verbose=verbose)
     g_col = 'k'
@@ -311,9 +312,12 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
-    # plot some arrows
-    recip_ax.quiver(0,0,0, *G)
-    recip_ax.text(*(G/2), f'$G, ({h},{k},{ell})$')
+    if indices is not None:
+        # And the normal vector for the (hkl)-family of planes.
+        G = h * b1 + k * b2 + ell * b3
+        # plot some arrows
+        recip_ax.quiver(0,0,0, *G)
+        recip_ax.text(*(G/2), f'$G, ({h},{k},{ell})$')
 
     # making the axes prettier
     recip_ax.set_aspect('equal')
