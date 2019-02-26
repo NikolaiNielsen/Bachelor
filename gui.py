@@ -532,9 +532,10 @@ class lattice_plane_window(lattice_window):
         self.create_recip_plot()
         self.layout_main.addWidget(self.recip_canvas)
         self.plot_lattice()
-        # cid = fig.canvas.mpl_connect(
-        #     'button_press_event',
-        #     lambda event: rotatefig(event, fig, ax))
+        cid = self.static_fig.canvas.mpl_connect(
+            'motion_notify_event',
+            lambda event: rotatefig(event, self.static_fig, self.static_ax,
+                                    self.recip_canvas, self.recip_ax))
 
     def create_recip_plot(self):
         a1 = self.lattice_config['a1']

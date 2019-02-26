@@ -342,10 +342,12 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
         plt.show()
 
 
-def rotatefig(event, fig1, ax1):
+def rotatefig(event, fig1, ax1, canvas2, ax2):
     if event.button == 1:
         elev, azim = ax1.elev, ax1.azim
-        print(elev, azim)
+        ax2.view_init(elev, azim)
+        canvas2.draw()
+        
     
     
 def Scattering(lattice_name='simple cubic',
