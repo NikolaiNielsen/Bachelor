@@ -459,20 +459,13 @@ def Scattering(lattice_name='simple cubic',
                                                              k_in)
     points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
 
-    # Plotting the basics
-    detector_screen_position = [0.7, 0.2, 0.25, 0.625]
+    # Plotting the basic
     if fig is None:
-        fig = plt.figure(figsize=(10, 4))
+        fig = plt.figure(figsize=(6, 4))
     if axes is None:
         ax = fig.gca(projection="3d")
-        ax.set_position([0, 0, 0.7, 1])
-
-        # Create second set of axes for detection screen
-        ax2 = plt.axes(detector_screen_position)
     else:
-        ax, ax2 = axes
-    ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
-    ax2.set_aspect('equal', 'box')
+        ax = axes
 
     # Plot atoms
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
@@ -556,13 +549,7 @@ def Scattering(lattice_name='simple cubic',
                               length=lambda_ * laue_scale)
 
         ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
-        ax2.scatter(points[:, 0], points[:, 1], c=colors)
-        for i in range(len(indices)):
-            x, y = points[i, 0:2] - 0.05 * ranges
-            s = indices[i]
-            c = colors[i, :-1]
-            ax2.text(x, y, s, color=c, va='top', ha='right')
-
+        
         # Plotting detection plane
         abs_ex = 0.0
         rel_ex = 0.1
@@ -580,6 +567,11 @@ def Scattering(lattice_name='simple cubic',
 
         # plotting intersections
         ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
+        for i in range(len(indices)):
+            x, y = points[i, 0:2]
+            s = indices[i]
+            c = colors[i, :-1]
+            ax.text(x, y, plane_z, s, color=c, va='top', ha='right')
 
         # Setting limits for the second figure
         det_max_x = np.amax(x_range)
@@ -588,8 +580,8 @@ def Scattering(lattice_name='simple cubic',
         det_min_y = np.amin(y_range)
         det_max = max(det_max_x, det_max_y)
         det_min = min(det_min_x, det_min_y)
-        ax2.set_xlim(det_min, det_max)
-        ax2.set_ylim(det_min, det_max)
+        # ax2.set_xlim(det_min, det_max)
+        # ax2.set_ylim(det_min, det_max)
 
         if show_all:
             # Plotting outgoing vectors
@@ -634,19 +626,18 @@ def Scattering(lattice_name='simple cubic',
     ax.axis('off')
 
     tit = (r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
-           '{}'.format(k_title))
+           '{}'.format(k_title) + f'\nForm factors: {form_factor}')
     tit2 = (r'Scattering on a cubic lattice. $k_{in} = $' +
             '{}'.format(k_title))
     if normalize:
         ax.set_title(tit)
     else:
         ax.set_title(tit2)
-    ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
     if plots:
         plt.show()
     return_list = []
     if returns:
-        return_list += [fig, ax, ax2]
+        return_list += [fig, ax]
     if return_indices:
         return_list.append(indices)
     if returns or return_indices:
