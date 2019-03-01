@@ -19,7 +19,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_scattering()
+        self.create_lattice_planes()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -527,7 +527,6 @@ class lattice_window(QW.QMainWindow):
 class lattice_plane_window(lattice_window):
     def __init__(self):
         super().__init__()
-
         self.create_miller_indices()
         self.create_recip_plot()
         self.layout_main.addWidget(self.recip_canvas)
@@ -580,6 +579,16 @@ class lattice_plane_window(lattice_window):
         self.lattice_config['indices'] = [1] * 3
         self.default_config['enable_indices'] = True
         self.lattice_config['enable_indices'] = True
+
+        # Create the gridline option for reciprocal plot
+        self.show_recip_grid = QW.QCheckBox()
+        recip_grid_label = QW.QLabel('Show gridlines on reciprocal plot')
+        self.show_recip_grid.stateChanged.connect(self.plot_recip_with_grid)
+        self.layout_parameters.addRow(recip_grid_label, self.show_recip_grid)
+
+    def plot_recip_with_grid(self):
+        enabled = self.show_recip_grid.isChecked()
+        print(f'Gridlines enabled: {enabled}')
 
     def enable_indices(self):
         enabled = self.show_indices.isChecked()
