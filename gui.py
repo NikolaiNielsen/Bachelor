@@ -583,12 +583,9 @@ class lattice_plane_window(lattice_window):
         # Create the gridline option for reciprocal plot
         self.show_recip_grid = QW.QCheckBox()
         recip_grid_label = QW.QLabel('Show gridlines on reciprocal plot')
-        self.show_recip_grid.stateChanged.connect(self.plot_recip_with_grid)
+        self.show_recip_grid.stateChanged.connect(self.plot_lattice)
         self.layout_parameters.addRow(recip_grid_label, self.show_recip_grid)
 
-    def plot_recip_with_grid(self):
-        enabled = self.show_recip_grid.isChecked()
-        print(f'Gridlines enabled: {enabled}')
 
     def enable_indices(self):
         enabled = self.show_indices.isChecked()
@@ -620,6 +617,10 @@ class lattice_plane_window(lattice_window):
         # This function takes the values from lattice_config and uses them to
         # update the plot.
 
+        # Get the rotation.
+        azim = self.static_ax.azim
+        elev = self.static_ax.elev
+
         # Clear the axes
         self.static_ax.clear()
         self.recip_ax.clear()
@@ -639,10 +640,13 @@ class lattice_plane_window(lattice_window):
         else:
             colors = self.lattice_config['enabled_user_colors']
             basis = self.lattice_config['enabled_user_basis']
+
         if self.lattice_config['enable_indices']:
             indices = self.lattice_config['indices']
         else:
             indices = None
+        
+        recip_grid = self.show_recip_grid.isChecked()
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
                                                   basis=basis,
@@ -658,7 +662,11 @@ class lattice_plane_window(lattice_window):
                                                         indices=indices,
                                                         fig=self.recip_fig,
                                                         ax=self.recip_ax,
+                                                        grid=recip_grid,
                                                         returns=True)
+
+        self.static_ax.view_init(elev, azim)
+        self.recip_ax.view_init(elev, azim)
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
