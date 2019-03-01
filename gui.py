@@ -536,6 +536,10 @@ class lattice_plane_window(lattice_window):
             'motion_notify_event',
             lambda event: rotatefig(event, self.static_fig, self.static_ax,
                                     self.recip_canvas, self.recip_ax))
+        cid2 = self.recip_fig.canvas.mpl_connect(
+            'motion_notify_event',
+            lambda event: rotatefig(event, self.recip_fig, self.recip_ax,
+                                    self.static_canvas, self.static_ax))
 
     def create_recip_plot(self):
         a1 = self.lattice_config['a1']
