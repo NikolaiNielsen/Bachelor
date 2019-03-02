@@ -553,14 +553,18 @@ def Scattering(lattice_name='simple cubic',
         # Plotting detection plane
         abs_ex = 0.0
         rel_ex = 0.1
-        def_y = 2
-        def_x = 2
+        def_ = 2
         x_min = np.amin(points[:, 0]) * (1 + rel_ex) - abs_ex
         x_max = np.amax(points[:, 0]) * (1 + rel_ex) + abs_ex
         y_min = np.amin(points[:, 1]) * (1 + rel_ex) - abs_ex
         y_max = np.amax(points[:, 1]) * (1 + rel_ex) + abs_ex
-        x_range = np.array([min(x_min, -def_x), max(x_max, def_x)])
-        y_range = np.array([min(y_min, -def_y), max(y_max, def_y)])
+
+        # We want the detection plane to be square:
+        max_ = max(x_max, y_max)
+        min_ = min(x_min, y_min)
+
+        x_range = np.array([min(min_, -def_), max(max_, def_)])
+        y_range = np.array([min(min_, -def_), max(max_, def_)])
         x, y = np.meshgrid(x_range, y_range)
         z = plane_z * np.ones(x.shape)
         ax.plot_surface(x, y, z, color='k', alpha=0.2)
