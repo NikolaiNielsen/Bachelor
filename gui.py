@@ -727,7 +727,7 @@ class scattering_window(lattice_window):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax, self.static_ax2, _ = Scattering(
+        self.static_fig, self.static_ax, _ = Scattering(
             returns=True, return_indices=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))

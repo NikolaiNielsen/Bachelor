@@ -461,9 +461,9 @@ def Scattering(lattice_name='simple cubic',
 
     # Plotting the basic
     if fig is None:
-        fig = plt.figure(figsize=(6, 4))
+        fig = plt.figure(figsize=(5, 5))
     if axes is None:
-        ax = fig.gca(projection="3d")
+        ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
     else:
         ax = axes
 
