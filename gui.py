@@ -586,6 +586,17 @@ class lattice_plane_window(lattice_window):
         self.show_recip_grid.stateChanged.connect(self.plot_lattice)
         self.layout_parameters.addRow(recip_grid_label, self.show_recip_grid)
 
+        # Add option to change limit type for reciprocal plot
+        self.limit_type_list = list(range(4))
+        self.limit_type_names = ['from 0 to h, with padding',
+                                 'from -h to h, with padding',
+                                 'from 0 to h, without padding',
+                                 'from -h to h, without padding']
+        limit_type_label = QW.QLabel('Limits')
+        self.limit_type_combo = QW.QComboBox(self)
+        self.limit_type_combo.addItems(self.limit_type_names)
+        self.limit_type_combo.activated[int].connect(self.plot_lattice)
+        self.layout_parameters.addRow(limit_type_label, self.limit_type_combo)
 
     def enable_indices(self):
         enabled = self.show_indices.isChecked()
@@ -646,6 +657,7 @@ class lattice_plane_window(lattice_window):
         else:
             indices = None
         
+        limit_type = self.limit_type_combo.currentIndex()
         recip_grid = self.show_recip_grid.isChecked()
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
@@ -663,7 +675,8 @@ class lattice_plane_window(lattice_window):
                                                         fig=self.recip_fig,
                                                         ax=self.recip_ax,
                                                         grid=recip_grid,
-                                                        returns=True)
+                                                        returns=True,
+                                                        limtype=limit_type)
 
         self.static_ax.view_init(elev, azim)
         self.recip_ax.view_init(elev, azim)
