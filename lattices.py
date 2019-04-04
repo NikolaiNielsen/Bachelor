@@ -488,7 +488,7 @@ def chooser(lattice_name="simple cubic",
     # FCC
     lfcc = np.array([[a / 2, a / 2, 0], [a / 2, 0, a / 2], [0, a / 2, a / 2]])
     L["fcc"] = lfcc
-    L["primitive fcc"] = lbcc
+    L["primitive fcc"] = lfcc
     # Tetragonal
     ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, b]])
     L["tetragonal"] = ltetra
