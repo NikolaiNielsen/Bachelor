@@ -1533,12 +1533,22 @@ def tester(verbose=False):
 def get_lattice_info(lattice):
     # takes in the lattice, returns the magnitude of each vector and the angles
     # between them.
+    
+    side_lengths = ['simple cubic', 'primitive bcc', 'primitive fcc',
+                    'tetragonal', 'tetragonal body centred',
+                    'tetragonal face centred', 'orthorhombic',
+                    'orthorhombic body centred', 'orthorhombic face centred',
+                    'orthorhombic base centred', 'diamond','zincblende',
+                    'conventional fcc', 'conventional bcc']
+    vec_lengths = ['simple monoclinic', 'base centred monoclinic', 'hexagonal',
+                   'triclinic', 'rhombohedral', 'wurtzite']
+    
     a1, a2, a3 = lattice
     a, b, c = mag(lattice)
     alpha_cos = a1.dot(a2)/(a*b)
-    alpha_deg= np.arccos(alpha_cos) * 180 / np.pi
+    alpha_deg = np.arccos(alpha_cos) * 180 / np.pi
     beta_cos = a2.dot(a3)/(b*c)
     beta_deg = np.arccos(beta_cos) * 180 / np.pi
     gamma_cos = a3.dot(a1)/(a*c)
-    gamma_deg= np.arccos(gamma_cos) * 180 / np.pi
+    gamma_deg = np.arccos(gamma_cos) * 180 / np.pi
     return a, b, c, alpha_deg, beta_deg, gamma_deg
