@@ -20,7 +20,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_lattice_planes()
+        self.create_scattering()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -715,6 +715,7 @@ class lattice_plane_window(lattice_window):
 class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
+        self.layout_main.addWidget(self.static_canvas2)
 
     def create_variables(self):
         self.lattice_names = ['cubic with a basis',
@@ -766,11 +767,15 @@ class scattering_window(lattice_window):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax, _ = Scattering(
+        (self.static_fig, self.static_fig2,
+         self.static_ax, self.static_ax2, _) = Scattering(
             returns=True, return_indices=True, plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
+        self.static_canvas2 = FigureCanvas(self.static_fig2)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
+        # self.addToolBar(NavigationToolbar(self.static_canvas2, self))
         self.static_ax.mouse_init()
+        self.static_ax2.mouse_init()
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
@@ -1021,7 +1026,6 @@ class scattering_window(lattice_window):
 
         # Clear the axes
         self.static_ax.clear()
-        self.static_ax2.clear()
 
         # Grab the basis and colors
         if self.lattice_config['lattice'] in self.presets_with_basis:
@@ -1040,7 +1044,8 @@ class scattering_window(lattice_window):
         show_all = self.lattice_config['show_all']
 
         # Plot the new lattice
-        self.static_fig, self.static_ax, self.static_ax2, indices = Scattering(
+        (self.static_fig, self.static_fig2,
+         self.static_ax, self.static_ax2, indices) = Scattering(
             basis=basis,
             k_in=k_in,
             colors=colors,
