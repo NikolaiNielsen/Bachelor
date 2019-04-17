@@ -366,7 +366,7 @@ def Scattering(lattice_name='simple cubic',
                return_indices=False,
                colors=None,
                laue_scale=1,
-               fig=None,
+               figs=None,
                axes=None,
                plots=True):
 
@@ -464,24 +464,35 @@ def Scattering(lattice_name='simple cubic',
     points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
 
     # Plotting the basic
-    if fig is None:
-        fig = plt.figure(figsize=(5, 5))
-    if axes is None:
-        ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
+    if figs is None:
+        macro_fig = plt.figure(figsize=(5, 5))
+        micro_fig = plt.figure(figsize=(5, 5))
     else:
-        ax = axes
+        macro_fig, micro_fig = figs
+    if axes is None:
+        macro_ax = macro_fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
+        micro_ax = micro_fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
+    else:
+        macro_ax, micro_ax = axes
 
     # Plot atoms
-    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
-               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+    macro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+    
+    micro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
     for line in pruned_lines:
-        ax.plot(line[0], line[1], line[2],
-                color=g_col, linewidth=g_w, alpha=g_a)
+        macro_ax.plot(line[0], line[1], line[2],
+                      color=g_col, linewidth=g_w, alpha=g_a)
+        micro_ax.plot(line[0], line[1], line[2],
+                      color=g_col, linewidth=g_w, alpha=g_a)
 
     # Plotting the beam: First we create the beam display vector
-    ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
-              color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
+    macro_ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
+                    color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
+    micro_ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
+                    color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
 
     if intensities.size == 0:
         print("There is no scattering for this choice of k_in")
@@ -520,7 +531,7 @@ def Scattering(lattice_name='simple cubic',
                     high_intensity = intensities[indices_index]
                     colors[indices_index] = [1, 0, 0, high_intensity]
                     for p in planes:
-                        ax.plot_surface(p[0], p[1], p[2], color="r",
+                        macro_ax.plot_surface(p[0], p[1], p[2], color="r",
                                         shade=False, alpha=0.2)
                     # We also plot the outgoing line corresponding to this
                     # scattering. First we get the point (and squeeze it, to
@@ -529,7 +540,7 @@ def Scattering(lattice_name='simple cubic',
                     start = np.array([0, 0, beam_end_z])
                     ray = p - start
                     line = np.array([start, start + outgoing_length * ray])
-                    ax.plot(line[:, 0], line[:, 1], line[:, 2], color='r',
+                    macro_ax.plot(line[:, 0], line[:, 1], line[:, 2], color='r',
                             alpha=0.3, ls='--',
                             lw=g_w * 2)
                     # Plotting outgoing vector and Laue condition
@@ -541,7 +552,7 @@ def Scattering(lattice_name='simple cubic',
                                        start - k_disp * lambda_ * laue_scale,
                                        (start - vecs_disp[2] * lambda_ *
                                         laue_scale)])
-                    ax.quiver(starts[:, 0],
+                    macro_ax.quiver(starts[:, 0],
                               starts[:, 1],
                               starts[:, 2],
                               vecs_disp[:, 0],
@@ -571,15 +582,15 @@ def Scattering(lattice_name='simple cubic',
         y_range = np.array([min(min_, -def_), max(max_, def_)])
         x, y = np.meshgrid(x_range, y_range)
         z = plane_z * np.ones(x.shape)
-        ax.plot_surface(x, y, z, color='k', alpha=0.2)
+        macro_ax.plot_surface(x, y, z, color='k', alpha=0.2)
 
         # plotting intersections
-        ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
+        macro_ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
         for i in range(len(indices)):
             x, y = points[i, 0:2]
             s = indices[i]
             c = colors[i, :-1]
-            ax.text(x, y, plane_z, s, color=c, va='bottom', ha='center')
+            macro_ax.text(x, y, plane_z, s, color=c, va='bottom', ha='center')
 
         # Setting limits for the second figure
         det_max_x = np.amax(x_range)
@@ -597,7 +608,7 @@ def Scattering(lattice_name='simple cubic',
             k_plot = k_out / lattices.mag(k_in)
             start_point = np.array((0, 0, beam_end_z))
             start_points = np.repeat(np.atleast_2d(start_point), n, axis=0)
-            ax.quiver(start_points[:, 0],
+            macro_ax.quiver(start_points[:, 0],
                       start_points[:, 1],
                       start_points[:, 2],
                       k_plot[:, 0],
@@ -613,39 +624,52 @@ def Scattering(lattice_name='simple cubic',
                 ray = p - start_point
                 line = np.array([start_point,
                                  start_point + outgoing_length * ray])
-                ax.plot(line[:, 0], line[:, 1], line[:, 2],
+                macro_ax.plot(line[:, 0], line[:, 1], line[:, 2],
                         color='k', alpha=0.3, ls='--',
                         lw=g_w)
 
-    ax.set_aspect('equal')
-    ax.set_proj_type('ortho')
-    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.set_aspect('equal')
+    macro_ax.set_proj_type('ortho')
+    macro_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+
+    micro_ax.set_aspect('equal')
+    micro_ax.set_proj_type('ortho')
+    micro_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    micro_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    micro_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
     # Some limit trickery. We make the plot box cubic:
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
-    ax.set_xlim(plot_min, plot_max)
-    ax.set_ylim(plot_min, plot_max)
-    ax.set_zlim(plot_min, plot_max)
+    macro_ax.set_xlim(plot_min, plot_max)
+    macro_ax.set_ylim(plot_min, plot_max)
+    macro_ax.set_zlim(plot_min, plot_max)
 
-    ax.grid(False)
-    ax.axis('off')
+    macro_ax.grid(False)
+    macro_ax.axis('off')
+
+    micro_ax.set_xlim(plot_min, plot_max)
+    micro_ax.set_ylim(plot_min, plot_max)
+    micro_ax.set_zlim(plot_min, plot_max)
+
+    micro_ax.grid(False)
+    micro_ax.axis('off')
 
     tit = (r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
            '{}'.format(k_title) + f'\nForm factors: {form_factor}')
     tit2 = (r'Scattering on a cubic lattice. $k_{in} = $' +
             '{}'.format(k_title))
     if normalize:
-        ax.set_title(tit)
+        macro_ax.set_title(tit)
     else:
-        ax.set_title(tit2)
+        macro_ax.set_title(tit2)
     if plots:
         plt.show()
     return_list = []
     if returns:
-        return_list += [fig, ax]
+        return_list += [macro_fig, micro_fig, macro_ax, micro_ax]
     if return_indices:
         return_list.append(indices)
     if returns or return_indices:
