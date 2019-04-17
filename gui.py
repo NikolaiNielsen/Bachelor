@@ -1,5 +1,6 @@
 import sys
 from cmp import *
+import lattices
 from itertools import compress
 
 from PyQt5 import QtWidgets as QW, QtGui as QG, QtCore as QC
@@ -19,7 +20,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_scattering()
+        self.create_lattice()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -395,6 +396,9 @@ class lattice_window(QW.QMainWindow):
                                             (a1, a2, a3, basis))))
         if name in self.presets_with_basis:
             self.update_preset_basis_widgets()
+        
+        self.update_unused_params()
+
         self.plot_lattice()
 
     def update_lattice_name(self, text):
@@ -442,6 +446,31 @@ class lattice_window(QW.QMainWindow):
             pass
         self.update_lattice()
 
+    def update_unused_params(self):
+
+        a1 = self.lattice_config['a1']
+        a2 = self.lattice_config['a2']
+        a3 = self.lattice_config['a3']
+        name = self.lattice_config['lattice']
+        
+        lattice = np.array((a1, a2, a3))
+        self.lattice_config.update(dict(zip(
+            ('a', 'b', 'c', 'alpha', 'beta', 'gamma'),
+            lattices.get_lattice_info(lattice, name)
+        )))
+
+        all_params = [0, 1, 2, 3, 4, 5]
+        current_params = self.needed_params[self.lattice_config['lattice']]
+        unused_params = list(set(all_params) ^ set(current_params))
+        self.update_parameter_widgets(unused_params)
+
+    def update_parameter_widgets(self, widget_nums):
+        for i in widget_nums:
+            param_name = self.parameter_names[i]
+            param_field = self.param_fields[i]
+            value = self.lattice_config[param_name]
+            param_field.setText(str(value))
+    
     def update_basis_color(self, type_, num, text):
         colors = self.lattice_config['{}_colors'.format(type_)]
         text = text.lower()
