@@ -1530,32 +1530,57 @@ def tester(verbose=False):
         print("Test done. If nothing printed, all were succesfully classified")
 
 
-def get_lattice_info(lattice):
+def get_lattice_info(lattice, lattice_name):
     # takes in the lattice, returns the magnitude of each vector and the angles
     # between them.
     
-    side_lengths = ['simple cubic', 'primitive bcc', 'primitive fcc',
-                    'tetragonal', 'tetragonal body centred',
-                    'tetragonal face centred', 'orthorhombic',
-                    'orthorhombic body centred', 'orthorhombic face centred',
-                    'orthorhombic base centred', 'diamond','zincblende',
-                    'conventional fcc', 'conventional bcc']
-    vec_lengths = ['simple monoclinic', 'base centred monoclinic', 'hexagonal',
-                   'triclinic', 'rhombohedral', 'wurtzite']
-    
+    # conversion matrices
     simple = np.eye(3)
     bcc = np.array([[1, 0, 0], [0, 1, 0], [-1, -1, 2]])
     fcc = np.ones((3, 3)) - 2 * np.fliplr(np.eye(3))
     base = np.array([[1,0,0], [-1, 2, 0], [0, 0, 1]])
 
+    matrices = {'base centred monoclinic': simple,
+                'base centred monoclinic 1': simple,
+                'base centred monoclinic 2': simple,
+                'base centred monoclinic 3': simple,
+                'bcc': bcc,
+                'primitive bcc': bcc,
+                'primitive fcc': fcc,
+                'conventional bcc': bcc,
+                'conventional fcc': fcc,
+                'fcc': fcc,
+                'hexagonal': simple,
+                'hexagonal 1': simple,
+                'hexagonal 2': simple,
+                'hcp': simple,
+                'orthorhombic': simple,
+                'orthorhombic base centred': base,
+                'orthorhombic body centred': bcc,
+                'orthorhombic face centred': fcc,
+                'rhombohedral': simple,
+                'simple cubic': simple,
+                'cubic with a basis': simple,
+                'simple monoclinic': simple,
+                'tetragonal': simple,
+                'tetragonal base centred': base,
+                'tetragonal body centred': bcc,
+                'tetragonal face centred': fcc,
+                'triclinic': simple,
+                'zincblende': fcc,
+                'diamond': fcc,
+                'wurtzite': simple,
+                'undetermined': simple}
 
+    newlattice = matrices[lattice_name] @ lattice
 
-    a1, a2, a3 = lattice
-    a, b, c = mag(lattice)
+    a1, a2, a3 = newlattice
+    a, b, c = mag(newlattice)
     alpha_cos = a1.dot(a2)/(a*b)
     alpha_deg = np.arccos(alpha_cos) * 180 / np.pi
     beta_cos = a2.dot(a3)/(b*c)
     beta_deg = np.arccos(beta_cos) * 180 / np.pi
     gamma_cos = a3.dot(a1)/(a*c)
     gamma_deg = np.arccos(gamma_cos) * 180 / np.pi
+    
     return a, b, c, alpha_deg, beta_deg, gamma_deg
