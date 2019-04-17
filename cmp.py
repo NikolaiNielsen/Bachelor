@@ -531,7 +531,7 @@ def Scattering(lattice_name='simple cubic',
                     high_intensity = intensities[indices_index]
                     colors[indices_index] = [1, 0, 0, high_intensity]
                     for p in planes:
-                        macro_ax.plot_surface(p[0], p[1], p[2], color="r",
+                        micro_ax.plot_surface(p[0], p[1], p[2], color="r",
                                         shade=False, alpha=0.2)
                     # We also plot the outgoing line corresponding to this
                     # scattering. First we get the point (and squeeze it, to
@@ -552,7 +552,7 @@ def Scattering(lattice_name='simple cubic',
                                        start - k_disp * lambda_ * laue_scale,
                                        (start - vecs_disp[2] * lambda_ *
                                         laue_scale)])
-                    macro_ax.quiver(starts[:, 0],
+                    micro_ax.quiver(starts[:, 0],
                               starts[:, 1],
                               starts[:, 2],
                               vecs_disp[:, 0],
