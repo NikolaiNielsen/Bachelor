@@ -323,11 +323,16 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     recip_ax.set_aspect('equal')
     recip_ax.set_proj_type('ortho')
 
-    # plot_max = np.amax(r_max)
-    # plot_min = np.amin(r_min)
-    # recip_ax.set_xlim([plot_min, plot_max])
-    # recip_ax.set_ylim([plot_min, plot_max])
-    # recip_ax.set_zlim([plot_min, plot_max])
+    # Get the max limit, so we can make plot box cubic
+    xlim = recip_ax.get_xlim()
+    ylim = recip_ax.get_ylim()
+    zlim = recip_ax.get_zlim()
+    limits = np.array(list(zip(xlim, ylim, zlim)))
+    plot_max = np.max(limits[1])
+    plot_min = np.min(limits[0])
+    recip_ax.set_xlim([plot_min, plot_max])
+    recip_ax.set_ylim([plot_min, plot_max])
+    recip_ax.set_zlim([plot_min, plot_max])
     recip_ax.grid(False)
     if not verbose:
         recip_ax.axis('off')
@@ -348,7 +353,6 @@ def rotatefig(event, fig1, ax1, canvas2, ax2):
         ax2.view_init(elev, azim)
         canvas2.draw()
         
-    
     
 def Scattering(lattice_name='simple cubic',
                basis=None,
