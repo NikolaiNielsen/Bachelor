@@ -176,10 +176,6 @@ def Lattice(
     if ax is None:
         ax = fig.gca(projection="3d")
 
-    # Plot atoms
-    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
-               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
-
     # Get the relevant gridlines:
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
                                        lattice_position, grid_type,
@@ -187,6 +183,10 @@ def Lattice(
     if grid:
         for line in pruned_lines:
             ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
+
+    # Plot atoms
+    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
