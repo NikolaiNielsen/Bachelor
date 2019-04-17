@@ -1511,7 +1511,7 @@ def tester(verbose=False):
     R = rot_matrix()
     for name in lattices:
         # Create the lattice
-        lattice, basis = chooser(name, verbose=verbose)
+        lattice, basis, _ = chooser(name, verbose=verbose)
         # rotate the lattice and basis
         lattice = (R@lattice.T).T
         basis = (R@basis.T).T
