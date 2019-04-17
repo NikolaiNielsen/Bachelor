@@ -114,6 +114,9 @@ class lattice_window(QW.QMainWindow):
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
 
+        # update unused parameters
+        self.update_unused_params()
+
     def create_variables(self):
         # A list of names for available lattice presets
         self.lattices = ['simple cubic', 'primitive bcc', 'primitive fcc',
@@ -356,11 +359,11 @@ class lattice_window(QW.QMainWindow):
             # check.stateChanged.connect(
             #     lambda i=i: self.hide_basis_widgets(i))
 
-            # Add the checkbox to the list of widgets, and the layout.
+            # Add the checkbox to the list of widgets and to the layout.
             self.basis_check_widgets.append(check)
             self.layout_basis_grid.addWidget(check, i + 1, n_coords + 2)
 
-        # It's ugly but it works. We make the checkbox to stuff
+        # It's ugly but it works. We make the checkbox do stuff
         self.basis_check_widgets[0].stateChanged.connect(
             lambda: self.hide_basis_widgets(0))
         self.basis_check_widgets[1].stateChanged.connect(
@@ -378,9 +381,6 @@ class lattice_window(QW.QMainWindow):
         self.current_basis_layout = self.layout_basis
         self.layout_basis.addLayout(self.layout_basis_grid)
         self.layout_options.addLayout(self.layout_basis)
-
-    def load_default_parameters(self):
-        pass
 
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
