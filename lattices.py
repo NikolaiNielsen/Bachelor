@@ -11,10 +11,10 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
-latticelines = {'base centred monoclinic': 'latticevectors',
-                'base centred monoclinic 1': 'latticevectors',
-                'base centred monoclinic 2': 'latticevectors',
-                'base centred monoclinic 3': 'latticevectors',
+latticelines = {'base centred monoclinic': 'base',
+                'base centred monoclinic 1': 'base',
+                'base centred monoclinic 2': 'base',
+                'base centred monoclinic 3': 'base',
                 'bcc': 'axes',
                 'primitive bcc': 'axes',
                 'primitive fcc': 'axes',
@@ -1284,17 +1284,20 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
 
     grid_type = grid_type.lower()
     lines = []
-
+    lattice_positions = atomic_positions[lattice_position]
     if grid_type in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         vectors = np.array([a1, a2, a3])
-        lines = create_línes(atomic_positions[lattice_position], vectors)
+        lines = create_línes(lattice_positions, vectors)
     elif grid_type in "hexagonal":
         vectors = np.array([a1, a2, a3, a1 - a2])
-        lines = create_línes(atomic_positions[lattice_position], vectors)
+        lines = create_línes(lattice_positions, vectors)
+    elif grid_type in 'base centred monoclinic':
+        vectors = np.array([a1, 2*a2-a1, a3])
+        lines = create_línes(lattice_positions, vectors)
     elif grid_type in 'axes':
-        lattice_positions = atomic_positions[lattice_position]
+
         # A Way of finding atoms on cartesian axes
         # bool array of atoms with x = 0 and y = 0
         x0 = lattice_positions[:, 0] == 0
