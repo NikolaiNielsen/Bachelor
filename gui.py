@@ -196,9 +196,12 @@ class lattice_window(QW.QMainWindow):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
         self.parameter_text = ['a', 'b', 'c', 'alpha (degrees)',
                                'beta (degrees)', 'gamma (degrees)']
-        self.parameter_tooltips = ['', '', '', 'Angle between side 1 and 3',
-                                   'Angle between side 1 and 2',
-                                   'Angle between side 2 and 3']
+        self.parameter_tooltips = ['Length of first side', 
+                                   'Length of second side',
+                                   'length of third side',
+                                   'Angle between sides 1 and 3',
+                                   'Angle between sides 1 and 2',
+                                   'Angle between sides 2 and 3']
         self.param_labels = []
         self.param_fields = []
         self.layout_options = QW.QVBoxLayout()
@@ -376,6 +379,9 @@ class lattice_window(QW.QMainWindow):
         self.layout_basis.addLayout(self.layout_basis_grid)
         self.layout_options.addLayout(self.layout_basis)
 
+    def load_default_parameters(self):
+        pass
+
     def update_lattice(self):
         # Grab a new lattice based on the parameters in lattice_config
         a = self.lattice_config['a']
@@ -452,7 +458,7 @@ class lattice_window(QW.QMainWindow):
         a2 = self.lattice_config['a2']
         a3 = self.lattice_config['a3']
         name = self.lattice_config['lattice']
-        
+
         lattice = np.array((a1, a2, a3))
         self.lattice_config.update(dict(zip(
             ('a', 'b', 'c', 'alpha', 'beta', 'gamma'),
@@ -461,6 +467,7 @@ class lattice_window(QW.QMainWindow):
 
         all_params = [0, 1, 2, 3, 4, 5]
         current_params = self.needed_params[self.lattice_config['lattice']]
+        # xor of all params and used params
         unused_params = list(set(all_params) ^ set(current_params))
         self.update_parameter_widgets(unused_params)
 
