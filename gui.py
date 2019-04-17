@@ -103,7 +103,6 @@ class lattice_window(QW.QMainWindow):
         self.create_options()
         self.layout_main.addLayout(self.layout_options)
         self.create_plot_window()
-        self.layout_main.addWidget(self.static_canvas)
 
     def create_plot_window(self):
         # Create the default plot and return the figure and axis objects for
@@ -116,6 +115,7 @@ class lattice_window(QW.QMainWindow):
 
         # update unused parameters
         self.update_unused_params()
+        self.layout_main.addWidget(self.static_canvas)
 
     def create_variables(self):
         # A list of names for available lattice presets
@@ -586,7 +586,6 @@ class lattice_plane_window(lattice_window):
         self.addToolBar(NavigationToolbar(self.recip_canvas, self))
         self.recip_ax.mouse_init()
         
-
     def create_miller_indices(self):
         # This function adds the miller indices stuff we need for specifying
         # the family of lattice planes
@@ -624,7 +623,6 @@ class lattice_plane_window(lattice_window):
         recip_grid_label = QW.QLabel('Show gridlines on reciprocal plot')
         self.show_recip_grid.stateChanged.connect(self.plot_lattice)
         self.layout_parameters.addRow(recip_grid_label, self.show_recip_grid)
-
 
     def enable_indices(self):
         enabled = self.show_indices.isChecked()
@@ -715,7 +713,15 @@ class lattice_plane_window(lattice_window):
 class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
-        self.layout_main.addWidget(self.static_canvas2)
+        
+        cid = self.macro_fig.canvas.mpl_connect(
+            'motion_notify_event',
+            lambda event: rotatefig(event, self.macro_fig, self.macro_ax,
+                                    self.micro_canvas, self.micro_ax))
+        cid2 = self.micro_fig.canvas.mpl_connect(
+            'motion_notify_event',
+            lambda event: rotatefig(event, self.micro_fig, self.micro_ax,
+                                    self.macro_canvas, self.macro_ax))
 
     def create_variables(self):
         self.lattice_names = ['cubic with a basis',
@@ -767,15 +773,17 @@ class scattering_window(lattice_window):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        (self.static_fig, self.static_fig2,
-         self.static_ax, self.static_ax2, _) = Scattering(
+        (self.macro_fig, self.micro_fig,
+         self.macro_ax, self.micro_ax, _) = Scattering(
             returns=True, return_indices=True, plots=False)
-        self.static_canvas = FigureCanvas(self.static_fig)
-        self.static_canvas2 = FigureCanvas(self.static_fig2)
-        self.addToolBar(NavigationToolbar(self.static_canvas, self))
-        # self.addToolBar(NavigationToolbar(self.static_canvas2, self))
-        self.static_ax.mouse_init()
-        self.static_ax2.mouse_init()
+        self.macro_canvas = FigureCanvas(self.macro_fig)
+        self.micro_canvas = FigureCanvas(self.micro_fig)
+        self.addToolBar(NavigationToolbar(self.macro_canvas, self))
+        self.macro_ax.mouse_init()
+        self.micro_ax.mouse_init()
+
+        self.layout_main.addWidget(self.macro_canvas)
+        self.layout_main.addWidget(self.micro_canvas)
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
@@ -1021,11 +1029,11 @@ class scattering_window(lattice_window):
         # aren't changed
 
         # Get the veiwing angle of the axes (so we can remember it)
-        azim = self.static_ax.azim
-        elev = self.static_ax.elev
+        azim = self.macro_ax.azim
+        elev = self.macro_ax.elev
 
         # Clear the axes
-        self.static_ax.clear()
+        self.macro_ax.clear()
 
         # Grab the basis and colors
         if self.lattice_config['lattice'] in self.presets_with_basis:
@@ -1044,20 +1052,20 @@ class scattering_window(lattice_window):
         show_all = self.lattice_config['show_all']
 
         # Plot the new lattice
-        (self.static_fig, self.static_fig2,
-         self.static_ax, self.static_ax2, indices) = Scattering(
+        (self.macro_fig, self.micro_fig,
+         self.macro_ax, self.micro_ax, indices) = Scattering(
             basis=basis,
             k_in=k_in,
             colors=colors,
             form_factor=form_factors,
             highlight=highlight,
-            fig=self.static_fig,
-            axes=(self.static_ax, self.static_ax2),
+            figs=(self.macro_fig, self.micro_fig),
+            axes=(self.macro_ax, self.micro_ax),
             show_all=show_all,
             returns=True,
             return_indices=True,
             plots=False)
-        self.static_ax.view_init(elev, azim)
+        self.macro_ax.view_init(elev, azim)
 
         if not no_change:
             # If we don't only highlight stuff (ie we've changed the basis or
