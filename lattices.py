@@ -490,13 +490,13 @@ def chooser(lattice_name="simple cubic",
     L["fcc"] = lfcc
     L["primitive fcc"] = lfcc
     # Tetragonal
-    ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, b]])
+    ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, c]])
     L["tetragonal"] = ltetra
     # Tetragonal Body Centred
-    ltbc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, b / 2]])
+    ltbc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, c / 2]])
     L["tetragonal body centred"] = ltbc
     # Tetragonal Face Centred
-    ltfc = np.array([[a / 2, a / 2, 0], [a / 2, 0, b / 2], [0, a / 2, b / 2]])
+    ltfc = np.array([[a / 2, a / 2, 0], [a / 2, 0, c / 2], [0, a / 2, c / 2]])
     L["tetragonal face centred"] = ltfc
     # tetragonal base centred
     ltbase = np.array([[a, 0, 0], [a / 2, a / 2, 0], [0, 0, b]])
@@ -1543,6 +1543,13 @@ def get_lattice_info(lattice):
     vec_lengths = ['simple monoclinic', 'base centred monoclinic', 'hexagonal',
                    'triclinic', 'rhombohedral', 'wurtzite']
     
+    simple = np.eye(3)
+    bcc = np.array([[1, 0, 0], [0, 1, 0], [-1, -1, 2]])
+    fcc = np.ones((3, 3)) - 2 * np.fliplr(np.eye(3))
+    base = np.array([[1,0,0], [-1, 2, 0], [0, 0, 1]])
+
+
+
     a1, a2, a3 = lattice
     a, b, c = mag(lattice)
     alpha_cos = a1.dot(a2)/(a*b)
