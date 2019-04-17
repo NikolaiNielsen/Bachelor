@@ -20,7 +20,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_lattice()
+        self.create_lattice_planes()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -591,30 +591,33 @@ class lattice_plane_window(lattice_window):
         # This function adds the miller indices stuff we need for specifying
         # the family of lattice planes
 
-        # First we create the widgets we need, then we add them to the existing
+        # First we make sure that the necessary back end is there (at least
+        # config wise)
+        self.default_config['indices'] = [1] * 3
+        self.lattice_config['indices'] = [1] * 3
+        self.default_config['enable_indices'] = False
+        self.lattice_config['enable_indices'] = False
+
+        enabled = self.lattice_config['enable_indices']
+        indices = self.lattice_config['indices']
+        # Then we create the widgets we need, then we add them to the existing
         # layout:
         indices_label = QW.QLabel('Miller indices')
         self.layout_indices = QW.QHBoxLayout()
         self.index_widgets = []
         self.show_indices = QW.QCheckBox()
-        self.show_indices.setChecked(True)
+        self.show_indices.setChecked(enabled)
         self.show_indices.stateChanged.connect(self.enable_indices)
         self.layout_indices.addWidget(self.show_indices)
-        for _ in range(3):
+        for i in range(3):
             el = QW.QLineEdit()
             el.setValidator(QG.QIntValidator())
-            el.setText('1')
+            el.setText(str(indices[i]))
+            el.setEnabled(enabled)
             el.editingFinished.connect(self.check_indices)
             self.layout_indices.addWidget(el)
             self.index_widgets.append(el)
         self.layout_parameters.addRow(indices_label, self.layout_indices)
-
-        # Next we make sure that the necessary back end is there (at least
-        # config wise)
-        self.default_config['indices'] = [1] * 3
-        self.lattice_config['indices'] = [1] * 3
-        self.default_config['enable_indices'] = True
-        self.lattice_config['enable_indices'] = True
 
         # Create the gridline option for reciprocal plot
         self.show_recip_grid = QW.QCheckBox()
