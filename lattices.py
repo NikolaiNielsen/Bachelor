@@ -616,6 +616,12 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
     # Outputs:
     # - r_min, r_max, n_min, n_max:     ndarray (3,)
 
+
+    allowed_types = ['individual', 'sum', 'proper']
+    if lim_type not in allowed_types:
+        print('Limit type not recognized. returning proper limit type')
+        lim_type = 'proper'
+
     n_min, n_max = np.array(min_), np.array(max_)
     lattice = np.array((a1, a2, a3))
     # For dynamic limits we pass min_ and max_ asq limits of basis vector range
@@ -662,8 +668,6 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
         # and maximum value for our cartesian axes
         r_min = np.amin(limits, 0)
         r_max = np.amax(limits, 0)
-    else:
-        print('You chose... poorly.')
     # And lastly we return the relevant arrays, with n_min / max -+ some value
     # to allow for "spillage". The value is the maximal value of the max_
     # array. Also, let's make sure n_min / max are arrays of integers. Don't
