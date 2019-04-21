@@ -1374,6 +1374,23 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
     return lines
 
 
+def create_2d_array_from_verts(x, y, z):
+    print(x)
+    print(y)
+    print(z)
+    xx, yy = np.meshgrid(x, y)
+    zz = np.empty_like(xx)
+    for i in range(zz.shape[0]):
+        for j in range(zz.shape[1]):
+            x_index = x[i]
+            y_index = y[j]
+            z_index = x_index * y_index
+            print(z_index)
+            print(z[z_index])
+            zz[i, j] = z[z_index]
+    return xx, yy, zz
+
+
 def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
                calc_intersections=False):
     """
@@ -1471,8 +1488,12 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
         intersection_coefficients = np.vstack(intersections)
         intersections = intersection_coefficients[:,1:]
         plane_vectors = np.array((v1, v2))
-
-        return d, [intersections @ plane_vectors]
+        points = intersections @ plane_vectors
+        points_2d = create_2d_array_from_verts(points[:,0],
+                                               points[:,1],
+                                               points[:,2])
+        xx, yy, zz = points_2d
+        return d, [xx, yy, zz]
     
 
     if eq(cosGz, 0):
