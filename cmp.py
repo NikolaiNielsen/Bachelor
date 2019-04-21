@@ -165,8 +165,8 @@ def Lattice(
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
         d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
-                                        points=num_plane_points,calc_intersections = True)
-        # planes = lattices.plane_limiter(planes, r_min, r_max)
+                                        points=num_plane_points,calc_intersections = False)
+        planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))
@@ -196,9 +196,10 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
         for p in planes:
-            ax.add_collection3d(Poly3DCollection(p), zs='z')
-            # ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
-            #                 alpha=0.4)
+            # ax.plot_trisurf(p[0], p[1], p[2])
+            # ax.add_collection3d(Poly3DCollection([p]))
+            ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
+                            alpha=0.4)
     elif arrows:
         # otherwise we plot the lattice vectors
         ax.quiver(0, 0, 0, *a1)
@@ -379,7 +380,7 @@ def Scattering(lattice_name='simple cubic',
     size_default = 36
     point_sizes = 2
     point_sizes *= size_default
-    plane_z = 3.5
+    plane_z = 25
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
     lim_type = "proper"
@@ -448,7 +449,7 @@ def Scattering(lattice_name='simple cubic',
                                  atom_sizes, n_min, n_max)
     objects = lattices.limiter(objects[0], objects, r_min, r_max,
                                unit_cell_type)
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+    (atomic_positions, _, atomic_colors, atomic_sizes,
      lattice_position) = objects
 
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
@@ -467,7 +468,7 @@ def Scattering(lattice_name='simple cubic',
 
     # Plotting the basic
     if figs is None:
-        macro_fig = plt.figure(figsize=(5, 5))
+        macro_fig = plt.figure(figsize=(8, 8))
         micro_fig = plt.figure(figsize=(5, 5))
     else:
         macro_fig, micro_fig = figs
@@ -645,9 +646,13 @@ def Scattering(lattice_name='simple cubic',
     # Some limit trickery. We make the plot box cubic:
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
-    macro_ax.set_xlim(plot_min, plot_max)
-    macro_ax.set_ylim(plot_min, plot_max)
-    macro_ax.set_zlim(plot_min, plot_max)
+    plane_max = max_
+    plane_min = min_
+    macro_max = max([plot_max, plane_max, plane_z])
+    macro_min = min([plot_min, plane_min, plane_z])
+    macro_ax.set_xlim(macro_min, macro_max)
+    macro_ax.set_ylim(macro_min, macro_max)
+    macro_ax.set_zlim(macro_min, macro_max)
 
     macro_ax.grid(False)
     macro_ax.axis('off')
