@@ -20,7 +20,7 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_scattering()
+        self.create_lattice_planes()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -594,8 +594,8 @@ class lattice_plane_window(lattice_window):
         # config wise)
         self.default_config['indices'] = [1] * 3
         self.lattice_config['indices'] = [1] * 3
-        self.default_config['enable_indices'] = False
-        self.lattice_config['enable_indices'] = False
+        self.default_config['enable_indices'] = True
+        self.lattice_config['enable_indices'] = True
 
         enabled = self.lattice_config['enable_indices']
         indices = self.lattice_config['indices']

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from functools import partial
 
 import lattices
@@ -164,8 +165,8 @@ def Lattice(
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
         d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
-                                        points=num_plane_points)
-        planes = lattices.plane_limiter(planes, r_min, r_max)
+                                        points=num_plane_points,calc_intersections = True)
+        # planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))
@@ -195,8 +196,9 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
         for p in planes:
-            ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
-                            alpha=0.4)
+            ax.add_collection3d(Poly3DCollection(p), zs='z')
+            # ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
+            #                 alpha=0.4)
     elif arrows:
         # otherwise we plot the lattice vectors
         ax.quiver(0, 0, 0, *a1)

@@ -1374,7 +1374,8 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
     return lines
 
 
-def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
+def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
+               calc_intersections=False):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
@@ -1397,10 +1398,83 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     # And the normal vector for the (hkl)-family of planes.
     G = h * b1 + k * b2 + ell * b3
     G_unit = G / mag(G)
-    z = np.array([0, 0, 1])
-    cosGz = G_unit.dot(z)
     # Next the displacement vector d
     d = 2 * np.pi * G_unit / mag(G)
+
+    # Generate vectors that are normal to the normal:
+    x, y, z = np.eye(3)
+    cosGz = G_unit.dot(z)
+
+    if eq(cosGz, 0):
+        v1 = z
+    else:
+        v1 = np.cross(G_unit, z)
+        v1 /= mag(v1)
+
+    v2 = np.cross(G_unit, v1)
+
+    # Now we have the vectors spanning the plane, and they're normalized
+    # Next we need to calculate the intersections.
+    # To rule out intersections we check for orthogonality between G and the
+    # cardinal directions. If G is orthogonal to 1, then the plane won't
+    # intersect the lines spanned by that vector.
+    cosGx = G_unit.dot(x)
+    cosGy = G_unit.dot(y)
+    xintersect = ~eq(cosGx, 0)
+    yintersect = ~eq(cosGy, 0)
+    zintersect = ~eq(cosGz, 0)
+
+    # The idea now is to create the matrix M = (r, v1, v2), and solve Mx=p,
+    # where p is a point on the line. Then x = (d, alpha, beta), where alpha
+    # and beta are the coefficients for v1 and v2, to get the intersection
+    # point. To get intersections for other planes we just add the relevant
+    # coordinates of the separation vector (ie, the dot product between r and
+    # the displacement vector).
+    Mx = np.array((x, v1, v2))
+    My = np.array((y, v1, v2))
+    Mz = np.array((z, v1, v2))
+
+    p1, p2, p3, p4 = np.array(([0, 0, 0],
+                               [0, 1, 1],
+                               [1, 1, 0],
+                               [1, 0, 1]))
+
+    if calc_intersections:
+        intersections = []
+        if xintersect:
+            x_p1 = np.linalg.solve(Mx, p1)
+            x_p2 = np.linalg.solve(Mx, p2)
+            x_p3 = np.linalg.solve(Mx, p3)
+            x_p4 = np.linalg.solve(Mx, p4)
+            intersections.append(x_p1)
+            intersections.append(x_p2)
+            intersections.append(x_p3)
+            intersections.append(x_p4)
+        if yintersect:
+            y_p1 = np.linalg.solve(My, p1)
+            y_p2 = np.linalg.solve(My, p2)
+            y_p3 = np.linalg.solve(My, p3)
+            y_p4 = np.linalg.solve(My, p4)
+            intersections.append(y_p1)
+            intersections.append(y_p2)
+            intersections.append(y_p3)
+            intersections.append(y_p4)
+        if zintersect:
+            z_p1 = np.linalg.solve(Mz, p1)
+            z_p2 = np.linalg.solve(Mz, p2)
+            z_p3 = np.linalg.solve(Mz, p3)
+            z_p4 = np.linalg.solve(Mz, p4)
+            intersections.append(z_p1)
+            intersections.append(z_p2)
+            intersections.append(z_p3)
+            intersections.append(z_p4)
+        intersection_coefficients = np.vstack(intersections)
+        intersections = intersection_coefficients[:,1:]
+        plane_vectors = np.array((v1, v2))
+
+        return d, [intersections @ plane_vectors]
+    
+
     if eq(cosGz, 0):
         # We have a vertical plane!
         v1 = z / 4
@@ -1591,3 +1665,11 @@ def get_lattice_info(lattice, lattice_name):
     gamma_deg = np.arccos(gamma_cos) * 180 / np.pi
     
     return a, b, c, alpha_deg, beta_deg, gamma_deg
+
+
+if __name__ == "__main__":
+    a1, a2, a3 = np.eye(3)
+    indices = (1,1,0)
+    d, planes = reciprocal(a1, a2, a3, indices, None, None, calc_intersections = True)
+    print(d)
+    print(planes)
