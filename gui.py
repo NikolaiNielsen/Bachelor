@@ -1073,7 +1073,8 @@ class scattering_window(lattice_window):
             self.update_indices(indices)
 
         # Remember to have the canvas draw it!
-        self.static_canvas.draw()
+        self.macro_canvas.draw()
+        self.micro_canvas.draw()
 
 
 def main():

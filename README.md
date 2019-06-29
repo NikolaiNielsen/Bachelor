@@ -2,22 +2,18 @@
 
 ## Code todo
 
-#### lattice planes
-- [X] fix when $d$ os outside of lattice
-- [X] also show reciprocal lattice when plotting lattice planes
-- [X] show b1, b2, b3 (h,k,l actually)
-- [X] rotate both figures simultaniously
-- [X] checkbox to toggle gridlines on reciprocal lattice
-- [X] dynamic changing of n/m min and n/m max
+#### lattice 
+- [ ] Add labels on side lengths
+
+####  Lattice Planes
+- [ ] get polygons/trisurf working for planes
 
 #### scattering
-- [X] hide basis stuff for preset bases
 - [ ] transfer notes to tooltips
-- [X] label on detection plane
 - [ ] recreate with two figures, one macroscopic, one microscopic
 - [ ] show scattering triangle only on microscopic figure
 - [ ] show lattice planes only on microscopic figure
-- [X] make detection screen always square (and only on macroscopic view)
 
 #### general
 - [ ] check out other libraries (mayavi2, plotly, etc)
+- [ ] limit size of settings widget
