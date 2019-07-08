@@ -1517,12 +1517,24 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     inside = find_inside(proto_points)
     planes = [proto_points[inside]]
 
-    for _ in range(5):
+    while True:
         p0 = p0 + d
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
         inside = find_inside(proto_points)
         planes.append(proto_points[inside])
+        if inside.sum() < 3:
+            break
+
+    p0 = -d
+    while True:
+        p0 = p0 - d
+        proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
+                                         return_dirs=False)
+        inside = find_inside(proto_points)
+        planes.append(proto_points[inside])
+        if inside.sum() < 3:
+            break
 
     return d, planes
 
