@@ -1416,44 +1416,26 @@ def calc_intersection(G, v1, v2):
     # point. To get intersections for other planes we just add the relevant
     # coordinates of the separation vector (ie, the dot product between r and
     # the displacement vector).
-    Mx = np.array((x, v1, v2))
-    My = np.array((y, v1, v2))
-    Mz = np.array((z, v1, v2))
+    Mx = np.array((x, v1, v2)).T
+    My = np.array((y, v1, v2)).T
+    Mz = np.array((z, v1, v2)).T
 
-    p1, p2, p3, p4 = np.array(([0, 0, 0],
-                               [0, 1, 1],
-                               [1, 1, 0],
-                               [1, 0, 1]))
+    p = np.array(([0, 0, 0],
+                  [0, 1, 1],
+                  [1, 1, 0],
+                  [1, 0, 1]))
     intersections = []
     if xintersect:
-        x_p1 = np.linalg.solve(Mx, p1)
-        x_p2 = np.linalg.solve(Mx, p2)
-        x_p3 = np.linalg.solve(Mx, p3)
-        x_p4 = np.linalg.solve(Mx, p4)
-        intersections.append(x_p1)
-        intersections.append(x_p2)
-        intersections.append(x_p3)
-        intersections.append(x_p4)
+        X = np.linalg.solve(Mx, p.T).T
+        intersections.append(X)
     if yintersect:
-        y_p1 = np.linalg.solve(My, p1)
-        y_p2 = np.linalg.solve(My, p2)
-        y_p3 = np.linalg.solve(My, p3)
-        y_p4 = np.linalg.solve(My, p4)
-        intersections.append(y_p1)
-        intersections.append(y_p2)
-        intersections.append(y_p3)
-        intersections.append(y_p4)
+        Y = np.linalg.solve(My, p.T).T
+        intersections.append(Y)
     if zintersect:
-        z_p1 = np.linalg.solve(Mz, p1)
-        z_p2 = np.linalg.solve(Mz, p2)
-        z_p3 = np.linalg.solve(Mz, p3)
-        z_p4 = np.linalg.solve(Mz, p4)
-        intersections.append(z_p1)
-        intersections.append(z_p2)
-        intersections.append(z_p3)
-        intersections.append(z_p4)
+        Z = np.linalg.solve(Mz, p.T).T
+        intersections.append(Z)
     intersection_coefficients = np.vstack(intersections)
-    intersections = intersection_coefficients[:,1:]
+    intersections = intersection_coefficients[:, 1:]
     plane_vectors = np.array((v1, v2))
     points = intersections @ plane_vectors
     return points
