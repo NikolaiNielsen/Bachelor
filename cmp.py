@@ -199,10 +199,9 @@ def Lattice(
             try:
                 ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
                                 alpha=0.4)
-                ax.scatter(x, y, z)
             except ValueError as e:
                 # There are not 3 unique points
-                print(points)
+                pass
 
     elif arrows:
         # otherwise we plot the lattice vectors
