@@ -1541,58 +1541,6 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
     v2 = np.cross(G_unit, v1)
     points = calc_intersection(G, v1, v2)
 
-
-    if eq(cosGz, 0):
-        # We have a vertical plane!
-        v1 = z / 4
-        v2 = np.cross(G_unit, z) / 4
-        min_, max_ = -10, 11
-        P, Q = np.meshgrid(range(min_, max_), range(min_, max_))
-
-        # Now the starting plane
-        x0 = v1[0] * P + v2[0] * Q
-        y0 = v1[1] * P + v2[1] * Q
-        z0 = v1[2] * P + v2[2] * Q
-        range_ = 20
-        planes = [(x0 + n * d[0], y0 + n * d[1], z0 + n * d[2]) for n in
-                  range(-range_, range_)]
-    else:
-        # The vertical displacement of the planes (dz) is given by
-        # mag(d)/cos(theta), where theta is the angle between the displacement
-        # vector and the z-axis. cos(theta) is also d[2]/mag(d) (cosine of
-        # angle between d and [0,0,1]):
-        dz = mag(d)**2 / d[2]
-
-        # We take the origin as the fix-point for the starting plane, then we
-        # just create copies of this plane, displaced vertically by dz, until
-        # the top of the first plane doesn't reach the bottom of the plot box,
-        # and the bottom of the last plane doesn't reach the top of the plot
-        # box. But first we create the meshgrid needed
-        x = np.linspace(r_min[0], r_max[0], points)
-        y = np.linspace(r_min[1], r_max[1], points)
-        xv, yv = np.meshgrid(x, y)
-
-        # Now the starting plane
-        zv = (-d[0] * xv - d[1] * yv) / d[2]
-
-        # The distance between the bottom of the plane and the max z-value
-        delta_z_plus = r_max[2] - np.amin(zv)
-        # The negative distance between the top of the plane and the min
-        # z-value
-        delta_z_minus = r_min[2] - np.amax(zv)
-
-        # The amount of planes needed in each direction to cover the plot box:
-        nz_plus = int(np.ceil(delta_z_plus / dz))
-        nz_minus = int(np.floor(delta_z_minus / dz))
-
-        # Swap the indices if nz_plus is smaller than nz_minus, otherwise range
-        # returns nothing
-        if nz_plus < nz_minus:
-            nz_plus, nz_minus = nz_minus, nz_plus
-
-        # Create a list of the planes with a list comprehension
-        planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
-
     return d, points
 
 
