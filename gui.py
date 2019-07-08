@@ -20,7 +20,8 @@ class full_window(QW.QMainWindow):
         self._main = QW.QWidget()
         self.setCentralWidget(self._main)
         self.layout_main = QW.QHBoxLayout(self._main)
-        self.create_lattice()
+        # self.create_lattice()
+        self.create_lattice_planes()
 
         # A shortcut to close the app.
         self.closer = QW.QShortcut(QG.QKeySequence('Ctrl+Q'), self, self.quit)
@@ -199,7 +200,7 @@ class lattice_window(QW.QMainWindow):
         self.parameter_names = ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
         self.parameter_text = ['a', 'b', 'c', 'alpha (degrees)',
                                'beta (degrees)', 'gamma (degrees)']
-        self.parameter_tooltips = ['Length of first side', 
+        self.parameter_tooltips = ['Length of first side',
                                    'Length of second side',
                                    'length of third side',
                                    'Angle between sides 1 and 3',
@@ -402,7 +403,7 @@ class lattice_window(QW.QMainWindow):
                                             (a1, a2, a3, basis))))
         if name in self.presets_with_basis:
             self.update_preset_basis_widgets()
-        
+
         self.update_unused_params()
 
         self.plot_lattice()
@@ -477,7 +478,7 @@ class lattice_window(QW.QMainWindow):
             param_field = self.param_fields[i]
             value = self.lattice_config[param_name]
             param_field.setText(str(value))
-    
+
     def update_basis_color(self, type_, num, text):
         colors = self.lattice_config['{}_colors'.format(type_)]
         text = text.lower()
@@ -585,7 +586,7 @@ class lattice_plane_window(lattice_window):
         self.recip_canvas = FigureCanvas(self.recip_fig)
         self.addToolBar(NavigationToolbar(self.recip_canvas, self))
         self.recip_ax.mouse_init()
-        
+
     def create_miller_indices(self):
         # This function adds the miller indices stuff we need for specifying
         # the family of lattice planes
@@ -682,7 +683,7 @@ class lattice_plane_window(lattice_window):
             indices = self.lattice_config['indices']
         else:
             indices = None
-        
+
         recip_grid = self.show_recip_grid.isChecked()
         # Plot the new lattice
         self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
@@ -694,7 +695,7 @@ class lattice_plane_window(lattice_window):
                                                   returns=True,
                                                   plots=False,
                                                   checks=False)
-        
+
         self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
                                                         indices=indices,
                                                         fig=self.recip_fig,
@@ -713,7 +714,7 @@ class lattice_plane_window(lattice_window):
 class scattering_window(lattice_window):
     def __init__(self):
         super().__init__()
-        
+
         cid = self.macro_fig.canvas.mpl_connect(
             'motion_notify_event',
             lambda event: rotatefig(event, self.macro_fig, self.macro_ax,
@@ -725,7 +726,7 @@ class scattering_window(lattice_window):
 
     def create_variables(self):
         self.lattice_names = ['cubic with a basis',
-                              'simple cubic',     
+                              'simple cubic',
                               'conventional fcc',
                               'conventional bcc']
         self.lattices = ['cubic with a basis',
@@ -763,7 +764,7 @@ class scattering_window(lattice_window):
         }
         self.presets_with_basis = {
             'simple cubic': [1, [0]],
-            'conventional fcc': [4, [0], [1,2,3]],
+            'conventional fcc': [4, [0], [1, 2, 3]],
             'conventional bcc': [2, [0], [1]]
         }
         self.lattice_config = self.default_config.copy()
@@ -852,9 +853,9 @@ class scattering_window(lattice_window):
         if text in self.presets_with_basis:
             # We have a preset with a basis, so we delete the user basis and
             # load the preset basis
-            #self.create_preset_basis(self.presets_with_basis[text])
-            #self.add_form_factors()
-            #self.modify_preset_basis()
+            # self.create_preset_basis(self.presets_with_basis[text])
+            # self.add_form_factors()
+            # self.modify_preset_basis()
             self.preset_form_factors(text)
         else:
             self.create_user_basis()
@@ -864,7 +865,7 @@ class scattering_window(lattice_window):
         self.update_lattice()
 
     def preset_form_factors(self, text):
-        # method for creating the form factor (and color) fields for lattices 
+        # method for creating the form factor (and color) fields for lattices
         # with a preset basis
 
         # create a layout
@@ -876,8 +877,8 @@ class scattering_window(lattice_window):
             label = QW.QLabel(name)
             label.setAlignment(QC.Qt.AlignCenter)
             self.preset_grid.addWidget(label, 0, n)
-        
-        # grab the specs for the lattices. Each row consists of a label, a 
+
+        # grab the specs for the lattices. Each row consists of a label, a
         # color chooser and a form factor field
         latticespec = self.presets_with_basis[text]
 
@@ -887,7 +888,7 @@ class scattering_window(lattice_window):
         self.color_widgets = []
         for n in range(1, len(latticespec)):
             atoms = latticespec[n]
-            
+
             # atom type label
             label = QW.QLabel(f'Atom type {n}')
             label.setAlignment(QC.Qt.AlignCenter)
@@ -910,7 +911,7 @@ class scattering_window(lattice_window):
                 lambda i=atoms, el=el: self.update_form_factor(i, el.text()))
             self.preset_grid.addWidget(el, n, 2)
             self.form_factor_fields.append(el)
-        
+
         # add the layout to options, and store it with a recognizable name
         self.layout_options.addLayout(self.preset_grid)
         self.current_basis_layout = self.preset_grid
@@ -923,8 +924,8 @@ class scattering_window(lattice_window):
 
         # Update primitive lattice vectors and (preset) basis.
         self.lattice_config['preset_basis'] = basis
-        #if name in self.presets_with_basis:
-        #    self.update_preset_basis_widgets()
+        # if name in self.presets_with_basis:
+        #     self.update_preset_basis_widgets()
         self.plot_lattice()
 
     def add_form_factors(self):

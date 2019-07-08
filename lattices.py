@@ -615,7 +615,6 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
     # Outputs:
     # - r_min, r_max, n_min, n_max:     ndarray (3,)
 
-
     allowed_types = ['individual', 'sum', 'proper']
     if lim_type not in allowed_types:
         print('Limit type not recognized. returning proper limit type')
@@ -1442,7 +1441,7 @@ def calc_intersection(G, v1, v2):
 
 
 def displace_and_limit_intersections(intersections, d,
-                                     r_min=[0,0,0], r_max=[2,2,2]):
+                                     r_min=[0, 0, 0], r_max=[2, 2, 2]):
     """
     Displaces and limits the intersections
     """
@@ -1466,7 +1465,7 @@ def displace_and_limit_intersections(intersections, d,
         x_int = intersections[:4]
         y_int = intersections[4:]
         z_int = None
-    
+
     # Now we displace
     mag_d = mag(d)
     new_intersections = []
@@ -1482,9 +1481,7 @@ def displace_and_limit_intersections(intersections, d,
     new_intersections = np.array(new_intersections)
 
 
-
-def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
-               calc_intersections=False):
+def reciprocal(a1, a2, a3, indices, r_min, r_max):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
@@ -1611,12 +1608,12 @@ def tester(verbose=False):
 def get_lattice_info(lattice, lattice_name):
     # takes in the lattice, returns the magnitude of each vector and the angles
     # between them.
-    
+
     # conversion matrices
     simple = np.eye(3)
     bcc = np.array([[1, 0, 0], [0, 1, 0], [-1, -1, 2]])
     fcc = np.ones((3, 3)) - 2 * np.fliplr(np.eye(3))
-    base = np.array([[1,0,0], [-1, 2, 0], [0, 0, 1]])
+    base = np.array([[1, 0, 0], [-1, 2, 0], [0, 0, 1]])
 
     matrices = {'base centred monoclinic': simple,
                 'base centred monoclinic 1': simple,
@@ -1660,13 +1657,5 @@ def get_lattice_info(lattice, lattice_name):
     beta_deg = np.arccos(beta_cos) * 180 / np.pi
     gamma_cos = a3.dot(a1)/(a*c)
     gamma_deg = np.arccos(gamma_cos) * 180 / np.pi
-    
+
     return a, b, c, alpha_deg, beta_deg, gamma_deg
-
-
-if __name__ == "__main__":
-    a1, a2, a3 = np.eye(3)
-    indices = (1,1,0)
-    d, planes = reciprocal(a1, a2, a3, indices, None, None, calc_intersections = True)
-    print(d)
-    print(planes)

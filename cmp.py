@@ -164,8 +164,7 @@ def Lattice(
         if len(indices) != 3:
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
-        d, points = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
-                                        points=num_plane_points,calc_intersections = False)
+        d, points = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
         # planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
@@ -196,12 +195,14 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
         x, y, z = points.T
+        px, py, pz = np.array(([0, 0, 0],
+                               [0, 1, 1],
+                               [1, 1, 0],
+                               [1, 0, 1])).T
         ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False, alpha=0.4)
-        # for p in planes:
-        #     # ax.plot_trisurf(p[0], p[1], p[2])
-        #     # ax.add_collection3d(Poly3DCollection([p]))
-        #     ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
-        #                     alpha=0.4)
+        ax.scatter(x, y, z)
+        ax.scatter(px, py, pz, s=100, color='red')
+
     elif arrows:
         # otherwise we plot the lattice vectors
         ax.quiver(0, 0, 0, *a1)
@@ -240,7 +241,7 @@ def Lattice(
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
 
-def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
+def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
                     grid=False, verbose=False, returns=False, limtype=0):
 
     if indices is None:
@@ -276,14 +277,14 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     b1 = 2 * np.pi * np.cross(a2, a3) / scale
     b2 = 2 * np.pi * np.cross(a3, a1) / scale
     b3 = 2 * np.pi * np.cross(a1, a2) / scale
-    
+
     # Create the array of lattice vectors and basis
     lattice = np.array([b1, b2, b3])
     basis = np.array([0, 0, 0])
 
     objects = lattices.generator(b1, b2, b3, basis, colors, sizes,
                                  n_min, n_max)
-    
+
     atomic_positions = np.around(objects[0], decimals=5)
     objects = [atomic_positions] + [i for i in objects[1:]]
 
@@ -295,12 +296,12 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
                                           unit_type=unit_type,
                                           lattice=lattice,
                                           verbose=verbose)
-    
+
     if fig is None:
-        recip_fig = plt.figure(figsize=(4,4))
+        recip_fig = plt.figure(figsize=(4, 4))
     else:
         recip_fig = fig
-    
+
     if ax is None:
         recip_ax = recip_fig.gca(projection="3d")
     else:
@@ -313,7 +314,8 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
     g_w = 0.5
     if grid:
         for line in pruned_lines:
-            recip_ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
+            recip_ax.plot(line[0], line[1], line[2], color=g_col,
+                          linewidth=g_w)
 
     recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
@@ -322,7 +324,7 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1),
         # And the normal vector for the (hkl)-family of planes.
         G = h * b1 + k * b2 + ell * b3
         # plot some arrows
-        recip_ax.quiver(0,0,0, *G)
+        recip_ax.quiver(0, 0, 0, *G)
         recip_ax.text(*(G/2), f'$G, ({h},{k},{ell})$')
 
     # making the axes prettier
@@ -358,8 +360,8 @@ def rotatefig(event, fig1, ax1, canvas2, ax2):
         elev, azim = ax1.elev, ax1.azim
         ax2.view_init(elev, azim)
         canvas2.draw()
-        
-    
+
+
 def Scattering(lattice_name='simple cubic',
                basis=None,
                k_in=np.array([0, 0, -1.5]),
@@ -484,7 +486,7 @@ def Scattering(lattice_name='simple cubic',
     # Plot atoms
     macro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
-    
+
     micro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
@@ -538,7 +540,7 @@ def Scattering(lattice_name='simple cubic',
                     colors[indices_index] = [1, 0, 0, high_intensity]
                     for p in planes:
                         micro_ax.plot_surface(p[0], p[1], p[2], color="r",
-                                        shade=False, alpha=0.2)
+                                              shade=False, alpha=0.2)
                     # We also plot the outgoing line corresponding to this
                     # scattering. First we get the point (and squeeze it, to
                     # make it 1D again)
@@ -546,9 +548,10 @@ def Scattering(lattice_name='simple cubic',
                     start = np.array([0, 0, beam_end_z])
                     ray = p - start
                     line = np.array([start, start + outgoing_length * ray])
-                    macro_ax.plot(line[:, 0], line[:, 1], line[:, 2], color='r',
-                            alpha=0.3, ls='--',
-                            lw=g_w * 2)
+                    macro_ax.plot(line[:, 0], line[:, 1], line[:, 2],
+                                  color='r',
+                                  alpha=0.3, ls='--',
+                                  lw=g_w * 2)
                     # Plotting outgoing vector and Laue condition
                     k_out_high = np.squeeze(k_out[indices_index])
                     G_high = k_in - k_out_high
@@ -559,18 +562,18 @@ def Scattering(lattice_name='simple cubic',
                                        (start - vecs_disp[2] * lambda_ *
                                         laue_scale)])
                     micro_ax.quiver(starts[:, 0],
-                              starts[:, 1],
-                              starts[:, 2],
-                              vecs_disp[:, 0],
-                              vecs_disp[:, 1],
-                              vecs_disp[:, 2],
-                              color=['r', 'r', 'g'],
-                              alpha=0.5,
-                              lw=1,
-                              length=lambda_ * laue_scale)
+                                    starts[:, 1],
+                                    starts[:, 2],
+                                    vecs_disp[:, 0],
+                                    vecs_disp[:, 1],
+                                    vecs_disp[:, 2],
+                                    color=['r', 'r', 'g'],
+                                    alpha=0.5,
+                                    lw=1,
+                                    length=lambda_ * laue_scale)
 
         ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
-        
+
         # Plotting detection plane
         abs_extra = 0.0
         rel_extra = 0.1
@@ -615,15 +618,15 @@ def Scattering(lattice_name='simple cubic',
             start_point = np.array((0, 0, beam_end_z))
             start_points = np.repeat(np.atleast_2d(start_point), n, axis=0)
             macro_ax.quiver(start_points[:, 0],
-                      start_points[:, 1],
-                      start_points[:, 2],
-                      k_plot[:, 0],
-                      k_plot[:, 1],
-                      k_plot[:, 2],
-                      color='g',
-                      alpha=0.5,
-                      lw=g_w,
-                      length=lambda_)
+                            start_points[:, 1],
+                            start_points[:, 2],
+                            k_plot[:, 0],
+                            k_plot[:, 1],
+                            k_plot[:, 2],
+                            color='g',
+                            alpha=0.5,
+                            lw=g_w,
+                            length=lambda_)
 
             # plotting outgoing lines
             for p in points:
@@ -631,8 +634,8 @@ def Scattering(lattice_name='simple cubic',
                 line = np.array([start_point,
                                  start_point + outgoing_length * ray])
                 macro_ax.plot(line[:, 0], line[:, 1], line[:, 2],
-                        color='k', alpha=0.3, ls='--',
-                        lw=g_w)
+                              color='k', alpha=0.3, ls='--',
+                              lw=g_w)
 
     macro_ax.set_aspect('equal')
     macro_ax.set_proj_type('ortho')
