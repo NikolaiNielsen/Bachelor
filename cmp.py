@@ -164,7 +164,7 @@ def Lattice(
         if len(indices) != 3:
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
-        d, points = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
+        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
         # planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
@@ -194,14 +194,11 @@ def Lattice(
         start = a1 + a2 + a3
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
-        x, y, z = points.T
-        px, py, pz = np.array(([0, 0, 0],
-                               [0, 1, 1],
-                               [1, 1, 0],
-                               [1, 0, 1])).T
-        ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False, alpha=0.4)
-        ax.scatter(x, y, z)
-        ax.scatter(px, py, pz, s=100, color='red')
+        for points in planes:
+            x, y, z = points.T
+            ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
+                            alpha=0.4)
+            ax.scatter(x, y, z)
 
     elif arrows:
         # otherwise we plot the lattice vectors

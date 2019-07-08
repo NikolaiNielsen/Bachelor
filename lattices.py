@@ -1418,26 +1418,34 @@ def calc_intersection(G, v1, v2):
     Mx = np.array((x, v1, v2)).T
     My = np.array((y, v1, v2)).T
     Mz = np.array((z, v1, v2)).T
+    xs = np.array((x, x, x, x))
+    ys = np.array((y, y, y, y))
+    zs = np.array((z, z, z, z))
 
     p = np.array(([0, 0, 0],
                   [0, 1, 1],
                   [1, 1, 0],
                   [1, 0, 1]))
     intersections = []
+    directions = []
     if xintersect:
         X = np.linalg.solve(Mx, p.T).T
         intersections.append(X)
+        directions.append(xs)
     if yintersect:
         Y = np.linalg.solve(My, p.T).T
         intersections.append(Y)
+        directions.append(ys)
     if zintersect:
         Z = np.linalg.solve(Mz, p.T).T
         intersections.append(Z)
+        directions.append(zs)
+    directions = np.vstack(directions)
     intersection_coefficients = np.vstack(intersections)
     intersections = intersection_coefficients[:, 1:]
     plane_vectors = np.array((v1, v2))
     points = intersections @ plane_vectors
-    return points
+    return points, directions
 
 
 def displace_and_limit_intersections(intersections, d,
@@ -1518,9 +1526,9 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         v1 /= mag(v1)
 
     v2 = np.cross(G_unit, v1)
-    points = calc_intersection(G, v1, v2)
-
-    return d, points
+    proto_points, directions = calc_intersection(G, v1, v2)
+    planes = [proto_points]
+    return d, planes
 
 
 def plane_limiter(planes, r_min, r_max):
