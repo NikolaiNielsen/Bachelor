@@ -1390,6 +1390,117 @@ def create_2d_array_from_verts(x, y, z):
     return xx, yy, zz
 
 
+def calc_intersection(G, v1, v2):
+    """
+    Calculate intersection between plane, defined by alpha1 and alpha2, and
+    lines, defined by r and p0.
+    """
+    G_unit = G/mag(G)
+    x, y, z = np.eye(3)
+    cosGz = G_unit.dot(z)
+
+    # Now we have the vectors spanning the plane, and they're normalized
+    # Next we need to calculate the intersections.
+    # To rule out intersections we check for orthogonality between G and the
+    # cardinal directions. If G is orthogonal to 1, then the plane won't
+    # intersect the lines spanned by that vector.
+    cosGx = G_unit.dot(x)
+    cosGy = G_unit.dot(y)
+    xintersect = ~eq(cosGx, 0)
+    yintersect = ~eq(cosGy, 0)
+    zintersect = ~eq(cosGz, 0)
+
+    # The idea now is to create the matrix M = (r, v1, v2), and solve Mx=p,
+    # where p is a point on the line. Then x = (d, alpha, beta), where alpha
+    # and beta are the coefficients for v1 and v2, to get the intersection
+    # point. To get intersections for other planes we just add the relevant
+    # coordinates of the separation vector (ie, the dot product between r and
+    # the displacement vector).
+    Mx = np.array((x, v1, v2))
+    My = np.array((y, v1, v2))
+    Mz = np.array((z, v1, v2))
+
+    p1, p2, p3, p4 = np.array(([0, 0, 0],
+                               [0, 1, 1],
+                               [1, 1, 0],
+                               [1, 0, 1]))
+    intersections = []
+    if xintersect:
+        x_p1 = np.linalg.solve(Mx, p1)
+        x_p2 = np.linalg.solve(Mx, p2)
+        x_p3 = np.linalg.solve(Mx, p3)
+        x_p4 = np.linalg.solve(Mx, p4)
+        intersections.append(x_p1)
+        intersections.append(x_p2)
+        intersections.append(x_p3)
+        intersections.append(x_p4)
+    if yintersect:
+        y_p1 = np.linalg.solve(My, p1)
+        y_p2 = np.linalg.solve(My, p2)
+        y_p3 = np.linalg.solve(My, p3)
+        y_p4 = np.linalg.solve(My, p4)
+        intersections.append(y_p1)
+        intersections.append(y_p2)
+        intersections.append(y_p3)
+        intersections.append(y_p4)
+    if zintersect:
+        z_p1 = np.linalg.solve(Mz, p1)
+        z_p2 = np.linalg.solve(Mz, p2)
+        z_p3 = np.linalg.solve(Mz, p3)
+        z_p4 = np.linalg.solve(Mz, p4)
+        intersections.append(z_p1)
+        intersections.append(z_p2)
+        intersections.append(z_p3)
+        intersections.append(z_p4)
+    intersection_coefficients = np.vstack(intersections)
+    intersections = intersection_coefficients[:,1:]
+    plane_vectors = np.array((v1, v2))
+    points = intersections @ plane_vectors
+    return points
+
+
+def displace_and_limit_intersections(intersections, d,
+                                     r_min=[0,0,0], r_max=[2,2,2]):
+    """
+    Displaces and limits the intersections
+    """
+    x, y, z = np.eye(3)
+    cosdz = d.dot(z)
+    cosdx = d.dot(x)
+    cosdy = d.dot(y)
+    xintersect = ~eq(cosdx, 0)
+    yintersect = ~eq(cosdy, 0)
+    zintersect = ~eq(cosdz, 0)
+    # At most, one of the above is 0, so unpacking is easy
+    if not xintersect:
+        x_int = None
+        y_int = intersections[:4]
+        z_int = intersections[4:]
+    if not yintersect:
+        x_int = intersections[:4]
+        y_int = None
+        z_int = intersections[4:]
+    if not zintersect:
+        x_int = intersections[:4]
+        y_int = intersections[4:]
+        z_int = None
+    
+    # Now we displace
+    mag_d = mag(d)
+    new_intersections = []
+    if x_int is not None:
+        x_int = x_int + mag_d*mag_d*x/d[0]
+        new_intersections.append(x_int)
+    if y_int is not None:
+        y_int = y_int + mag_d*mag_d*y/d[1]
+        new_intersections.append(y_int)
+    if z_int is not None:
+        z_int = z_int + mag_d*mag_d*z/d[2]
+        new_intersections.append(z_int)
+    new_intersections = np.array(new_intersections)
+
+
+
 def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
                calc_intersections=False):
     """
@@ -1428,72 +1539,8 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
         v1 /= mag(v1)
 
     v2 = np.cross(G_unit, v1)
+    points = calc_intersection(G, v1, v2)
 
-    # Now we have the vectors spanning the plane, and they're normalized
-    # Next we need to calculate the intersections.
-    # To rule out intersections we check for orthogonality between G and the
-    # cardinal directions. If G is orthogonal to 1, then the plane won't
-    # intersect the lines spanned by that vector.
-    cosGx = G_unit.dot(x)
-    cosGy = G_unit.dot(y)
-    xintersect = ~eq(cosGx, 0)
-    yintersect = ~eq(cosGy, 0)
-    zintersect = ~eq(cosGz, 0)
-
-    # The idea now is to create the matrix M = (r, v1, v2), and solve Mx=p,
-    # where p is a point on the line. Then x = (d, alpha, beta), where alpha
-    # and beta are the coefficients for v1 and v2, to get the intersection
-    # point. To get intersections for other planes we just add the relevant
-    # coordinates of the separation vector (ie, the dot product between r and
-    # the displacement vector).
-    Mx = np.array((x, v1, v2))
-    My = np.array((y, v1, v2))
-    Mz = np.array((z, v1, v2))
-
-    p1, p2, p3, p4 = np.array(([0, 0, 0],
-                               [0, 1, 1],
-                               [1, 1, 0],
-                               [1, 0, 1]))
-
-    if calc_intersections:
-        intersections = []
-        if xintersect:
-            x_p1 = np.linalg.solve(Mx, p1)
-            x_p2 = np.linalg.solve(Mx, p2)
-            x_p3 = np.linalg.solve(Mx, p3)
-            x_p4 = np.linalg.solve(Mx, p4)
-            intersections.append(x_p1)
-            intersections.append(x_p2)
-            intersections.append(x_p3)
-            intersections.append(x_p4)
-        if yintersect:
-            y_p1 = np.linalg.solve(My, p1)
-            y_p2 = np.linalg.solve(My, p2)
-            y_p3 = np.linalg.solve(My, p3)
-            y_p4 = np.linalg.solve(My, p4)
-            intersections.append(y_p1)
-            intersections.append(y_p2)
-            intersections.append(y_p3)
-            intersections.append(y_p4)
-        if zintersect:
-            z_p1 = np.linalg.solve(Mz, p1)
-            z_p2 = np.linalg.solve(Mz, p2)
-            z_p3 = np.linalg.solve(Mz, p3)
-            z_p4 = np.linalg.solve(Mz, p4)
-            intersections.append(z_p1)
-            intersections.append(z_p2)
-            intersections.append(z_p3)
-            intersections.append(z_p4)
-        intersection_coefficients = np.vstack(intersections)
-        intersections = intersection_coefficients[:,1:]
-        plane_vectors = np.array((v1, v2))
-        points = intersections @ plane_vectors
-        points_2d = create_2d_array_from_verts(points[:,0],
-                                               points[:,1],
-                                               points[:,2])
-        xx, yy, zz = points_2d
-        return d, [xx, yy, zz]
-    
 
     if eq(cosGz, 0):
         # We have a vertical plane!
@@ -1546,7 +1593,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50,
         # Create a list of the planes with a list comprehension
         planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
 
-    return d, planes
+    return d, points
 
 
 def plane_limiter(planes, r_min, r_max):
