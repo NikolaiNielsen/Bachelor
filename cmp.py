@@ -196,9 +196,13 @@ def Lattice(
         ax.text(*(start+d/2), '$d$')
         for points in planes:
             x, y, z = points.T
-            ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
-                            alpha=0.4)
-            ax.scatter(x, y, z)
+            try:
+                ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
+                                alpha=0.4)
+                ax.scatter(x, y, z)
+            except ValueError as e:
+                # There are not 3 unique points
+                print(points)
 
     elif arrows:
         # otherwise we plot the lattice vectors
