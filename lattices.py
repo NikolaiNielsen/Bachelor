@@ -1448,45 +1448,25 @@ def calc_intersection(G, v1, v2):
     return points, directions
 
 
-def displace_and_limit_intersections(intersections, d,
-                                     r_min=[0, 0, 0], r_max=[2, 2, 2]):
+def displace_intersections(intersections, directions, d):
     """
-    Displaces and limits the intersections
+    Displaces the intersections by the displacement vector d 
     """
-    x, y, z = np.eye(3)
-    cosdz = d.dot(z)
-    cosdx = d.dot(x)
-    cosdy = d.dot(y)
-    xintersect = ~eq(cosdx, 0)
-    yintersect = ~eq(cosdy, 0)
-    zintersect = ~eq(cosdz, 0)
-    # At most, one of the above is 0, so unpacking is easy
-    if not xintersect:
-        x_int = None
-        y_int = intersections[:4]
-        z_int = intersections[4:]
-    if not yintersect:
-        x_int = intersections[:4]
-        y_int = None
-        z_int = intersections[4:]
-    if not zintersect:
-        x_int = intersections[:4]
-        y_int = intersections[4:]
-        z_int = None
 
-    # Now we displace
-    mag_d = mag(d)
-    new_intersections = []
-    if x_int is not None:
-        x_int = x_int + mag_d*mag_d*x/d[0]
-        new_intersections.append(x_int)
-    if y_int is not None:
-        y_int = y_int + mag_d*mag_d*y/d[1]
-        new_intersections.append(y_int)
-    if z_int is not None:
-        z_int = z_int + mag_d*mag_d*z/d[2]
-        new_intersections.append(z_int)
-    new_intersections = np.array(new_intersections)
+    # The formula for displacing the intersections is
+    # p2 = p1 + (d*d)/(d*r) * r
+    # where:
+    # - p1: previous intersection
+    # - d: displacement vector
+    # - r: direction vector
+    # - p2: new intersections
+
+    d2 = d.dot(d)
+    dots = directions.dot(d)
+    quotient = d2/dots
+    n = quotient.size
+    new_intersections = intersections + quotient.reshape((n, 1)) * directions
+    return new_intersections
 
 
 def reciprocal(a1, a2, a3, indices, r_min, r_max):
@@ -1528,6 +1508,11 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     v2 = np.cross(G_unit, v1)
     proto_points, directions = calc_intersection(G, v1, v2)
     planes = [proto_points]
+    for _ in range(5):
+        proto_points = planes[-1]
+        new_points = displace_intersections(proto_points, directions, d)
+        planes.append(new_points)
+
     return d, planes
 
 
