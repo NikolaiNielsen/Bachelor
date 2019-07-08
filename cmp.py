@@ -164,9 +164,9 @@ def Lattice(
         if len(indices) != 3:
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
-        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
+        d, points = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
                                         points=num_plane_points,calc_intersections = False)
-        planes = lattices.plane_limiter(planes, r_min, r_max)
+        # planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))
@@ -195,11 +195,13 @@ def Lattice(
         start = a1 + a2 + a3
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
-        for p in planes:
-            # ax.plot_trisurf(p[0], p[1], p[2])
-            # ax.add_collection3d(Poly3DCollection([p]))
-            ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
-                            alpha=0.4)
+        x, y, z = points.T
+        ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False, alpha=0.4)
+        # for p in planes:
+        #     # ax.plot_trisurf(p[0], p[1], p[2])
+        #     # ax.add_collection3d(Poly3DCollection([p]))
+        #     ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
+        #                     alpha=0.4)
     elif arrows:
         # otherwise we plot the lattice vectors
         ax.quiver(0, 0, 0, *a1)
@@ -236,6 +238,7 @@ def Lattice(
 
 
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
+
 
 def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1,1,1), 
                     grid=False, verbose=False, returns=False, limtype=0):
