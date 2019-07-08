@@ -22,7 +22,7 @@ def Lattice(
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=None, arrows=True, grid=True,
         verbose=False, returns=False, fig=None, ax=None, plots=True,
-        rounder=True, checks=True):
+        rounder=True, checks=True, limit=False):
     """
     Creates, limits and plots the lattice
     """
@@ -188,6 +188,8 @@ def Lattice(
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
+    def find_inside(x): return ~((x > r_max) + (x < r_min)).any(axis=1)
+
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
         # vector and the planes
@@ -195,10 +197,14 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
         for points in planes:
+            if limit:
+                inside = find_inside(points)
+                points = points[inside]
             x, y, z = points.T
             try:
                 ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
                                 alpha=0.4)
+                ax.scatter(x, y, z)
             except ValueError as e:
                 # There are not 3 unique points
                 pass
