@@ -1511,21 +1511,18 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     v2 = np.cross(G_unit, v1)
     p0 = np.zeros(3)
     proto_points, directions = calc_intersection(G, v1, v2, r_min, r_max, p0)
-    print(proto_points.shape)
 
     def find_inside(x): return ~((x > r_max) + (x < r_min)).any(axis=1)
 
     inside = find_inside(proto_points)
-    # print(inside)
-    planes = [proto_points]
+    planes = [proto_points[inside]]
+
     for _ in range(5):
         p0 = p0 + d
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
-        print(proto_points.shape)
         inside = find_inside(proto_points)
-        print(inside)
-        planes.append(proto_points)
+        planes.append(proto_points[inside])
 
     return d, planes
 
