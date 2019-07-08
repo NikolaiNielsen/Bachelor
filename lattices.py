@@ -1389,14 +1389,14 @@ def create_2d_array_from_verts(x, y, z):
     return xx, yy, zz
 
 
-def calc_intersection(G, v1, v2):
+def calc_intersection(G, v1, v2, r_min, r_max, 
+                      p0=np.zeros(3), return_dirs=True):
     """
     Calculate intersection between plane, defined by alpha1 and alpha2, and
     lines, defined by r and p0.
     """
     G_unit = G/mag(G)
     x, y, z = np.eye(3)
-    cosGz = G_unit.dot(z)
 
     # Now we have the vectors spanning the plane, and they're normalized
     # Next we need to calculate the intersections.
@@ -1405,6 +1405,7 @@ def calc_intersection(G, v1, v2):
     # intersect the lines spanned by that vector.
     cosGx = G_unit.dot(x)
     cosGy = G_unit.dot(y)
+    cosGz = G_unit.dot(z)
     xintersect = ~eq(cosGx, 0)
     yintersect = ~eq(cosGy, 0)
     zintersect = ~eq(cosGz, 0)
@@ -1422,10 +1423,11 @@ def calc_intersection(G, v1, v2):
     ys = np.array((y, y, y, y))
     zs = np.array((z, z, z, z))
 
-    p = np.array(([0, 0, 0],
-                  [0, 1, 1],
-                  [1, 1, 0],
-                  [1, 0, 1]))
+    r0 = np.array((r_min,
+                   [r_min[0], r_max[1], r_max[2]],
+                   [r_max[0], r_max[1], r_min[2]],
+                   [r_max[0], r_min[1], r_max[2]]))
+    p = r0 - p0.reshape((1, 3))
     intersections = []
     directions = []
     if xintersect:
@@ -1444,29 +1446,30 @@ def calc_intersection(G, v1, v2):
     intersection_coefficients = np.vstack(intersections)
     intersections = intersection_coefficients[:, 1:]
     plane_vectors = np.array((v1, v2))
-    points = intersections @ plane_vectors
-    return points, directions
+    points = intersections @ plane_vectors + p0.reshape((1, 3))
+    if return_dirs:
+        return points, directions
+    return points
 
+# def displace_intersections(intersections, directions, d):
+#     """
+#     Displaces the intersections by the displacement vector d 
+#     """
 
-def displace_intersections(intersections, directions, d):
-    """
-    Displaces the intersections by the displacement vector d 
-    """
+#     # The formula for displacing the intersections is
+#     # p2 = p1 + (d*d)/(d*r) * r
+#     # where:
+#     # - p1: previous intersection
+#     # - d: displacement vector
+#     # - r: direction vector
+#     # - p2: new intersections
 
-    # The formula for displacing the intersections is
-    # p2 = p1 + (d*d)/(d*r) * r
-    # where:
-    # - p1: previous intersection
-    # - d: displacement vector
-    # - r: direction vector
-    # - p2: new intersections
-
-    d2 = d.dot(d)
-    dots = directions.dot(d)
-    quotient = d2/dots
-    n = quotient.size
-    new_intersections = intersections + quotient.reshape((n, 1)) * directions
-    return new_intersections
+#     d2 = d.dot(d)
+#     dots = directions.dot(d)
+#     quotient = d2/dots
+#     n = quotient.size
+#     new_intersections = intersections + quotient.reshape((n, 1)) * directions
+#     return new_intersections
 
 
 def reciprocal(a1, a2, a3, indices, r_min, r_max):
@@ -1506,16 +1509,19 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         v1 /= mag(v1)
 
     v2 = np.cross(G_unit, v1)
-    proto_points, directions = calc_intersection(G, v1, v2)
+    p0 = np.zeros(3)
+    proto_points, directions = calc_intersection(G, v1, v2, r_min, r_max, p0)
     print(proto_points.shape)
 
     def find_inside(x): return ~((x > r_max) + (x < r_min)).any(axis=1)
 
     inside = find_inside(proto_points)
-    print(inside)
+    # print(inside)
     planes = [proto_points]
     for _ in range(5):
-        proto_points = displace_intersections(proto_points, directions, d)
+        p0 = p0 + d
+        proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
+                                         return_dirs=False)
         print(proto_points.shape)
         inside = find_inside(proto_points)
         print(inside)
