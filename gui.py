@@ -694,13 +694,14 @@ class lattice_plane_window(lattice_window):
                                                   indices=indices,
                                                   returns=True,
                                                   plots=False,
-                                                  checks=False)
+                                                  checks=False,
+                                                  limit=recip_grid)
 
         self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
                                                         indices=indices,
                                                         fig=self.recip_fig,
                                                         ax=self.recip_ax,
-                                                        grid=recip_grid,
+                                                        # grid=recip_grid,
                                                         returns=True)
 
         self.static_ax.view_init(elev, azim)
