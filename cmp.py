@@ -687,9 +687,9 @@ def Scattering(lattice_name='simple cubic',
     micro_ax.grid(False)
     micro_ax.axis('off')
 
-    tit = (r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
+    tit = ('Scattering on a cubic lattice.\n' + r'$k_{in} = (2\pi/a)\cdot$' +
            '{}'.format(k_title) + f'\nForm factors: {form_factor}')
-    tit2 = (r'Scattering on a cubic lattice. $k_{in} = $' +
+    tit2 = ('Scattering on a cubic lattice.\n' + r'$k_{in} = $' +
             '{}'.format(k_title))
     if normalize:
         macro_ax.set_title(tit)
