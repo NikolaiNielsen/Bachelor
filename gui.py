@@ -1,6 +1,7 @@
 import sys
-from cmp import *
+import numpy as np
 import lattices
+import cmp
 from itertools import compress
 
 from PyQt5 import QtWidgets as QW, QtGui as QG, QtCore as QC
@@ -110,7 +111,8 @@ class lattice_window(QW.QMainWindow):
         # Create the default plot and return the figure and axis objects for
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
-        self.static_fig, self.static_ax = Lattice(returns=True, plots=False)
+        self.static_fig, self.static_ax = cmp.Lattice(returns=True,
+                                                      plots=False)
         self.static_canvas = FigureCanvas(self.static_fig)
         self.addToolBar(NavigationToolbar(self.static_canvas, self))
         self.static_ax.mouse_init()
@@ -514,14 +516,14 @@ class lattice_window(QW.QMainWindow):
             basis = self.lattice_config['enabled_user_basis']
 
         # Plot the new lattice
-        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
-                                                  basis=basis,
-                                                  colors=colors,
-                                                  fig=self.static_fig,
-                                                  ax=self.static_ax,
-                                                  returns=True,
-                                                  plots=False,
-                                                  checks=False)
+        self.static_fig, self.static_ax = cmp.Lattice(a1=a1, a2=a2, a3=a3,
+                                                      basis=basis,
+                                                      colors=colors,
+                                                      fig=self.static_fig,
+                                                      ax=self.static_ax,
+                                                      returns=True,
+                                                      plots=False,
+                                                      checks=False)
 
         # Remember to have the canvas draw it!
         self.static_canvas.draw()
@@ -571,19 +573,19 @@ class lattice_plane_window(lattice_window):
         self.plot_lattice()
         cid = self.static_fig.canvas.mpl_connect(
             'motion_notify_event',
-            lambda event: rotatefig(event, self.static_fig, self.static_ax,
-                                    self.recip_canvas, self.recip_ax))
+            lambda event: cmp.rotatefig(event, self.static_fig, self.static_ax,
+                                        self.recip_canvas, self.recip_ax))
         cid2 = self.recip_fig.canvas.mpl_connect(
             'motion_notify_event',
-            lambda event: rotatefig(event, self.recip_fig, self.recip_ax,
-                                    self.static_canvas, self.static_ax))
+            lambda event: cmp.rotatefig(event, self.recip_fig, self.recip_ax,
+                                        self.static_canvas, self.static_ax))
 
     def create_recip_plot(self):
         a1 = self.lattice_config['a1']
         a2 = self.lattice_config['a2']
         a3 = self.lattice_config['a3']
-        self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
-                                                        returns=True)
+        self.recip_fig, self.recip_ax = cmp.plot_reciprocal(a1, a2, a3,
+                                                            returns=True)
         self.recip_canvas = FigureCanvas(self.recip_fig)
         self.addToolBar(NavigationToolbar(self.recip_canvas, self))
         self.recip_ax.mouse_init()
@@ -688,23 +690,23 @@ class lattice_plane_window(lattice_window):
 
         recip_grid = self.show_recip_grid.isChecked()
         # Plot the new lattice
-        self.static_fig, self.static_ax = Lattice(a1=a1, a2=a2, a3=a3,
-                                                  basis=basis,
-                                                  colors=colors,
-                                                  fig=self.static_fig,
-                                                  ax=self.static_ax,
-                                                  indices=indices,
-                                                  returns=True,
-                                                  plots=False,
-                                                  checks=False,
-                                                  limit=True)
+        self.static_fig, self.static_ax = cmp.Lattice(a1=a1, a2=a2, a3=a3,
+                                                      basis=basis,
+                                                      colors=colors,
+                                                      fig=self.static_fig,
+                                                      ax=self.static_ax,
+                                                      indices=indices,
+                                                      returns=True,
+                                                      plots=False,
+                                                      checks=False,
+                                                      limit=True)
 
-        self.recip_fig, self.recip_ax = plot_reciprocal(a1, a2, a3,
-                                                        indices=indices,
-                                                        fig=self.recip_fig,
-                                                        ax=self.recip_ax,
-                                                        grid=recip_grid,
-                                                        returns=True)
+        self.recip_fig, self.recip_ax = cmp.plot_reciprocal(a1, a2, a3,
+                                                            indices=indices,
+                                                            fig=self.recip_fig,
+                                                            ax=self.recip_ax,
+                                                            grid=recip_grid,
+                                                            returns=True)
 
         self.static_ax.view_init(elev, azim)
         self.recip_ax.view_init(elev, azim)
@@ -720,12 +722,12 @@ class scattering_window(lattice_window):
 
         cid = self.macro_fig.canvas.mpl_connect(
             'motion_notify_event',
-            lambda event: rotatefig(event, self.macro_fig, self.macro_ax,
-                                    self.micro_canvas, self.micro_ax))
+            lambda event: cmp.rotatefig(event, self.macro_fig, self.macro_ax,
+                                        self.micro_canvas, self.micro_ax))
         cid2 = self.micro_fig.canvas.mpl_connect(
             'motion_notify_event',
-            lambda event: rotatefig(event, self.micro_fig, self.micro_ax,
-                                    self.macro_canvas, self.macro_ax))
+            lambda event: cmp.rotatefig(event, self.micro_fig, self.micro_ax,
+                                        self.macro_canvas, self.macro_ax))
 
     def create_variables(self):
         self.lattice_names = ['cubic with a basis',
@@ -778,7 +780,7 @@ class scattering_window(lattice_window):
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
         (self.macro_fig, self.micro_fig,
-         self.macro_ax, self.micro_ax, _) = Scattering(
+         self.macro_ax, self.micro_ax, _) = cmp.Scattering(
             returns=True, return_indices=True, plots=False)
         self.macro_canvas = FigureCanvas(self.macro_fig)
         self.micro_canvas = FigureCanvas(self.micro_fig)
@@ -1057,7 +1059,7 @@ class scattering_window(lattice_window):
 
         # Plot the new lattice
         (self.macro_fig, self.micro_fig,
-         self.macro_ax, self.micro_ax, indices) = Scattering(
+         self.macro_ax, self.micro_ax, indices) = cmp.Scattering(
             basis=basis,
             k_in=k_in,
             colors=colors,
