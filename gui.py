@@ -787,7 +787,9 @@ class scattering_window(lattice_window):
          self.macro_ax, self.micro_ax, _) = cmp.Scattering(
             returns=True, return_indices=True, plots=False)
         self.macro_canvas = FigureCanvas(self.macro_fig)
+        self.macro_canvas.setMinimumWidth(450)
         self.micro_canvas = FigureCanvas(self.micro_fig)
+        self.micro_canvas.setMinimumWidth(300)
         self.addToolBar(NavigationToolbar(self.macro_canvas, self))
         self.macro_ax.mouse_init()
         self.micro_ax.mouse_init()
