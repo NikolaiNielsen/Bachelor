@@ -1516,13 +1516,9 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
         inside = find_inside(proto_points, r_min, r_max)
-        inside_points = proto_points[inside]
         if np.sum(inside) < 3:
             break
-        unique_points = np.unique(inside_points, axis=0)
-        if unique_points.shape[0] < 3:
-            break
-        planes.append(unique_points)
+        planes.append(proto_points)
 
     p0 = np.zeros(3)
     while True:
@@ -1530,15 +1526,17 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
         inside = find_inside(proto_points, r_min, r_max)
-        inside_points = proto_points[inside]
         if np.sum(inside) < 3:
             break
-        unique_points = np.unique(inside_points, axis=0)
-        if unique_points.shape[0] < 3:
-            break
-        planes.append(unique_points)
+        planes.append(proto_points)
 
-    return d, planes
+    limited_planes = []
+    for plane in planes:
+        unique_points = np.unique(plane, axis=0)
+        inside = find_inside(unique_points, r_min, r_max)
+        if np.sum(inside) >= 3:
+            limited_planes.append(unique_points[inside])
+    return d, limited_planes
 
 
 def plane_limiter(planes, r_min, r_max):
