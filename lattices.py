@@ -1451,25 +1451,18 @@ def calc_intersection(G, v1, v2, r_min, r_max,
         return points, directions
     return points
 
-# def displace_intersections(intersections, directions, d):
-#     """
-#     Displaces the intersections by the displacement vector d 
-#     """
 
-#     # The formula for displacing the intersections is
-#     # p2 = p1 + (d*d)/(d*r) * r
-#     # where:
-#     # - p1: previous intersection
-#     # - d: displacement vector
-#     # - r: direction vector
-#     # - p2: new intersections
-
-#     d2 = d.dot(d)
-#     dots = directions.dot(d)
-#     quotient = d2/dots
-#     n = quotient.size
-#     new_intersections = intersections + quotient.reshape((n, 1)) * directions
-#     return new_intersections
+def find_inside(x, r_min, r_max):
+    resmin = x - r_min
+    resmax = x - r_max
+    almost_min = np.isclose(resmin, 0)
+    almost_max = np.isclose(resmax, 0)
+    def_min = x >= r_min
+    def_max = x <= r_max
+    min_ = almost_min + def_min
+    max_ = almost_max + def_max
+    result = (min_ * max_).all(axis=1)
+    return result
 
 
 def reciprocal(a1, a2, a3, indices, r_min, r_max):
@@ -1509,19 +1502,18 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         v1 /= mag(v1)
 
     v2 = np.cross(G_unit, v1)
+
     p0 = np.zeros(3)
     proto_points, directions = calc_intersection(G, v1, v2, r_min, r_max, p0)
 
-    def find_inside(x): return ~((x > r_max) + (x < r_min)).any(axis=1)
-
-    inside = find_inside(proto_points)
-    planes = [proto_points[inside]]
+    inside = find_inside(proto_points, r_min, r_max)
+    planes = [proto_points]
 
     while True:
         p0 = p0 + d
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
-        inside = find_inside(proto_points)
+        inside = find_inside(proto_points, r_min, r_max)
         planes.append(proto_points)
         if inside.sum() < 3:
             break
@@ -1531,7 +1523,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         p0 = p0 - d
         proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
                                          return_dirs=False)
-        inside = find_inside(proto_points)
+        inside = find_inside(proto_points, r_min, r_max)
         planes.append(proto_points)
         if inside.sum() < 3:
             break
