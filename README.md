@@ -6,7 +6,7 @@
 - [ ] Add labels on side lengths
 
 ####  Lattice Planes
-- [ ] get polygons/trisurf working for planes
+- [X] get polygons/trisurf working for planes
 
 #### scattering
 - [ ] transfer notes to tooltips
