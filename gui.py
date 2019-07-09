@@ -104,7 +104,10 @@ class lattice_window(QW.QMainWindow):
         # We create the options and add it to our main layout (it also creates
         # the basis fiels)
         self.create_options()
-        self.layout_main.addLayout(self.layout_options)
+        self.options = QW.QWidget()
+        self.options.setLayout(self.layout_options)
+        self.options.setFixedWidth(400)
+        self.layout_main.addWidget(self.options)
         self.create_plot_window()
 
     def create_plot_window(self):
@@ -211,6 +214,7 @@ class lattice_window(QW.QMainWindow):
                                    'Angle between sides 2 and 3']
         self.param_labels = []
         self.param_fields = []
+
         self.layout_options = QW.QVBoxLayout()
         # Create the "show plot" button
         self.button_show = QW.QPushButton("Update plot", self)
@@ -624,7 +628,7 @@ class lattice_plane_window(lattice_window):
 
         # Create the gridline option for reciprocal plot
         self.show_recip_grid = QW.QCheckBox()
-        recip_grid_label = QW.QLabel('Show gridlines on reciprocal plot')
+        recip_grid_label = QW.QLabel('Gridlines on reciprocal plot')
         self.show_recip_grid.stateChanged.connect(self.plot_lattice)
         self.layout_parameters.addRow(recip_grid_label, self.show_recip_grid)
 

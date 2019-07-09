@@ -16,4 +16,4 @@
 
 #### general
 - [ ] check out other libraries (mayavi2, plotly, etc)
-- [ ] limit size of settings widget
+- [X] limit size of settings widget
