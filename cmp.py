@@ -195,16 +195,14 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
         for points in planes:
-            if limit:
-                inside = lattices.find_inside(points, r_min, r_max)
-                points = points[inside]
             x, y, z = points.T
             try:
                 ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
                                 alpha=0.4)
-                ax.scatter(x, y, z)
             except ValueError as e:
                 # There are not 3 unique points
+                print(points)
+                # raise e
                 pass
 
     elif arrows:
