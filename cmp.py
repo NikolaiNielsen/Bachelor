@@ -188,8 +188,6 @@ def Lattice(
     ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
-    def find_inside(x): return ~((x > r_max) + (x < r_min)).any(axis=1)
-
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
         # vector and the planes
@@ -198,7 +196,7 @@ def Lattice(
         ax.text(*(start+d/2), '$d$')
         for points in planes:
             if limit:
-                inside = find_inside(points)
+                inside = lattices.find_inside(points, r_min, r_max)
                 points = points[inside]
             x, y, z = points.T
             try:
