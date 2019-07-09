@@ -1389,7 +1389,7 @@ def create_2d_array_from_verts(x, y, z):
     return xx, yy, zz
 
 
-def calc_intersection(G, v1, v2, r_min, r_max, 
+def calc_intersection(G, v1, v2, r_min, r_max,
                       p0=np.zeros(3), return_dirs=True):
     """
     Calculate intersection between plane, defined by alpha1 and alpha2, and

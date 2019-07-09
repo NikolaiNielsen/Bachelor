@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from functools import partial
+from scipy.spatial import Delaunay
 
 import lattices
 import scattering
@@ -194,16 +195,30 @@ def Lattice(
         start = a1 + a2 + a3
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
+
+        # If the planes are vertical, then points in xy are colinear, and
+        # triangulation cannot happen with these. As such, for plot_trisurf to
+        # work we need to triangulate with either x,z or y,z. Here we find out
+        # which we want to triangulate with, by accounting for the direction of
+        # the displacement vector.
+        dhat = d/lattices.mag(d)
+        xhat, yhat, zhat = np.eye(3)
+        in_xy_plane = eq(dhat.dot(zhat), 0)
+        if in_xy_plane:
+            # If d is along x, then we triangulate with y, otherwise we
+            # triangulate with x
+            along_x = eq(dhat.dot(xhat), 1)
+            coords = [1, 2] if along_x else [0, 2]
+
         for points in planes:
             x, y, z = points.T
-            try:
+            if in_xy_plane:
+                simp = Delaunay(points[:, coords]).simplices
+                ax.plot_trisurf(x, y, simp, z, color='xkcd:cement',
+                                shade=False, alpha=0.4)
+            else:
                 ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
                                 alpha=0.4)
-            except ValueError as e:
-                # There are not 3 unique points
-                print(points)
-                # raise e
-                pass
 
     elif arrows:
         # otherwise we plot the lattice vectors
