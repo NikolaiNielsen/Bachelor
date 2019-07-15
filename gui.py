@@ -1046,6 +1046,7 @@ class scattering_window(lattice_window):
 
         # Clear the axes
         self.macro_ax.clear()
+        self.micro_ax.clear()
 
         # Grab the basis and colors
         if self.lattice_config['lattice'] in self.presets_with_basis:
@@ -1078,6 +1079,7 @@ class scattering_window(lattice_window):
             return_indices=True,
             plots=False)
         self.macro_ax.view_init(elev, azim)
+        self.micro_ax.view_init(elev, azim)
 
         if not no_change:
             # If we don't only highlight stuff (ie we've changed the basis or
