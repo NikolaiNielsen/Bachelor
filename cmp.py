@@ -385,6 +385,7 @@ def Scattering(lattice_name='simple cubic',
                plots=True):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
+    micro_min, micro_max = ((-1, -1, -1), (1, 1, 1))
     g_col = 'k'
     g_w = 0.5
     g_a = 0.6
@@ -453,6 +454,21 @@ def Scattering(lattice_name='simple cubic',
         k_in = k_in * 2 * np.pi
 
     # Calculating stuff for plotting the crystal
+    (r_min_micro, r_max_micro,
+     n_min_micro, n_max_micro) = lattices.find_limits(lim_type, a1, a2, a3,
+                                                      micro_min, micro_max,
+                                                      unit_cell_type)
+    objects = lattices.generator(a1, a2, a3, basis, atom_colors,
+                                 atom_sizes, n_min_micro, n_max_micro)
+    objects = lattices.limiter(objects[0], objects, r_min_micro, r_max_micro,
+                               unit_cell_type)
+    (atom_pos_micro, _, atom_cols_micro, atom_sizes_micro,
+     lattice_position_micro) = objects
+
+    pruned_lines_micro = lattices.grid_lines(a1, a2, a3, atom_pos_micro,
+                                             lattice_position_micro, grid_type,
+                                             verbose=verbose)
+
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_cell_type)
@@ -493,12 +509,14 @@ def Scattering(lattice_name='simple cubic',
     macro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
-    micro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
-                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+    micro_ax.scatter(atom_pos_micro[:, 0], atom_pos_micro[:, 1],
+                     atom_pos_micro[:, 2], c=atom_cols_micro,
+                     s=atom_sizes_micro)
 
     for line in pruned_lines:
         macro_ax.plot(line[0], line[1], line[2],
                       color=g_col, linewidth=g_w, alpha=g_a)
+    for line in pruned_lines_micro:
         micro_ax.plot(line[0], line[1], line[2],
                       color=g_col, linewidth=g_w, alpha=g_a)
 
@@ -535,8 +553,8 @@ def Scattering(lattice_name='simple cubic',
                 else:
                     # We have highlighting!
                     d, planes = lattices.reciprocal(a1, a2, a3, hi_index,
-                                                    r_min - extra,
-                                                    r_max + extra)
+                                                    r_min_micro - extra,
+                                                    r_max_micro + extra)
                     simps = lattices.calc_triangulation(d, planes)
 
                     for plane, tri in zip(planes, simps):
