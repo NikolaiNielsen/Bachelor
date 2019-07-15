@@ -196,29 +196,18 @@ def Lattice(
         ax.quiver(*start, *d)
         ax.text(*(start+d/2), '$d$')
 
-        # If the planes are vertical, then points in xy are colinear, and
-        # triangulation cannot happen with these. As such, for plot_trisurf to
-        # work we need to triangulate with either x,z or y,z. Here we find out
-        # which we want to triangulate with, by accounting for the direction of
-        # the displacement vector.
-        dhat = d/lattices.mag(d)
-        xhat, yhat, zhat = np.eye(3)
-        in_xy_plane = eq(dhat.dot(zhat), 0)
-        if in_xy_plane:
-            # If d is along x, then we triangulate with y, otherwise we
-            # triangulate with x
-            along_x = eq(dhat.dot(xhat), 1)
-            coords = [1, 2] if along_x else [0, 2]
+        simps = lattices.calc_triangulation(d, planes)
 
-        for points in planes:
-            x, y, z = points.T
-            if in_xy_plane:
-                simp = Delaunay(points[:, coords]).simplices
-                ax.plot_trisurf(x, y, simp, z, color='xkcd:cement',
-                                shade=False, alpha=0.4)
+        for plane, tri in zip(planes, simps):
+            x, y, z = plane.T
+            if tri is not None:
+                ax.plot_trisurf(x, y, tri, z, color='r',
+                                shade=False,
+                                alpha=0.2)
             else:
-                ax.plot_trisurf(x, y, z, color='xkcd:cement', shade=False,
-                                alpha=0.4)
+                ax.plot_trisurf(x, y, z, color='r',
+                                shade=False,
+                                alpha=0.2)
 
     elif arrows:
         # otherwise we plot the lattice vectors
@@ -547,17 +536,23 @@ def Scattering(lattice_name='simple cubic',
                     # We have highlighting!
                     d, planes = lattices.reciprocal(a1, a2, a3, hi_index,
                                                     r_min - extra,
-                                                    r_max + extra,
-                                                    points=20)
-                    planes = lattices.plane_limiter(planes, r_min - extra,
                                                     r_max + extra)
+                    simps = lattices.calc_triangulation(d, planes)
+
+                    for plane, tri in zip(planes, simps):
+                        x, y, z = plane.T
+                        if tri is not None:
+                            micro_ax.plot_trisurf(x, y, tri, z, color='r',
+                                                  shade=False,
+                                                  alpha=0.2)
+                        else:
+                            micro_ax.plot_trisurf(x, y, z, color='r',
+                                                  shade=False,
+                                                  alpha=0.2)
                     # We change the color of highlighted point and plot the
                     # family of planes
                     high_intensity = intensities[indices_index]
                     colors[indices_index] = [1, 0, 0, high_intensity]
-                    for p in planes:
-                        micro_ax.plot_surface(p[0], p[1], p[2], color="r",
-                                              shade=False, alpha=0.2)
                     # We also plot the outgoing line corresponding to this
                     # scattering. First we get the point (and squeeze it, to
                     # make it 1D again)
