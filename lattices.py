@@ -2,6 +2,7 @@
 import itertools
 
 import numpy as np
+from scipy.spatial import Delaunay
 
 eq = np.isclose
 
@@ -1463,6 +1464,28 @@ def find_inside(x, r_min, r_max):
     max_ = almost_max + def_max
     result = (min_ * max_).all(axis=1)
     return result
+
+
+def calc_triangulation(d, planes):
+
+    # If the planes are vertical, then points in xy are colinear, and
+    # triangulation cannot happen with these. As such, for plot_trisurf to
+    # work we need to triangulate with either x,z or y,z. Here we find out
+    # which we want to triangulate with, by accounting for the direction of
+    # the displacement vector.
+    dhat = d/mag(d)
+    xhat, yhat, zhat = np.eye(3)
+    in_xy_plane = eq(dhat.dot(zhat), 0)
+    if in_xy_plane:
+        # If d is along x, then we triangulate with y, otherwise we
+        # triangulate with x
+        along_x = eq(dhat.dot(xhat), 1)
+        coords = [1, 2] if along_x else [0, 2]
+    else:
+        coords = None
+    simps = [Delaunay(plane[:, coords]) if coords is not None else None for
+             plane in planes]
+    return simps
 
 
 def reciprocal(a1, a2, a3, indices, r_min, r_max):
