@@ -828,10 +828,10 @@ class scattering_window(lattice_window):
         self.highlight_combo.activated[int].connect(self.update_highlight)
 
         # The show all checkbox
-        show_all_label = QW.QLabel('Show all')
+        show_all_label = QW.QLabel('Show notes')
         self.show_all_checkbox = QW.QCheckBox()
-        self.show_all_checkbox.setChecked(True)
-        self.show_all_checkbox.stateChanged.connect(self.show_all)
+        self.show_all_checkbox.setChecked(False)
+        self.show_all_checkbox.stateChanged.connect(self.toggle_notes)
 
         # Note on k_in
         str_ = ('Notes:\n\n'
@@ -844,8 +844,9 @@ class scattering_window(lattice_window):
                 'scattering event, in green\n'
                 '- The family of lattice planes for the reciprocal lattice '
                 'vector.')
-        note_label = QW.QLabel(str_)
-        note_label.setWordWrap(True)
+        self.note_label = QW.QLabel(str_)
+        self.note_label.setWordWrap(True)
+        self.note_label.hide()
 
         # Add stuff to the layout
         self.layout_options.addLayout(self.layout_options_form)
@@ -853,9 +854,15 @@ class scattering_window(lattice_window):
         self.layout_options_form.addRow(k_in_label, self.layout_k_in)
         self.layout_options_form.addRow(highlight_label, self.highlight_combo)
         self.layout_options_form.addRow(show_all_label, self.show_all_checkbox)
-        self.layout_options_form.addRow(note_label)
+        self.layout_options_form.addRow(self.note_label)
         self.create_user_basis()
         self.add_form_factors()
+
+    def toggle_notes(self):
+        if self.show_all_checkbox.isChecked():
+            self.note_label.show()
+        else:
+            self.note_label.hide()
 
     def update_lattice_name(self, text):
         # Delete current basis layout.
