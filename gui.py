@@ -750,7 +750,7 @@ class scattering_window(lattice_window):
             'a1': d[0],
             'a2': d[1],
             'a3': d[2],
-            'k_in': np.array([0, 0, -1.5]),
+            'k_in': np.array([0, 0, -2.5]),
             'indices': [None,
                         [-1, -1, 2],
                         [-1, 1, 2],
