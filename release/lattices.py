@@ -2,6 +2,7 @@
 import itertools
 
 import numpy as np
+from scipy.spatial import Delaunay
 
 eq = np.isclose
 
@@ -10,12 +11,13 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      np.array([0, 0, 0]), "xkcd:cement", 2, "proper", "latticevectors",
      [0, 0, 0], [2, 2, 2])
 
-latticelines = {'base centred cubic': 'axes',
-                'base centred monoclinic': 'latticevectors',
-                'base centred monoclinic 1': 'latticevectors',
-                'base centred monoclinic 2': 'latticevectors',
-                'base centred monoclinic 3': 'latticevectors',
+latticelines = {'base centred monoclinic': 'base',
+                'base centred monoclinic 1': 'base',
+                'base centred monoclinic 2': 'base',
+                'base centred monoclinic 3': 'base',
                 'bcc': 'axes',
+                'primitive bcc': 'axes',
+                'primitive fcc': 'axes',
                 'conventional bcc': 'axes',
                 'conventional fcc': 'axes',
                 'fcc': 'axes',
@@ -29,6 +31,7 @@ latticelines = {'base centred cubic': 'axes',
                 'orthorhombic face centred': 'axes',
                 'rhombohedral': 'latticevectors',
                 'simple cubic': 'axes',
+                'cubic with a basis': 'axes',
                 'simple monoclinic': 'latticevectors',
                 'tetragonal': 'axes',
                 'tetragonal base centred': 'axes',
@@ -40,12 +43,13 @@ latticelines = {'base centred cubic': 'axes',
                 'wurtzite': 'latticevectors',
                 'undetermined': 'latticevectors'}
 
-unitcells = {'base centred cubic': 'conventional',
-             'base centred monoclinic': 'primitive',
+unitcells = {'base centred monoclinic': 'primitive',
              'base centred monoclinic 1': 'primitive',
              'base centred monoclinic 2': 'primitive',
              'base centred monoclinic 3': 'primitive',
              'bcc': 'conventional',
+             'primitive bcc': 'conventional',
+             'primitive fcc': 'conventional',
              'conventional bcc': 'conventional',
              'conventional fcc': 'conventional',
              'fcc': 'conventional',
@@ -59,6 +63,7 @@ unitcells = {'base centred cubic': 'conventional',
              'orthorhombic face centred': 'conventional',
              'rhombohedral': 'primitive',
              'simple cubic': 'conventional',
+             'cubic with a basis': 'conventional',
              'simple monoclinic': 'primitive',
              'tetragonal': 'conventional',
              'tetragonal base centred': 'conventional',
@@ -475,23 +480,23 @@ def chooser(lattice_name="simple cubic",
     # Simple cubic
     lcubic = np.array([[a, 0, 0], [0, a, 0], [0, 0, a]])
     L["simple cubic"] = lcubic
+    L['cubic with a basis'] = lcubic
     # BCC
     lbcc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, a / 2]])
     L["bcc"] = lbcc
+    L["primitive bcc"] = lbcc
     # FCC
     lfcc = np.array([[a / 2, a / 2, 0], [a / 2, 0, a / 2], [0, a / 2, a / 2]])
     L["fcc"] = lfcc
-    # Base Centered Cubic
-    lcbase = np.array([[a, 0, 0], [a / 2, a / 2, 0], [0, 0, a]])
-    L["base centred cubic"] = lcbase
+    L["primitive fcc"] = lfcc
     # Tetragonal
-    ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, b]])
+    ltetra = np.array([[a, 0, 0], [0, a, 0], [0, 0, c]])
     L["tetragonal"] = ltetra
     # Tetragonal Body Centred
-    ltbc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, b / 2]])
+    ltbc = np.array([[a, 0, 0], [0, a, 0], [a / 2, a / 2, c / 2]])
     L["tetragonal body centred"] = ltbc
     # Tetragonal Face Centred
-    ltfc = np.array([[a / 2, a / 2, 0], [a / 2, 0, b / 2], [0, a / 2, b / 2]])
+    ltfc = np.array([[a / 2, a / 2, 0], [a / 2, 0, c / 2], [0, a / 2, c / 2]])
     L["tetragonal face centred"] = ltfc
     # tetragonal base centred
     ltbase = np.array([[a, 0, 0], [a / 2, a / 2, 0], [0, 0, b]])
@@ -611,6 +616,11 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
     # Outputs:
     # - r_min, r_max, n_min, n_max:     ndarray (3,)
 
+    allowed_types = ['individual', 'sum', 'proper']
+    if lim_type not in allowed_types:
+        print('Limit type not recognized. returning proper limit type')
+        lim_type = 'proper'
+
     n_min, n_max = np.array(min_), np.array(max_)
     lattice = np.array((a1, a2, a3))
     # For dynamic limits we pass min_ and max_ asq limits of basis vector range
@@ -657,8 +667,6 @@ def find_limits(lim_type, a1, a2, a3, min_=[0, 0, 0], max_=[2, 2, 2],
         # and maximum value for our cartesian axes
         r_min = np.amin(limits, 0)
         r_max = np.amax(limits, 0)
-    else:
-        print('You chose... poorly.')
     # And lastly we return the relevant arrays, with n_min / max -+ some value
     # to allow for "spillage". The value is the maximal value of the max_
     # array. Also, let's make sure n_min / max are arrays of integers. Don't
@@ -1279,17 +1287,20 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
 
     grid_type = grid_type.lower()
     lines = []
-
+    lattice_positions = atomic_positions[lattice_position]
     if grid_type in "latticevectors":
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         vectors = np.array([a1, a2, a3])
-        lines = create_línes(atomic_positions[lattice_position], vectors)
+        lines = create_línes(lattice_positions, vectors)
     elif grid_type in "hexagonal":
         vectors = np.array([a1, a2, a3, a1 - a2])
-        lines = create_línes(atomic_positions[lattice_position], vectors)
+        lines = create_línes(lattice_positions, vectors)
+    elif grid_type in 'base centred monoclinic':
+        vectors = np.array([a1, 2*a2-a1, a3])
+        lines = create_línes(lattice_positions, vectors)
     elif grid_type in 'axes':
-        lattice_positions = atomic_positions[lattice_position]
+
         # A Way of finding atoms on cartesian axes
         # bool array of atoms with x = 0 and y = 0
         x0 = lattice_positions[:, 0] == 0
@@ -1362,7 +1373,122 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
     return lines
 
 
-def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
+def create_2d_array_from_verts(x, y, z):
+    print(x)
+    print(y)
+    print(z)
+    xx, yy = np.meshgrid(x, y)
+    zz = np.empty_like(xx)
+    for i in range(zz.shape[0]):
+        for j in range(zz.shape[1]):
+            x_index = x[i]
+            y_index = y[j]
+            z_index = x_index * y_index
+            print(z_index)
+            print(z[z_index])
+            zz[i, j] = z[z_index]
+    return xx, yy, zz
+
+
+def calc_intersection(G, v1, v2, r_min, r_max,
+                      p0=np.zeros(3), return_dirs=True):
+    """
+    Calculate intersection between plane, defined by alpha1 and alpha2, and
+    lines, defined by r and p0.
+    """
+    G_unit = G/mag(G)
+    x, y, z = np.eye(3)
+
+    # Now we have the vectors spanning the plane, and they're normalized
+    # Next we need to calculate the intersections.
+    # To rule out intersections we check for orthogonality between G and the
+    # cardinal directions. If G is orthogonal to 1, then the plane won't
+    # intersect the lines spanned by that vector.
+    cosGx = G_unit.dot(x)
+    cosGy = G_unit.dot(y)
+    cosGz = G_unit.dot(z)
+    xintersect = ~eq(cosGx, 0)
+    yintersect = ~eq(cosGy, 0)
+    zintersect = ~eq(cosGz, 0)
+
+    # The idea now is to create the matrix M = (r, v1, v2), and solve Mx=p,
+    # where p is a point on the line. Then x = (d, alpha, beta), where alpha
+    # and beta are the coefficients for v1 and v2, to get the intersection
+    # point. To get intersections for other planes we just add the relevant
+    # coordinates of the separation vector (ie, the dot product between r and
+    # the displacement vector).
+    Mx = np.array((x, v1, v2)).T
+    My = np.array((y, v1, v2)).T
+    Mz = np.array((z, v1, v2)).T
+    xs = np.array((x, x, x, x))
+    ys = np.array((y, y, y, y))
+    zs = np.array((z, z, z, z))
+
+    r0 = np.array((r_min,
+                   [r_min[0], r_max[1], r_max[2]],
+                   [r_max[0], r_max[1], r_min[2]],
+                   [r_max[0], r_min[1], r_max[2]]))
+    p = r0 - p0.reshape((1, 3))
+    intersections = []
+    directions = []
+    if xintersect:
+        X = np.linalg.solve(Mx, p.T).T
+        intersections.append(X)
+        directions.append(xs)
+    if yintersect:
+        Y = np.linalg.solve(My, p.T).T
+        intersections.append(Y)
+        directions.append(ys)
+    if zintersect:
+        Z = np.linalg.solve(Mz, p.T).T
+        intersections.append(Z)
+        directions.append(zs)
+    directions = np.vstack(directions)
+    intersection_coefficients = np.vstack(intersections)
+    intersections = intersection_coefficients[:, 1:]
+    plane_vectors = np.array((v1, v2))
+    points = intersections @ plane_vectors + p0.reshape((1, 3))
+    if return_dirs:
+        return points, directions
+    return points
+
+
+def find_inside(x, r_min, r_max):
+    resmin = x - r_min
+    resmax = x - r_max
+    almost_min = np.isclose(resmin, 0)
+    almost_max = np.isclose(resmax, 0)
+    def_min = x >= r_min
+    def_max = x <= r_max
+    min_ = almost_min + def_min
+    max_ = almost_max + def_max
+    result = (min_ * max_).all(axis=1)
+    return result
+
+
+def calc_triangulation(d, planes):
+
+    # If the planes are vertical, then points in xy are colinear, and
+    # triangulation cannot happen with these. As such, for plot_trisurf to
+    # work we need to triangulate with either x,z or y,z. Here we find out
+    # which we want to triangulate with, by accounting for the direction of
+    # the displacement vector.
+    dhat = d/mag(d)
+    xhat, yhat, zhat = np.eye(3)
+    in_xy_plane = eq(dhat.dot(zhat), 0)
+    if in_xy_plane:
+        # If d is along x, then we triangulate with y, otherwise we
+        # triangulate with x
+        along_x = eq(dhat.dot(xhat), 1)
+        coords = [1, 2] if along_x else [0, 2]
+    else:
+        coords = None
+    simps = [Delaunay(plane[:, coords]) if coords is not None else None for
+             plane in planes]
+    return simps
+
+
+def reciprocal(a1, a2, a3, indices, r_min, r_max):
     """
     Creates the reciprocal lattice and a given family of lattice planes.
     """
@@ -1385,62 +1511,55 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max, points=50):
     # And the normal vector for the (hkl)-family of planes.
     G = h * b1 + k * b2 + ell * b3
     G_unit = G / mag(G)
-    z = np.array([0, 0, 1])
-    cosGz = G_unit.dot(z)
     # Next the displacement vector d
     d = 2 * np.pi * G_unit / mag(G)
-    if eq(cosGz, 0):
-        # We have a vertical plane!
-        v1 = z / 4
-        v2 = np.cross(G_unit, z) / 4
-        min_, max_ = -10, 11
-        P, Q = np.meshgrid(range(min_, max_), range(min_, max_))
 
-        # Now the starting plane
-        x0 = v1[0] * P + v2[0] * Q
-        y0 = v1[1] * P + v2[1] * Q
-        z0 = v1[2] * P + v2[2] * Q
-        range_ = 20
-        planes = [(x0 + n * d[0], y0 + n * d[1], z0 + n * d[2]) for n in
-                  range(-range_, range_)]
+    # Generate vectors that are normal to the normal:
+    x, y, z = np.eye(3)
+    cosGz = G_unit.dot(z)
+
+    if eq(cosGz, 1):
+        # G is along z, we choose v1 to be x
+        v1 = x
     else:
-        # The vertical displacement of the planes (dz) is given by
-        # mag(d)/cos(theta), where theta is the angle between the displacement
-        # vector and the z-axis. cos(theta) is also d[2]/mag(d) (cosine of
-        # angle between d and [0,0,1]):
-        dz = mag(d)**2 / d[2]
+        # G is NOT along z - we choose v1 as the cross between z and G.
+        v1 = np.cross(G_unit, z)
+        v1 /= mag(v1)
 
-        # We take the origin as the fix-point for the starting plane, then we
-        # just create copies of this plane, displaced vertically by dz, until
-        # the top of the first plane doesn't reach the bottom of the plot box,
-        # and the bottom of the last plane doesn't reach the top of the plot
-        # box. But first we create the meshgrid needed
-        x = np.linspace(r_min[0], r_max[0], points)
-        y = np.linspace(r_min[1], r_max[1], points)
-        xv, yv = np.meshgrid(x, y)
+    v2 = np.cross(G_unit, v1)
 
-        # Now the starting plane
-        zv = (-d[0] * xv - d[1] * yv) / d[2]
+    p0 = np.zeros(3)
+    proto_points, directions = calc_intersection(G, v1, v2, r_min, r_max, p0)
 
-        # The distance between the bottom of the plane and the max z-value
-        delta_z_plus = r_max[2] - np.amin(zv)
-        # The negative distance between the top of the plane and the min
-        # z-value
-        delta_z_minus = r_min[2] - np.amax(zv)
+    inside = find_inside(proto_points, r_min, r_max)
+    planes = [proto_points]
 
-        # The amount of planes needed in each direction to cover the plot box:
-        nz_plus = int(np.ceil(delta_z_plus / dz))
-        nz_minus = int(np.floor(delta_z_minus / dz))
+    while True:
+        p0 = p0 + d
+        proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
+                                         return_dirs=False)
+        inside = find_inside(proto_points, r_min, r_max)
+        if np.sum(inside) < 3:
+            break
+        planes.append(proto_points)
 
-        # Swap the indices if nz_plus is smaller than nz_minus, otherwise range
-        # returns nothing
-        if nz_plus < nz_minus:
-            nz_plus, nz_minus = nz_minus, nz_plus
+    p0 = np.zeros(3)
+    while True:
+        p0 = p0 - d
+        proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
+                                         return_dirs=False)
+        inside = find_inside(proto_points, r_min, r_max)
+        if np.sum(inside) < 3:
+            break
+        planes.append(proto_points)
 
-        # Create a list of the planes with a list comprehension
-        planes = [(xv, yv, zv + n * dz) for n in range(nz_minus, nz_plus + 1)]
-
-    return d, planes
+    limited_planes = []
+    for plane in planes:
+        unique_points = np.unique(plane, axis=0)
+        inside = find_inside(unique_points, r_min, r_max)
+        if np.sum(inside) >= 3:
+            limited_planes.append(unique_points[inside])
+    return d, limited_planes
 
 
 def plane_limiter(planes, r_min, r_max):
@@ -1499,7 +1618,7 @@ def tester(verbose=False):
     R = rot_matrix()
     for name in lattices:
         # Create the lattice
-        lattice, basis = chooser(name, verbose=verbose)
+        lattice, basis, _ = chooser(name, verbose=verbose)
         # rotate the lattice and basis
         lattice = (R@lattice.T).T
         basis = (R@basis.T).T
@@ -1523,3 +1642,59 @@ def tester(verbose=False):
         print("Test done.")
     else:
         print("Test done. If nothing printed, all were succesfully classified")
+
+
+def get_lattice_info(lattice, lattice_name):
+    # takes in the lattice, returns the magnitude of each vector and the angles
+    # between them.
+
+    # conversion matrices
+    simple = np.eye(3)
+    bcc = np.array([[1, 0, 0], [0, 1, 0], [-1, -1, 2]])
+    fcc = np.ones((3, 3)) - 2 * np.fliplr(np.eye(3))
+    base = np.array([[1, 0, 0], [-1, 2, 0], [0, 0, 1]])
+
+    matrices = {'base centred monoclinic': simple,
+                'base centred monoclinic 1': simple,
+                'base centred monoclinic 2': simple,
+                'base centred monoclinic 3': simple,
+                'bcc': bcc,
+                'primitive bcc': bcc,
+                'primitive fcc': fcc,
+                'conventional bcc': bcc,
+                'conventional fcc': fcc,
+                'fcc': fcc,
+                'hexagonal': simple,
+                'hexagonal 1': simple,
+                'hexagonal 2': simple,
+                'hcp': simple,
+                'orthorhombic': simple,
+                'orthorhombic base centred': base,
+                'orthorhombic body centred': bcc,
+                'orthorhombic face centred': fcc,
+                'rhombohedral': simple,
+                'simple cubic': simple,
+                'cubic with a basis': simple,
+                'simple monoclinic': simple,
+                'tetragonal': simple,
+                'tetragonal base centred': base,
+                'tetragonal body centred': bcc,
+                'tetragonal face centred': fcc,
+                'triclinic': simple,
+                'zincblende': fcc,
+                'diamond': fcc,
+                'wurtzite': simple,
+                'undetermined': simple}
+
+    newlattice = matrices[lattice_name] @ lattice
+
+    a1, a2, a3 = newlattice
+    a, b, c = mag(newlattice)
+    alpha_cos = a1.dot(a2)/(a*b)
+    alpha_deg = np.arccos(alpha_cos) * 180 / np.pi
+    beta_cos = a2.dot(a3)/(b*c)
+    beta_deg = np.arccos(beta_cos) * 180 / np.pi
+    gamma_cos = a3.dot(a1)/(a*c)
+    gamma_deg = np.arccos(gamma_cos) * 180 / np.pi
+
+    return a, b, c, alpha_deg, beta_deg, gamma_deg

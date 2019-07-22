@@ -1,10 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from functools import partial
+from scipy.spatial import Delaunay
 
 import lattices
 import scattering
+import band_structure
 import gui
 
 d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
@@ -20,7 +23,7 @@ def Lattice(
         lim_type=d[6], grid_type=None, max_=d[8], lattice_name=None,
         unit_type=None, indices=None, arrows=True, grid=True,
         verbose=False, returns=False, fig=None, ax=None, plots=True,
-        rounder=True, checks=True):
+        rounder=True, checks=True, limit=False):
     """
     Creates, limits and plots the lattice
     """
@@ -162,9 +165,8 @@ def Lattice(
         if len(indices) != 3:
             print("We need 3 indices! We'll give you (1,1,1)")
             indices = (1, 1, 1)
-        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max,
-                                        points=num_plane_points)
-        planes = lattices.plane_limiter(planes, r_min, r_max)
+        d, planes = lattices.reciprocal(a1, a2, a3, indices, r_min, r_max)
+        # planes = lattices.plane_limiter(planes, r_min, r_max)
 
     if verbose:
         print("Lattice: {}".format(lattice_type))
@@ -175,10 +177,6 @@ def Lattice(
     if ax is None:
         ax = fig.gca(projection="3d")
 
-    # Plot atoms
-    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
-               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
-
     # Get the relevant gridlines:
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
                                        lattice_position, grid_type,
@@ -187,22 +185,38 @@ def Lattice(
         for line in pruned_lines:
             ax.plot(line[0], line[1], line[2], color=g_col, linewidth=g_w)
 
+    # Plot atoms
+    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+
     if indices is not None:
         # If we plot the family of lattice planes, we plot the displacement
         # vector and the planes
-        ax.quiver(0, 0, 0, d[0], d[1], d[2])
-        ax.text(d[0] / 2, d[1] / 2, d[2] / 2, '$d$')
-        for p in planes:
-            ax.plot_surface(p[0], p[1], p[2], color='xkcd:cement', shade=False,
-                            alpha=0.4)
+        start = a1 + a2 + a3
+        ax.quiver(*start, *d)
+        ax.text(*(start+d/2), '$d$')
+
+        simps = lattices.calc_triangulation(d, planes)
+
+        for plane, tri in zip(planes, simps):
+            x, y, z = plane.T
+            if tri is not None:
+                ax.plot_trisurf(x, y, tri, z, color='r',
+                                shade=False,
+                                alpha=0.2)
+            else:
+                ax.plot_trisurf(x, y, z, color='r',
+                                shade=False,
+                                alpha=0.2)
+
     elif arrows:
         # otherwise we plot the lattice vectors
-        ax.quiver(0, 0, 0, a1[0], a1[1], a1[2])
-        ax.quiver(0, 0, 0, a2[0], a2[1], a2[2])
-        ax.quiver(0, 0, 0, a3[0], a3[1], a3[2])
-        ax.text(a1[0] / 2, a1[1] / 2, a1[2] / 2, '$a_1$')
-        ax.text(a2[0] / 2, a2[1] / 2, a2[2] / 2, '$a_2$')
-        ax.text(a3[0] / 2, a3[1] / 2, a3[2] / 2, '$a_3$')
+        ax.quiver(0, 0, 0, *a1)
+        ax.quiver(0, 0, 0, *a2)
+        ax.quiver(0, 0, 0, *a3)
+        ax.text(*(a1/2), '$a_1$')
+        ax.text(*(a2/2), '$a_2$')
+        ax.text(*(a3/2), '$a_3$')
 
     # Set limits, orthographic projection (so we get the beautiful hexagons),
     # no automatic gridlines, and no axes
@@ -233,30 +247,152 @@ def Lattice(
 Reciprocal = partial(Lattice, indices=(1, 1, 1))
 
 
+def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
+                    grid=False, verbose=False, returns=False, limtype=0):
+
+    if indices is None:
+        n_min = np.array([-1, -1, -1])
+        n_max = np.array([1, 1, 1])
+    else:
+        h, k, ell = indices
+
+        # we plot between -h and h with 1 lattice point as padding.
+        if limtype == 0:
+            n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell))) - 1
+            n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell))) + 1
+        elif limtype == 1:
+            n_min = np.array((min(h, 0), min(k, 0), min(ell, 0))) - 1
+            n_max = np.array((max(h, 0), max(k, 0), max(ell, 0))) + 1
+        elif limtype == 2:
+            n_min = np.array((min(h, -h), min(k, -k), min(ell, -ell)))
+            n_max = np.array((max(h, -h), max(k, -k), max(ell, -ell)))
+        elif limtype == 3:
+            n_min = np.array((min(h, 0), min(k, 0), min(ell, 0)))
+            n_max = np.array((max(h, 0), max(k, 0), max(ell, 0)))
+    # we want black colors, and small dots
+    colors = ['k']
+    sizes = [0.5]
+
+    # we use primitive unit cell, and lattice lines along lattice vectors
+    unit_type = 'primitive'
+    grid_type = 'latticevectors'
+
+    # First the scaling factor for the reciprocal lattice
+    scale = a1.dot(np.cross(a2, a3))
+    # Then the reciprocal lattice
+    b1 = 2 * np.pi * np.cross(a2, a3) / scale
+    b2 = 2 * np.pi * np.cross(a3, a1) / scale
+    b3 = 2 * np.pi * np.cross(a1, a2) / scale
+
+    # Create the array of lattice vectors and basis
+    lattice = np.array([b1, b2, b3])
+    basis = np.array([0, 0, 0])
+
+    objects = lattices.generator(b1, b2, b3, basis, colors, sizes,
+                                 n_min, n_max)
+
+    atomic_positions = np.around(objects[0], decimals=5)
+    objects = [atomic_positions] + [i for i in objects[1:]]
+
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+     lattice_position) = lattices.limiter(points=objects[0],
+                                          objects=objects,
+                                          min_=n_min,
+                                          max_=n_max,
+                                          unit_type=unit_type,
+                                          lattice=lattice,
+                                          verbose=verbose)
+
+    if fig is None:
+        recip_fig = plt.figure(figsize=(4, 4))
+    else:
+        recip_fig = fig
+
+    if ax is None:
+        recip_ax = recip_fig.gca(projection="3d")
+    else:
+        recip_ax = ax
+
+    pruned_lines = lattices.grid_lines(b1, b2, b3, atomic_positions,
+                                       lattice_position, grid_type,
+                                       verbose=verbose)
+    g_col = 'k'
+    g_w = 0.5
+    if grid:
+        for line in pruned_lines:
+            recip_ax.plot(line[0], line[1], line[2], color=g_col,
+                          linewidth=g_w)
+
+    recip_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+
+    if indices is not None:
+        # And the normal vector for the (hkl)-family of planes.
+        G = h * b1 + k * b2 + ell * b3
+        # plot some arrows
+        recip_ax.quiver(0, 0, 0, *G)
+        recip_ax.text(*(G/2), f'$G, ({h},{k},{ell})$')
+
+    # making the axes prettier
+    recip_ax.set_aspect('equal')
+    recip_ax.set_proj_type('ortho')
+
+    # Get the max limit, so we can make plot box cubic
+    xlim = recip_ax.get_xlim()
+    ylim = recip_ax.get_ylim()
+    zlim = recip_ax.get_zlim()
+    limits = np.array(list(zip(xlim, ylim, zlim)))
+    plot_max = np.max(limits[1])
+    plot_min = np.min(limits[0])
+    recip_ax.set_xlim([plot_min, plot_max])
+    recip_ax.set_ylim([plot_min, plot_max])
+    recip_ax.set_zlim([plot_min, plot_max])
+    recip_ax.grid(False)
+    if not verbose:
+        recip_ax.axis('off')
+
+    # make the panes transparent (the plot box)
+    recip_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    recip_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    recip_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    if returns:
+        return recip_fig, recip_ax
+    else:
+        plt.show()
+
+
+def rotatefig(event, fig1, ax1, canvas2, ax2):
+    if event.button == 1:
+        elev, azim = ax1.elev, ax1.azim
+        ax2.view_init(elev, azim)
+        canvas2.draw()
+
+
 def Scattering(lattice_name='simple cubic',
                basis=None,
                k_in=np.array([0, 0, -1.5]),
                form_factor=None,
                highlight=None,
-               show_all=False,
+               show_all=True,
                normalize=True,
                verbose=False,
                returns=False,
                return_indices=False,
                colors=None,
                laue_scale=1,
-               fig=None,
+               figs=None,
                axes=None,
                plots=True):
 
     min_, max_ = (-2, -2, -1), (2, 2, 1)
+    micro_min, micro_max = ((-1, -1, -1), (1, 1, 1))
     g_col = 'k'
     g_w = 0.5
     g_a = 0.6
     size_default = 36
     point_sizes = 2
     point_sizes *= size_default
-    plane_z = 3.5
+    plane_z = 25
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
     lim_type = "proper"
@@ -318,6 +454,21 @@ def Scattering(lattice_name='simple cubic',
         k_in = k_in * 2 * np.pi
 
     # Calculating stuff for plotting the crystal
+    (r_min_micro, r_max_micro,
+     n_min_micro, n_max_micro) = lattices.find_limits(lim_type, a1, a2, a3,
+                                                      micro_min, micro_max,
+                                                      unit_cell_type)
+    objects = lattices.generator(a1, a2, a3, basis, atom_colors,
+                                 atom_sizes, n_min_micro, n_max_micro)
+    objects = lattices.limiter(objects[0], objects, r_min_micro, r_max_micro,
+                               unit_cell_type)
+    (atom_pos_micro, _, atom_cols_micro, atom_sizes_micro,
+     lattice_position_micro) = objects
+
+    pruned_lines_micro = lattices.grid_lines(a1, a2, a3, atom_pos_micro,
+                                             lattice_position_micro, grid_type,
+                                             verbose=verbose)
+
     r_min, r_max, n_min, n_max = lattices.find_limits(lim_type, a1, a2, a3,
                                                       min_, max_,
                                                       unit_cell_type)
@@ -325,7 +476,7 @@ def Scattering(lattice_name='simple cubic',
                                  atom_sizes, n_min, n_max)
     objects = lattices.limiter(objects[0], objects, r_min, r_max,
                                unit_cell_type)
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+    (atomic_positions, _, atomic_colors, atomic_sizes,
      lattice_position) = objects
 
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
@@ -342,32 +493,38 @@ def Scattering(lattice_name='simple cubic',
                                                              k_in)
     points = scattering.projection(k_out, p0=np.array([0, 0, plane_z]))
 
-    # Plotting the basics
-    detector_screen_position = [0.7, 0.2, 0.25, 0.625]
-    if fig is None:
-        fig = plt.figure(figsize=(10, 4))
-    if axes is None:
-        ax = fig.gca(projection="3d")
-        ax.set_position([0, 0, 0.7, 1])
-
-        # Create second set of axes for detection screen
-        ax2 = plt.axes(detector_screen_position)
+    # Plotting the basic
+    if figs is None:
+        macro_fig = plt.figure(figsize=(8, 8))
+        micro_fig = plt.figure(figsize=(5, 5))
     else:
-        ax, ax2 = axes
-    ax2.tick_params(axis="both", labelbottom=False, labelleft=False)
-    ax2.set_aspect('equal', 'box')
+        macro_fig, micro_fig = figs
+    if axes is None:
+        macro_ax = macro_fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
+        micro_ax = micro_fig.add_axes([0.05, 0.05, 0.9, 0.9], projection='3d')
+    else:
+        macro_ax, micro_ax = axes
 
     # Plot atoms
-    ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
-               atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+    macro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
+                     atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
+
+    micro_ax.scatter(atom_pos_micro[:, 0], atom_pos_micro[:, 1],
+                     atom_pos_micro[:, 2], c=atom_cols_micro,
+                     s=atom_sizes_micro)
 
     for line in pruned_lines:
-        ax.plot(line[0], line[1], line[2],
-                color=g_col, linewidth=g_w, alpha=g_a)
+        macro_ax.plot(line[0], line[1], line[2],
+                      color=g_col, linewidth=g_w, alpha=g_a)
+    for line in pruned_lines_micro:
+        micro_ax.plot(line[0], line[1], line[2],
+                      color=g_col, linewidth=g_w, alpha=g_a)
 
     # Plotting the beam: First we create the beam display vector
-    ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
-              color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
+    macro_ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
+                    color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
+    micro_ax.quiver(0, 0, beam_end_z, k_disp[0], k_disp[1], k_disp[2],
+                    color='b', lw=2, pivot='tip', length=lambda_ * laue_scale)
 
     if intensities.size == 0:
         print("There is no scattering for this choice of k_in")
@@ -396,18 +553,24 @@ def Scattering(lattice_name='simple cubic',
                 else:
                     # We have highlighting!
                     d, planes = lattices.reciprocal(a1, a2, a3, hi_index,
-                                                    r_min - extra,
-                                                    r_max + extra,
-                                                    points=20)
-                    planes = lattices.plane_limiter(planes, r_min - extra,
-                                                    r_max + extra)
+                                                    r_min_micro - extra,
+                                                    r_max_micro + extra)
+                    simps = lattices.calc_triangulation(d, planes)
+
+                    for plane, tri in zip(planes, simps):
+                        x, y, z = plane.T
+                        if tri is not None:
+                            micro_ax.plot_trisurf(x, y, tri, z, color='r',
+                                                  shade=False,
+                                                  alpha=0.2)
+                        else:
+                            micro_ax.plot_trisurf(x, y, z, color='r',
+                                                  shade=False,
+                                                  alpha=0.2)
                     # We change the color of highlighted point and plot the
                     # family of planes
                     high_intensity = intensities[indices_index]
                     colors[indices_index] = [1, 0, 0, high_intensity]
-                    for p in planes:
-                        ax.plot_surface(p[0], p[1], p[2], color="r",
-                                        shade=False, alpha=0.2)
                     # We also plot the outgoing line corresponding to this
                     # scattering. First we get the point (and squeeze it, to
                     # make it 1D again)
@@ -415,9 +578,10 @@ def Scattering(lattice_name='simple cubic',
                     start = np.array([0, 0, beam_end_z])
                     ray = p - start
                     line = np.array([start, start + outgoing_length * ray])
-                    ax.plot(line[:, 0], line[:, 1], line[:, 2], color='r',
-                            alpha=0.3, ls='--',
-                            lw=g_w * 2)
+                    macro_ax.plot(line[:, 0], line[:, 1], line[:, 2],
+                                  color='r',
+                                  alpha=0.3, ls='--',
+                                  lw=g_w * 2)
                     # Plotting outgoing vector and Laue condition
                     k_out_high = np.squeeze(k_out[indices_index])
                     G_high = k_in - k_out_high
@@ -427,42 +591,45 @@ def Scattering(lattice_name='simple cubic',
                                        start - k_disp * lambda_ * laue_scale,
                                        (start - vecs_disp[2] * lambda_ *
                                         laue_scale)])
-                    ax.quiver(starts[:, 0],
-                              starts[:, 1],
-                              starts[:, 2],
-                              vecs_disp[:, 0],
-                              vecs_disp[:, 1],
-                              vecs_disp[:, 2],
-                              color=['r', 'r', 'g'],
-                              alpha=0.5,
-                              lw=1,
-                              length=lambda_ * laue_scale)
+                    micro_ax.quiver(starts[:, 0],
+                                    starts[:, 1],
+                                    starts[:, 2],
+                                    vecs_disp[:, 0],
+                                    vecs_disp[:, 1],
+                                    vecs_disp[:, 2],
+                                    color=['r', 'r', 'g'],
+                                    alpha=0.5,
+                                    lw=1,
+                                    length=lambda_ * laue_scale)
 
         ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
-        ax2.scatter(points[:, 0], points[:, 1], c=colors)
-        for i in range(len(indices)):
-            x, y = points[i, 0:2] - 0.05 * ranges
-            s = indices[i]
-            c = colors[i, :-1]
-            ax2.text(x, y, s, color=c, va='top', ha='right')
 
         # Plotting detection plane
-        abs_ex = 0.0
-        rel_ex = 0.1
-        def_y = 2
-        def_x = 2
-        x_min = np.amin(points[:, 0]) * (1 + rel_ex) - abs_ex
-        x_max = np.amax(points[:, 0]) * (1 + rel_ex) + abs_ex
-        y_min = np.amin(points[:, 1]) * (1 + rel_ex) - abs_ex
-        y_max = np.amax(points[:, 1]) * (1 + rel_ex) + abs_ex
-        x_range = np.array([min(x_min, -def_x), max(x_max, def_x)])
-        y_range = np.array([min(y_min, -def_y), max(y_max, def_y)])
+        abs_extra = 0.0
+        rel_extra = 0.1
+        def_ = 2
+        x_min = np.amin(points[:, 0]) * (1 + rel_extra) - abs_extra
+        x_max = np.amax(points[:, 0]) * (1 + rel_extra) + abs_extra
+        y_min = np.amin(points[:, 1]) * (1 + rel_extra) - abs_extra
+        y_max = np.amax(points[:, 1]) * (1 + rel_extra) + abs_extra
+
+        # We want the detection plane to be square:
+        max_ = max(x_max, y_max)
+        min_ = min(x_min, y_min)
+
+        x_range = np.array([min(min_, -def_), max(max_, def_)])
+        y_range = np.array([min(min_, -def_), max(max_, def_)])
         x, y = np.meshgrid(x_range, y_range)
         z = plane_z * np.ones(x.shape)
-        ax.plot_surface(x, y, z, color='k', alpha=0.2)
+        macro_ax.plot_surface(x, y, z, color='k', alpha=0.2)
 
         # plotting intersections
-        ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
+        macro_ax.scatter(points[:, 0], points[:, 1], plane_z, color=colors)
+        for i in range(len(indices)):
+            x, y = points[i, 0:2]
+            s = indices[i]
+            c = colors[i, :-1]
+            macro_ax.text(x, y, plane_z, s, color=c, va='bottom', ha='center')
 
         # Setting limits for the second figure
         det_max_x = np.amax(x_range)
@@ -471,8 +638,8 @@ def Scattering(lattice_name='simple cubic',
         det_min_y = np.amin(y_range)
         det_max = max(det_max_x, det_max_y)
         det_min = min(det_min_x, det_min_y)
-        ax2.set_xlim(det_min, det_max)
-        ax2.set_ylim(det_min, det_max)
+        # ax2.set_xlim(det_min, det_max)
+        # ax2.set_ylim(det_min, det_max)
 
         if show_all:
             # Plotting outgoing vectors
@@ -480,56 +647,72 @@ def Scattering(lattice_name='simple cubic',
             k_plot = k_out / lattices.mag(k_in)
             start_point = np.array((0, 0, beam_end_z))
             start_points = np.repeat(np.atleast_2d(start_point), n, axis=0)
-            ax.quiver(start_points[:, 0],
-                      start_points[:, 1],
-                      start_points[:, 2],
-                      k_plot[:, 0],
-                      k_plot[:, 1],
-                      k_plot[:, 2],
-                      color='g',
-                      alpha=0.5,
-                      lw=g_w,
-                      length=lambda_)
+            macro_ax.quiver(start_points[:, 0],
+                            start_points[:, 1],
+                            start_points[:, 2],
+                            k_plot[:, 0],
+                            k_plot[:, 1],
+                            k_plot[:, 2],
+                            color='g',
+                            alpha=0.5,
+                            lw=g_w,
+                            length=lambda_)
 
             # plotting outgoing lines
             for p in points:
                 ray = p - start_point
                 line = np.array([start_point,
                                  start_point + outgoing_length * ray])
-                ax.plot(line[:, 0], line[:, 1], line[:, 2],
-                        color='k', alpha=0.3, ls='--',
-                        lw=g_w)
+                macro_ax.plot(line[:, 0], line[:, 1], line[:, 2],
+                              color='k', alpha=0.3, ls='--',
+                              lw=g_w)
 
-    ax.set_aspect('equal')
-    ax.set_proj_type('ortho')
-    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.set_aspect('equal')
+    macro_ax.set_proj_type('ortho')
+    macro_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    macro_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+
+    micro_ax.set_aspect('equal')
+    micro_ax.set_proj_type('ortho')
+    micro_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    micro_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    micro_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
     # Some limit trickery. We make the plot box cubic:
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
-    ax.set_xlim(plot_min, plot_max)
-    ax.set_ylim(plot_min, plot_max)
-    ax.set_zlim(plot_min, plot_max)
+    plane_max = max_
+    plane_min = min_
+    macro_max = max([plot_max, plane_max, plane_z])
+    macro_min = min([plot_min, plane_min, plane_z])
+    macro_ax.set_xlim(macro_min, macro_max)
+    macro_ax.set_ylim(macro_min, macro_max)
+    macro_ax.set_zlim(macro_min, macro_max)
 
-    ax.grid(False)
-    ax.axis('off')
+    macro_ax.grid(False)
+    macro_ax.axis('off')
 
-    tit = (r'Scattering on a cubic lattice. $k_{in} = (2\pi/a)\cdot$' +
-           '{}'.format(k_title))
-    tit2 = (r'Scattering on a cubic lattice. $k_{in} = $' +
+    micro_ax.set_xlim(plot_min, plot_max)
+    micro_ax.set_ylim(plot_min, plot_max)
+    micro_ax.set_zlim(plot_min, plot_max)
+
+    micro_ax.grid(False)
+    micro_ax.axis('off')
+
+    tit = ('Scattering on a cubic lattice.\n' + r'$k_{in} = (2\pi/a)\cdot$' +
+           '{}'.format(k_title) + f'\nForm factors: {form_factor}')
+    tit2 = ('Scattering on a cubic lattice.\n' + r'$k_{in} = $' +
             '{}'.format(k_title))
     if normalize:
-        ax.set_title(tit)
+        macro_ax.set_title(tit)
     else:
-        ax.set_title(tit2)
-    ax2.set_title('Detection screen.\nForm factors: {}'.format(form_factor))
+        macro_ax.set_title(tit2)
     if plots:
         plt.show()
     return_list = []
     if returns:
-        return_list += [fig, ax, ax2]
+        return_list += [macro_fig, micro_fig, macro_ax, micro_ax]
     if return_indices:
         return_list.append(indices)
     if returns or return_indices:
