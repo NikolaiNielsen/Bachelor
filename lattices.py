@@ -1474,7 +1474,7 @@ def calc_triangulation(d, planes):
     # which we want to triangulate with, by accounting for the direction of
     # the displacement vector.
     dhat = d/mag(d)
-    xhat, yhat, zhat = np.eye(3)
+    xhat, _, zhat = np.eye(3)
     in_xy_plane = eq(dhat.dot(zhat), 0)
     if in_xy_plane:
         # If d is along x, then we triangulate with y, otherwise we
@@ -1483,8 +1483,8 @@ def calc_triangulation(d, planes):
         coords = [1, 2] if along_x else [0, 2]
     else:
         coords = None
-    simps = [Delaunay(plane[:, coords]) if coords is not None else None for
-             plane in planes]
+    simps = [Delaunay(plane[:, coords]).simplices if coords is not None
+             else None for plane in planes]
     return simps
 
 
@@ -1515,7 +1515,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     d = 2 * np.pi * G_unit / mag(G)
 
     # Generate vectors that are normal to the normal:
-    x, y, z = np.eye(3)
+    x, _, z = np.eye(3)
     cosGz = G_unit.dot(z)
 
     if eq(cosGz, 1):
@@ -1529,7 +1529,7 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     v2 = np.cross(G_unit, v1)
 
     p0 = np.zeros(3)
-    proto_points, directions = calc_intersection(G, v1, v2, r_min, r_max, p0)
+    proto_points, _ = calc_intersection(G, v1, v2, r_min, r_max, p0)
 
     inside = find_inside(proto_points, r_min, r_max)
     planes = [proto_points]
