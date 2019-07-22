@@ -237,7 +237,7 @@ def Lattice(
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-    ax.set_title('Direct Lattice')
+    fig.suptitle('Direct Lattice')
 
     if plots:
         plt.show()
@@ -358,7 +358,7 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
     recip_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     recip_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-    recip_ax.set_title('Reciprocal Lattice')
+    recip_fig.suptitle('Reciprocal Lattice')
     if returns:
         return recip_fig, recip_ax
     else:
