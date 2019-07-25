@@ -3,6 +3,7 @@ import itertools
 
 import numpy as np
 from scipy.spatial import Delaunay
+import exercise
 
 eq = np.isclose
 
@@ -138,10 +139,13 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
         for ny in range(n_min[1], n_max[1] + 1):
             for nz in range(n_min[2], n_max[2] + 1):
                 lattice_coefficients[counter, ] = np.array([nx, ny, nz]).T
-                position = nx * a1 + ny * a2 + nz * a3
+                position, atomic_pos = exercise.calc_positions(a1, a2, a3,
+                                                               nx, ny, nz,
+                                                               basis)
+                # position = a1*nx + a2*ny + a3*nz
                 for n_atom in range(n_basis):
-                    atomic_positions[counter, ] = (position +
-                                                   basis[n_atom, ])
+                    # atomic_positions[counter, ] = position + basis[n_atom]
+                    atomic_positions[counter, ] = atomic_pos[n_atom]
                     atomic_colors.append(colors[n_atom])
                     atomic_sizes.append(size_default * sizes[n_atom])
 
@@ -1504,12 +1508,14 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     # First the scaling factor for the reciprocal lattice
     scale = a1.dot(np.cross(a2, a3))
     # Then the reciprocal lattice
-    b1 = 2 * np.pi * np.cross(a2, a3) / scale
-    b2 = 2 * np.pi * np.cross(a3, a1) / scale
-    b3 = 2 * np.pi * np.cross(a1, a2) / scale
+
+    b1, b2, b3, G = exercise.calc_reciprocal_lattice(a1, a2, a3, h, k, ell)
+    # b1 = 2 * np.pi * np.cross(a2, a3) / scale
+    # b2 = 2 * np.pi * np.cross(a3, a1) / scale
+    # b3 = 2 * np.pi * np.cross(a1, a2) / scale
 
     # And the normal vector for the (hkl)-family of planes.
-    G = h * b1 + k * b2 + ell * b3
+    # G = h * b1 + k * b2 + ell * b3
     G_unit = G / mag(G)
     # Next the displacement vector d
     d = 2 * np.pi * G_unit / mag(G)
