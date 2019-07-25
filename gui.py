@@ -122,7 +122,7 @@ class lattice_window(QW.QMainWindow):
 
         # update unused parameters
         self.update_unused_params()
-        self.layout_main.addWidget(self.static_canvas)
+        self.layout_main.addWidget(self.static_canvas, 1)
 
     def create_variables(self):
         # A list of names for available lattice presets
@@ -573,7 +573,7 @@ class lattice_plane_window(lattice_window):
         super().__init__()
         self.create_miller_indices()
         self.create_recip_plot()
-        self.layout_main.addWidget(self.recip_canvas)
+        self.layout_main.addWidget(self.recip_canvas, 1)
         self.plot_lattice()
         cid = self.static_fig.canvas.mpl_connect(
             'motion_notify_event',
@@ -787,15 +787,15 @@ class scattering_window(lattice_window):
          self.macro_ax, self.micro_ax, _) = cmp.Scattering(
             returns=True, return_indices=True, plots=False)
         self.macro_canvas = FigureCanvas(self.macro_fig)
-        self.macro_canvas.setMinimumWidth(450)
+        self.macro_canvas.setMinimumWidth(400)
         self.micro_canvas = FigureCanvas(self.micro_fig)
-        self.micro_canvas.setMinimumWidth(300)
+        self.micro_canvas.setMinimumWidth(400)
         self.addToolBar(NavigationToolbar(self.macro_canvas, self))
         self.macro_ax.mouse_init()
         self.micro_ax.mouse_init()
 
-        self.layout_main.addWidget(self.macro_canvas)
-        self.layout_main.addWidget(self.micro_canvas)
+        self.layout_main.addWidget(self.macro_canvas, 1)
+        self.layout_main.addWidget(self.micro_canvas, 1)
 
     def create_options(self):
         self.layout_options = QW.QVBoxLayout()
