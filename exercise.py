@@ -73,6 +73,20 @@ def calc_reciprocal_lattice(a1, a2, a3, m1, m2, m3):
     - b1, b2, b3: 3-component vectors. Primitive lattice vectors of the
                   reciprocal lattice.
     - G: 3-component vector. The reciprocal lattice point.
+
+    Sample inputs:
+    a1 = [1, 0, 0]
+    a2 = [0, 1, 0]
+    a3 = [0, 0, 1]
+    m1 = 3
+    m2 = 1
+    m3 = 0
+
+    Sample outputs:
+    b1 = [2*pi, 0, 0]
+    b2 = [0, 2*pi, 0]
+    b3 = [0, 0, 2*pi]
+    G = [6*pi, 2*pi, 0]
     """
 
     # Mock up:
