@@ -237,6 +237,8 @@ def Lattice(
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
+    fig.suptitle('Direct Lattice')
+
     if plots:
         plt.show()
 
@@ -355,6 +357,8 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
     recip_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     recip_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     recip_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+
+    recip_fig.suptitle('Reciprocal Lattice')
     if returns:
         return recip_fig, recip_ax
     else:
@@ -370,7 +374,7 @@ def rotatefig(event, fig1, ax1, canvas2, ax2):
 
 def Scattering(lattice_name='simple cubic',
                basis=None,
-               k_in=np.array([0, 0, -1.5]),
+               k_in=np.array([0, 0, -2.5]),
                form_factor=None,
                highlight=None,
                show_all=True,
@@ -396,7 +400,12 @@ def Scattering(lattice_name='simple cubic',
     beam_end_z = max_[2]
     unit_cell_type = "conventional"
     lim_type = "proper"
-    outgoing_length = 10
+    outgoing_length = 2
+
+    # Plane specs
+    abs_extra = 0.0
+    rel_extra = 0.1
+    def_ = 10
 
     # input sanitization for the lattice/basis
     lattice_name = lattice_name.lower()
@@ -528,6 +537,11 @@ def Scattering(lattice_name='simple cubic',
 
     if intensities.size == 0:
         print("There is no scattering for this choice of k_in")
+        # We still need to plot some stuff. So we just plot an empty plane
+        x = [-def_, def_]
+        xx, yy = np.meshgrid(x, x)
+        zz = plane_z * np.ones(xx.shape)
+        macro_ax.plot_surface(xx, yy, zz, color='k', alpha=0.2)
 
     else:
         # I assume the points are unique, now that I have deleted the ones
@@ -605,20 +619,17 @@ def Scattering(lattice_name='simple cubic',
         ranges = (np.amax(points, axis=0) - np.amin(points, axis=0))[:-1]
 
         # Plotting detection plane
-        abs_extra = 0.0
-        rel_extra = 0.1
-        def_ = 2
         x_min = np.amin(points[:, 0]) * (1 + rel_extra) - abs_extra
         x_max = np.amax(points[:, 0]) * (1 + rel_extra) + abs_extra
         y_min = np.amin(points[:, 1]) * (1 + rel_extra) - abs_extra
         y_max = np.amax(points[:, 1]) * (1 + rel_extra) + abs_extra
 
         # We want the detection plane to be square:
-        max_ = max(x_max, y_max)
-        min_ = min(x_min, y_min)
+        plane_max = max(x_max, y_max)
+        plane_min = min(x_min, y_min)
 
-        x_range = np.array([min(min_, -def_), max(max_, def_)])
-        y_range = np.array([min(min_, -def_), max(max_, def_)])
+        x_range = np.array([min(plane_min, -def_), max(plane_max, def_)])
+        y_range = np.array([min(plane_min, -def_), max(plane_max, def_)])
         x, y = np.meshgrid(x_range, y_range)
         z = plane_z * np.ones(x.shape)
         macro_ax.plot_surface(x, y, z, color='k', alpha=0.2)
@@ -678,24 +689,31 @@ def Scattering(lattice_name='simple cubic',
     micro_ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     micro_ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     micro_ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-
     # Some limit trickery. We make the plot box cubic:
     plot_max = np.amax(r_max)
     plot_min = np.amin(r_min)
-    plane_max = max_
-    plane_min = min_
-    macro_max = max([plot_max, plane_max, plane_z])
-    macro_min = min([plot_min, plane_min, plane_z])
-    macro_ax.set_xlim(macro_min, macro_max)
-    macro_ax.set_ylim(macro_min, macro_max)
-    macro_ax.set_zlim(macro_min, macro_max)
+    plot_max_micro = np.amax(r_max_micro)
+    plot_min_micro = np.amin(r_min_micro)
+
+    try:
+        macro_max = max([plot_max, plane_max, plane_z])
+        macro_min = min([plot_min, plane_min, plane_z])
+    except UnboundLocalError as e:
+        # If there is no scattering, plane_max doesn't get defined. Use +-def_
+        # instead
+        macro_max = max([plot_max, def_, plane_z])
+        macro_min = min([plot_min, -def_, plane_z])
+
+    macro_ax.set_xlim(-macro_max, macro_max)
+    macro_ax.set_ylim(-macro_max, macro_max)
+    macro_ax.set_zlim(-macro_max, macro_max)
 
     macro_ax.grid(False)
     macro_ax.axis('off')
 
-    micro_ax.set_xlim(plot_min, plot_max)
-    micro_ax.set_ylim(plot_min, plot_max)
-    micro_ax.set_zlim(plot_min, plot_max)
+    micro_ax.set_xlim(plot_min_micro, plot_max_micro)
+    micro_ax.set_ylim(plot_min_micro, plot_max_micro)
+    micro_ax.set_zlim(plot_min_micro, plot_max_micro)
 
     micro_ax.grid(False)
     micro_ax.axis('off')
@@ -704,10 +722,13 @@ def Scattering(lattice_name='simple cubic',
            '{}'.format(k_title) + f'\nForm factors: {form_factor}')
     tit2 = ('Scattering on a cubic lattice.\n' + r'$k_{in} = $' +
             '{}'.format(k_title))
-    if normalize:
-        macro_ax.set_title(tit)
+    tit3 = "Scattering on a cubic lattice."
+    if not plots:
+        macro_fig.suptitle(tit3)
+    elif normalize:
+        macro_fig.suptitle(tit)
     else:
-        macro_ax.set_title(tit2)
+        macro_fig.suptitle(tit2)
     if plots:
         plt.show()
     return_list = []
