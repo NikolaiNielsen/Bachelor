@@ -15,6 +15,26 @@ d = (np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]),
      [2, 2, 2])
 
 
+class slider(QW.QSlider):
+    """
+    A slider with the capability of having floats as values
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    # Set the values of the slider. The values are integers between 0 and
+    # the length of "values". Then use floatValue to retrieve the appropriate
+    # value from "values"
+    def setValues(self, values):
+        num_vals = len(values)
+        self.setMinimum(0)
+        self.setMaximum(num_vals-1)
+        self.values = values
+
+    def floatValue(self):
+        return self.values[self.value()]
+
+
 class full_window(QW.QMainWindow):
     def __init__(self):
         super().__init__()
