@@ -48,12 +48,12 @@ def calc_positions(a1, a2, a3, n1, n2, n3, basis):
     atomic_positions = np.zeros((n, 3))
 
     # Sample solution
-    """
+
     lattice_point = n1*a1 + n2*a2 + n3*a3
     # Reshape the lattice_point, so we can easily add it to the basis
     lattice_add = lattice_point.reshape(1, 3)
     atomic_positions = basis + lattice_add
-    """
+
     return lattice_point, atomic_positions
 
 
@@ -96,7 +96,7 @@ def calc_reciprocal_lattice(a1, a2, a3, m1, m2, m3):
     G = np.array((0, 0, 0))
 
     # Sample Solution
-    """
+
     # Calculate the scale factor
     scale = (2 * np.pi) / np.dot(a1, np.cross(a2, a3))
     # Calculate the primitive lattice vectors
@@ -105,5 +105,5 @@ def calc_reciprocal_lattice(a1, a2, a3, m1, m2, m3):
     b3 = scale * np.cross(a1, a2)
     # Calculate the lattice point
     G = m1*b1 + m2*b2 + m3*b3
-    """
+
     return b1, b2, b3, G

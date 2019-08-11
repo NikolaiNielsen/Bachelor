@@ -942,11 +942,15 @@ class scattering_window(lattice_window):
             self.color_widgets.append(el)
 
             # form factor field
-            el = QW.QLineEdit()
-            el.setText('1')
-            el.setValidator(QG.QDoubleValidator(decimals=2))
-            el.editingFinished.connect(
-                lambda i=atoms, el=el: self.update_form_factor(i, el.text()))
+            num = 50
+            vals = np.linspace(0, 1, num)
+            el = slider(QC.Qt.Horizontal)
+            el.setValues(vals)
+            el.setValue(num-1)
+            # si is the slider index. Not needed.
+            el.valueChanged.connect(
+                lambda si, i=atoms, el=el: self.update_form_factor(si, i, el)
+            )
             self.preset_grid.addWidget(el, n, 2)
             self.form_factor_fields.append(el)
 
@@ -990,25 +994,29 @@ class scattering_window(lattice_window):
         label.setAlignment(QC.Qt.AlignCenter)
         self.current_basis_grid.addWidget(label, 0, place)
         for i in range(n_basis):
-            el = QW.QLineEdit()
-            el.setText('1')
+            num = 50
+            vals = np.linspace(0, 1, num)
+            el = slider(QC.Qt.Horizontal)
+            el.setValues(vals)
+            el.setValue(num-1)
+            el.valueChanged.connect(
+                lambda si, i=i, el=el: self.update_form_factor(si, i, el)
+            )
             if i and move_checkboxes:
                 el.setEnabled(False)
-            el.setValidator(QG.QDoubleValidator(decimals=2))
-            el.editingFinished.connect(
-                lambda i=i, el=el: self.update_form_factor(i, el.text()))
             self.form_factor_fields.append(el)
             self.current_basis_grid.addWidget(el, i + 1, place)
             if move_checkboxes:
                 el = self.basis_check_widgets[i]
                 self.current_basis_grid.addWidget(el, i + 1, place + 1)
 
-    def update_form_factor(self, i, text):
+    def update_form_factor(self, si, i, el):
+        val = el.floatValue()
         if isinstance(i, list):
             for j in i:
-                self.lattice_config['form_factors'][j] = float(text)
+                self.lattice_config['form_factors'][j] = val
         else:
-            self.lattice_config['form_factors'][i] = float(text)
+            self.lattice_config['form_factors'][i] = val
         self.update_basis()
 
     def hide_basis_widgets(self, basis_no):
