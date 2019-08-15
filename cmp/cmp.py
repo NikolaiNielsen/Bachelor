@@ -777,7 +777,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
     ax.set_position([0.05, 0, 0.5, 1])
 
     # Optional plotting of Fermi surface in main axes.
-    ax.contour(kxs, kys, band, E_F, colors='r', linewidths=3)
+    ax.contour(kxs, kys, band, [E_F], colors='r', linewidths=3)
 
     # Plotting of the main event: the band structure
     ax.plot_surface(kxs, kys, band, alpha=0.9)
@@ -809,7 +809,7 @@ def Band_structure(V0=0, n_k=51, G_range=list(range(-3, 4)),
 
     # Plotting of the second set of axes
     ax2 = plt.axes([0.7, 0.2, 0.25, 0.6])
-    ax2.contour(kxs, kys, band, E_F)
+    ax2.contour(kxs, kys, band, [E_F])
     ax2.set_xlabel(r'$k_x/k_0$')
     ax2.set_ylabel(r'$k_y/k_0$')
     ax2.set_title('Fermi surface')
