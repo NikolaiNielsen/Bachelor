@@ -647,7 +647,9 @@ def Scattering(lattice_name='simple cubic',
             x, y = points[i, 0:2]
             s = indices[i]
             c = colors[i, :-1]
-            macro_ax.text(x, y, plane_z, s, color=c, va='bottom', ha='center')
+            a = colors[i, -1]
+            macro_ax.text(x, y, plane_z, s, color=c, alpha=a,
+                          va='bottom', ha='center')
 
         # Setting limits for the second figure
         det_max_x = np.amax(x_range)
