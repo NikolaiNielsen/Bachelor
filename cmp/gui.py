@@ -804,8 +804,9 @@ class scattering_window(lattice_window):
         # it. Then create the FigureCanvas, add them all to the layout and add
         # a toolbar. Lastly enable mouse support for Axes3D
         (self.macro_fig, self.micro_fig,
-         self.macro_ax, self.micro_ax, _) = cmp.Scattering(
+         self.macro_ax, self.micro_ax, indices) = cmp.Scattering(
             returns=True, return_indices=True, plots=False)
+        self.update_indices(indices)
         self.macro_canvas = FigureCanvas(self.macro_fig)
         self.macro_canvas.setMinimumWidth(400)
         self.micro_canvas = FigureCanvas(self.micro_fig)
