@@ -578,9 +578,16 @@ def Scattering(lattice_name='simple cubic',
                                                   shade=False,
                                                   alpha=0.2)
                         else:
-                            micro_ax.plot_trisurf(x, y, z, color='r',
-                                                  shade=False,
-                                                  alpha=0.2)
+                            try:
+                                micro_ax.plot_trisurf(x, y, z, color='r',
+                                                      shade=False,
+                                                      alpha=0.2)
+                            except RuntimeError as e:
+                                # We get a runtime error from qhull. We
+                                # calculated badly, but it's probably just an
+                                # uncaught bad intersection (ie, outside the
+                                # plot box)
+                                pass
                     # We change the color of highlighted point and plot the
                     # family of planes
                     high_intensity = intensities[indices_index]
