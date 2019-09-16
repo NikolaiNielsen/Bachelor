@@ -234,3 +234,15 @@ def prune_scattered_points(points, intensities, indices):
             new_indices[new_id] = "{}\n{}".format(new_indices[new_id], index)
 
     return unique_points, new_intensities, new_indices
+
+
+def form_factor_lerp(form_factors, ymax=1, ymin=0):
+    """
+    Linear interpolation of form factors to the range [0, 1]
+    """
+
+    max_form = np.amax(form_factors)
+    min_form = np.amin(form_factors)
+    delta = (ymax-ymin)/(max_form-min_form)
+    lerp = delta * (form_factors - min_form)
+    return lerp
