@@ -1564,7 +1564,9 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         unique_points = np.unique(plane, axis=0)
         inside = find_inside(unique_points, r_min, r_max)
         if np.sum(inside) >= 3:
-            limited_planes.append(unique_points[inside])
+            unique_inside = unique_points[inside]
+            if np.linalg.matrix_rank(unique_inside) >= 3:
+                limited_planes.append(unique_inside)
     return d, limited_planes
 
 
