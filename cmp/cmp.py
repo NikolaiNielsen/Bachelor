@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import matplotlib.colors as mplcolors
 from functools import partial
 from scipy.spatial import Delaunay
 
@@ -90,6 +91,8 @@ def Lattice(
         for i in range(n_basis):
             sizes.append(s)
 
+    alphas = [1] * len(sizes)
+
     # Choosing gridline and unit cell type. First the default settings.
     latticelines = lattices.latticelines
     unitcells = lattices.unitcells
@@ -140,7 +143,7 @@ def Lattice(
     else:
         lim_min, lim_max = n_min, n_max
 
-    objects = lattices.generator(a1, a2, a3, basis, colors, sizes,
+    objects = lattices.generator(a1, a2, a3, basis, colors, sizes, alphas,
                                  n_min, n_max)
     if rounder:
         atomic_positions = np.around(objects[0], decimals=5)
@@ -149,7 +152,7 @@ def Lattice(
         print("Number of atoms and lattice points before limiting:")
         print(objects[0].size / 3, np.sum(objects[-1]))
     # Objects to limit to the plot-box
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes, _,
      lattice_position) = lattices.limiter(points=objects[0],
                                           objects=objects,
                                           min_=lim_min,
@@ -274,6 +277,7 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
     # we want black colors, and small dots
     colors = ['k']
     sizes = [0.5]
+    alphas = [1]
 
     # we use primitive unit cell, and lattice lines along lattice vectors
     unit_type = 'primitive'
@@ -290,13 +294,13 @@ def plot_reciprocal(a1, a2, a3, fig=None, ax=None, indices=(1, 1, 1),
     lattice = np.array([b1, b2, b3])
     basis = np.array([0, 0, 0])
 
-    objects = lattices.generator(b1, b2, b3, basis, colors, sizes,
+    objects = lattices.generator(b1, b2, b3, basis, colors, sizes, alphas,
                                  n_min, n_max)
 
     atomic_positions = np.around(objects[0], decimals=5)
     objects = [atomic_positions] + [i for i in objects[1:]]
 
-    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes,
+    (atomic_positions, lattice_coefficients, atomic_colors, atomic_sizes, _,
      lattice_position) = lattices.limiter(points=objects[0],
                                           objects=objects,
                                           min_=n_min,
@@ -450,6 +454,7 @@ def Scattering(lattice_name='simple cubic',
 
     # We want the atoms to scale with the form factor
     atom_sizes = [1.5 * f for f in form_factor]
+    alphas = np.array(form_factor)
 
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
     k_in = np.array(k_in)
@@ -469,10 +474,10 @@ def Scattering(lattice_name='simple cubic',
                                                       micro_min, micro_max,
                                                       unit_cell_type)
     objects = lattices.generator(a1, a2, a3, basis, atom_colors,
-                                 atom_sizes, n_min_micro, n_max_micro)
+                                 atom_sizes, alphas, n_min_micro, n_max_micro)
     objects = lattices.limiter(objects[0], objects, r_min_micro, r_max_micro,
                                unit_cell_type)
-    (atom_pos_micro, _, atom_cols_micro, atom_sizes_micro,
+    (atom_pos_micro, _, atom_cols_micro, atom_sizes_micro, atom_alpha_micro,
      lattice_position_micro) = objects
 
     pruned_lines_micro = lattices.grid_lines(a1, a2, a3, atom_pos_micro,
@@ -483,10 +488,10 @@ def Scattering(lattice_name='simple cubic',
                                                       min_, max_,
                                                       unit_cell_type)
     objects = lattices.generator(a1, a2, a3, basis, atom_colors,
-                                 atom_sizes, n_min, n_max)
+                                 atom_sizes, alphas, n_min, n_max)
     objects = lattices.limiter(objects[0], objects, r_min, r_max,
                                unit_cell_type)
-    (atomic_positions, _, atomic_colors, atomic_sizes,
+    (atomic_positions, _, atomic_colors, atomic_sizes, atomic_alphas,
      lattice_position) = objects
 
     pruned_lines = lattices.grid_lines(a1, a2, a3, atomic_positions,
@@ -519,8 +524,11 @@ def Scattering(lattice_name='simple cubic',
     macro_ax.scatter(atomic_positions[:, 0], atomic_positions[:, 1],
                      atomic_positions[:, 2], c=atomic_colors, s=atomic_sizes)
 
+    atom_rgba_micro = mplcolors.to_rgba_array(atom_cols_micro)
+    atom_rgba_micro[:, -1] = np.array(atom_alpha_micro)
+
     micro_ax.scatter(atom_pos_micro[:, 0], atom_pos_micro[:, 1],
-                     atom_pos_micro[:, 2], c=atom_cols_micro,
+                     atom_pos_micro[:, 2], c=atom_rgba_micro,
                      s=atom_sizes_micro)
 
     for line in pruned_lines:
