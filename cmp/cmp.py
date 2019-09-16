@@ -448,7 +448,8 @@ def Scattering(lattice_name='simple cubic',
     else:
         atom_colors = colors
 
-    atom_sizes = [1] * n_basis
+    # We want the atoms to scale with the form factor
+    atom_sizes = [1.5 * f for f in form_factor]
 
     # Normalizing wave vector (multiplying by k0 = 2Pi/a)
     k_in = np.array(k_in)
