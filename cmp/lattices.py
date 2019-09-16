@@ -95,7 +95,8 @@ def mag(a):
         return np.linalg.norm(a, axis=1)
 
 
-def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
+def generator(a1, a2, a3, basis, colors, sizes, alphas,
+              n_min, n_max, verbose=False):
     """
     Generates the atomic positions of the lattice, from the lattice- and basis-
     vectors
@@ -104,7 +105,8 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
     # - a1, a2, a3:             ndarray (3,)
     # - basis:                  ndarray (n,3)
     # - colors:                 list (n, strings)
-    # - sizes:                  list (n, ints)
+    # - sizes:                  list (n, floats)
+    # - alphas:                 list (n, floats)
     # - n_min, n_max:           ndarray (3,)
     # - verbose:                Bool
     #
@@ -131,6 +133,7 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
     # Empty lists for colors, sizes and whether or not they're lattice points
     atomic_colors = []
     atomic_sizes = []
+    atomic_alphas = []
     lattice_position = []
 
     # Loop over all chosen linear combinations of basis vectors and plot each
@@ -148,6 +151,7 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
                     atomic_positions[counter, ] = atomic_pos[n_atom]
                     atomic_colors.append(colors[n_atom])
                     atomic_sizes.append(size_default * sizes[n_atom])
+                    atomic_alphas.append(alphas[n_atom])
 
                     if (atomic_positions[counter, ] == position).all():
                         lattice_position.append(True)
@@ -170,7 +174,7 @@ def generator(a1, a2, a3, basis, colors, sizes, n_min, n_max, verbose=False):
     atomic_positions[eq(atomic_positions, 0)] = 0
 
     return (atomic_positions, lattice_coefficients, atomic_colors,
-            atomic_sizes, lattice_position)
+            atomic_sizes, atomic_alphas, lattice_position)
 
 
 def classifier(a1, a2, a3, basis):
