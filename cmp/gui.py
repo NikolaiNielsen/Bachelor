@@ -279,8 +279,16 @@ class lattice_window(QW.QMainWindow):
         for n in range(len(self.param_labels)):
             self.layout_parameters.addRow(self.param_labels[n],
                                           self.param_fields[n])
+        # Add checkbox to only show one unit cell
+        self.showOneBox = QW.QCheckBox()
+        self.showOneLabel = QW.QLabel('Show one unitcell')
+        self.showOneBox.setChecked(False)
+        self.showOneBox.stateChanged.connect(self.plot_lattice)
+
+        self.layout_parameters.addRow(self.showOneLabel, self.showOneBox)
 
         self.layout_options.addLayout(self.layout_parameters)
+
         # Enable only the needed parameter fields.
         for n in self.needed_params[self.lattice_config['lattice']]:
             self.param_fields[n].setEnabled(True)
@@ -539,12 +547,18 @@ class lattice_window(QW.QMainWindow):
             colors = self.lattice_config['enabled_user_colors']
             basis = self.lattice_config['enabled_user_basis']
 
+        if self.showOneBox.isChecked():
+            max_ = [1, 1, 1]
+        else:
+            max_ = [2, 2, 2]
+
         # Plot the new lattice
         self.static_fig, self.static_ax = cmp.Lattice(a1=a1, a2=a2, a3=a3,
                                                       basis=basis,
                                                       colors=colors,
                                                       fig=self.static_fig,
                                                       ax=self.static_ax,
+                                                      max_=max_,
                                                       returns=True,
                                                       plots=False,
                                                       checks=False)
