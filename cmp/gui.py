@@ -281,7 +281,7 @@ class lattice_window(QW.QMainWindow):
                                           self.param_fields[n])
         # Add checkbox to only show one unit cell
         self.showOneBox = QW.QCheckBox()
-        self.showOneLabel = QW.QLabel('Show one unitcell')
+        self.showOneLabel = QW.QLabel('Show one unit cell')
         self.showOneBox.setChecked(False)
         self.showOneBox.stateChanged.connect(self.plot_lattice)
 
