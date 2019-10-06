@@ -727,6 +727,8 @@ class lattice_plane_window(lattice_window):
             indices = None
 
         recip_grid = self.show_recip_grid.isChecked()
+
+        max_ = [2]*3 if not self.showOneBox.isChecked() else [1]*3
         # Plot the new lattice
         self.static_fig, self.static_ax = cmp.Lattice(a1=a1, a2=a2, a3=a3,
                                                       basis=basis,
@@ -734,6 +736,7 @@ class lattice_plane_window(lattice_window):
                                                       fig=self.static_fig,
                                                       ax=self.static_ax,
                                                       indices=indices,
+                                                      max_=max_,
                                                       returns=True,
                                                       plots=False,
                                                       checks=False,
