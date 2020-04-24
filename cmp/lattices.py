@@ -1216,7 +1216,7 @@ def rotator(a1, a2, a3, basis, lattice_name=None, verbose=False):
     return a1, a2, a3, basis
 
 
-def create_línes(points, vectors):
+def create_lines(points, vectors):
     """
     Creates lines along vectors and limits these to the given plot box
     """
@@ -1300,13 +1300,13 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
         # gridlines along lattice vectors - really messy for non-orthogonal
         # latticevectors
         vectors = np.array([a1, a2, a3])
-        lines = create_línes(lattice_positions, vectors)
+        lines = create_lines(lattice_positions, vectors)
     elif grid_type in "hexagonal":
         vectors = np.array([a1, a2, a3, a1 - a2])
-        lines = create_línes(lattice_positions, vectors)
+        lines = create_lines(lattice_positions, vectors)
     elif grid_type in 'base centred monoclinic':
         vectors = np.array([a1, 2*a2-a1, a3])
-        lines = create_línes(lattice_positions, vectors)
+        lines = create_lines(lattice_positions, vectors)
     elif grid_type in 'axes':
 
         # A Way of finding atoms on cartesian axes
@@ -1333,7 +1333,7 @@ def grid_lines(a1, a2, a3, atomic_positions, lattice_position, grid_type,
             print(("Couldn't find lattice points along all axes, returning "
                    "grid lines along lattice vectors instead"))
             vectors = np.array([a1, a2, a3])
-            lines = create_línes(lattice_positions, vectors)
+            lines = create_lines(lattice_positions, vectors)
         else:
             # Take the minimum as the lattice spacing
             a_z = np.min(absz_vals)
@@ -1509,11 +1509,9 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     # - d:              ndarray (3,)
     # - planes:         list(n, tuple(3, ndarray (points,points)))
     h, k, ell = indices
-    # First the scaling factor for the reciprocal lattice
-    scale = a1.dot(np.cross(a2, a3))
-    # Then the reciprocal lattice
-
-    b1, b2, b3, G = exercise.calc_reciprocal_lattice(a1, a2, a3, h, k, ell)
+    
+    # reciprocal lattice
+    _, _, _, G = exercise.calc_reciprocal_lattice(a1, a2, a3, h, k, ell)
     # b1 = 2 * np.pi * np.cross(a2, a3) / scale
     # b2 = 2 * np.pi * np.cross(a3, a1) / scale
     # b3 = 2 * np.pi * np.cross(a1, a2) / scale
@@ -1527,7 +1525,6 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     # Generate vectors that are normal to the normal:
     x, _, z = np.eye(3)
     cosGz = G_unit.dot(z)
-
     if eq(cosGz, 1):
         # G is along z, we choose v1 to be x
         v1 = x
@@ -1539,9 +1536,8 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
     v2 = np.cross(G_unit, v1)
 
     p0 = np.zeros(3)
-    proto_points, _ = calc_intersection(G, v1, v2, r_min, r_max, p0)
-
-    inside = find_inside(proto_points, r_min, r_max)
+    proto_points = calc_intersection(G, v1, v2, r_min, r_max, p0,
+                                     return_dirs=False)
     planes = [proto_points]
 
     while True:
@@ -1569,7 +1565,9 @@ def reciprocal(a1, a2, a3, indices, r_min, r_max):
         inside = find_inside(unique_points, r_min, r_max)
         if np.sum(inside) >= 3:
             unique_inside = unique_points[inside]
-            if np.linalg.matrix_rank(unique_inside) >= 3:
+            # If matrix rank is 2 we can create a plane (since we have 2
+            # linearly independent vectors)
+            if np.linalg.matrix_rank(unique_inside) >= 2:
                 limited_planes.append(unique_inside)
     return d, limited_planes
 
