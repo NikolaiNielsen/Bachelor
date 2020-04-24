@@ -1,20 +1,7 @@
-# Bachelor
+# Bachelor - Visualization of Concepts in Condensed Matter Physics
+This repository stores my bachelors project in Physics from the University of Copenhagen, under the supervision of Mark Spencer Rudner.
 
-## Code todo
+The source code is located in the cmp folder, along with a rawtext installation guide and a list of packages used.
 
-#### lattice 
-- [ ] Add labels on side lengths
-
-####  Lattice Planes
-- [X] get polygons/trisurf working for planes
-
-#### scattering
-- [X] transfer notes to tooltips
-- [X] recreate with two figures, one macroscopic, one microscopic
-- [X] show scattering triangle only on microscopic figure
-- [X] show lattice planes only on microscopic figure
-- [X] Plot only 2x2x2 lattice in micro-fig
-
-#### general
-- [ ] check out other libraries (mayavi2, plotly, etc)
-- [X] limit size of settings widget
+## Abstract
+In this thesis we explore key concepts in the field of condensed matter physics and translate these into visualisations using the computer programming language Python. Concepts explored include the geometry of crystal structures, families of lattice planes, neutron scattering and the band structure of two dimensional materials. Four distinct programs are written to visualize each of these concepts, and they are bundled into one open-source software package available at https://github.com/NikolaiNielsen/Bachelor, along with documentation on its use.
